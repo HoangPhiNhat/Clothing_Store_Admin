@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+/* eslint-disable react/prop-types */
+import { useEffect } from "react";
 import { Button, Modal, Form, Input, message } from "antd";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 
@@ -27,9 +28,8 @@ const UpdateCategory = ({ open, onCancel, category }) => {
   }, [category, form]);
 
   const onFinish = (values) => {
-  
-    if (category && category._id) {
-      updateCategory({ ...values, id: category._id });
+    if (category && category.id) {
+      updateCategory({ ...values, id: category.id });
     } else {
       messageApi.error("Không tìm thấy ID của danh mục");
     }
@@ -72,7 +72,7 @@ const UpdateCategory = ({ open, onCancel, category }) => {
               },
             ]}
           >
-            <Input placeholder="Tên danh mục" />
+            <Input placeholder="Tên danh mục" disabled={isPending} />
           </Form.Item>
         </Form>
       </Modal>

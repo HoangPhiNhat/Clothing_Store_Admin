@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -8,9 +7,10 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
+import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
-const { Header, Sider, Content, Footer } = Layout;
+const { Header, Sider, Content } = Layout;
 
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -22,9 +22,23 @@ const LayoutAdmin = () => {
 
   const items = [
     {
-      key: "/admin/users",
+      key: "/admin/dashboard",
       icon: <PieChartOutlined />,
       label: <Link to="/admin/users">Dashboard</Link>,
+    },
+    {
+      icon: <VideoCameraOutlined />,
+      label: <Link to="/admin/categories">Categories</Link>,
+      children: [
+        {
+          key: "/admin/categories",
+          label: <Link to="/admin/categories">Category list</Link>,
+        },
+        {
+          key: "/admin/categories/trash",
+          label: <Link to="/admin/categories/trash">Category trash</Link>,
+        },
+      ],
     },
     {
       key: "sub1",
@@ -40,11 +54,6 @@ const LayoutAdmin = () => {
           label: <Link to="/admin/products/add">Add Product</Link>,
         },
       ],
-    },
-    {
-      key: "/admin/categories",
-      icon: <VideoCameraOutlined />,
-      label: <Link to="/admin/categories">Categories</Link>,
     },
     {
       key: "/admin/users",
@@ -81,7 +90,7 @@ const LayoutAdmin = () => {
   return (
     <Layout>
       <Sider
-      className="min-h-[100vh]"
+        className="min-h-[100vh]"
         trigger={null}
         collapsible
         collapsed={collapsed}

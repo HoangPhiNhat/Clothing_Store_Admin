@@ -1,10 +1,14 @@
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { useQueryClient } from "@tanstack/react-query";
-import { Button, Popconfirm, Space, Table, message } from "antd";
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
+import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
+import { useState } from "react";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
-import CreateCategory from "./_components/CreateCategory"; // Ensure this is the correct path
+import CreateCategory from "./_components/CreateCategory";
 import UpdateCategory from "./_components/UpdateCategory";
 
 const Category = () => {
@@ -12,27 +16,18 @@ const Category = () => {
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
   const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const queryClient = useQueryClient();
-  const { data: categories, isLoading, error } = useCategoryQuery();
+  const [pageCategory, setPageCategory] = useState(1);
 
+  const {
+    data: categories,
+    isLoading,
+    isError,
+  } = useCategoryQuery(null, pageCategory);
   const { mutate: deleteCategory } = useCategoryMutation({
     action: "DELETE",
-    onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
-      messageApi.success("Xóa danh mục thành công");
-    },
-    onError: (error) => {
-      messageApi.error(`Lỗi khi xóa danh mục: ${error.message}`);
-    },
+    onSuccess: () => messageApi.success("Xóa danh mục thành công."),
+    onError: (error) => message.error("Xóa danh mục thất bại. " + error),
   });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
 
   const columns = [
     {
@@ -42,7 +37,7 @@ const Category = () => {
       sorter: (a, b) => a.index - b.index,
     },
     {
-      title: "Name",
+      title: "Tên danh mục",
       dataIndex: "name",
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
@@ -50,31 +45,19 @@ const Category = () => {
       width: "60%",
     },
     {
-      title: "Ảnh",
-      dataIndex: "image",
-      key: "image",
-      width: "20%",
-
-      render: (image) => (
-        <>
-          <img className="w-16" src={image} alt="" />
-        </>
-      ),
-    },
-    {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_, category) => (
         <Space size="middle">
-          <Button onClick={() => hanldeModalUpdate(category)}>
+          <Button onClick={() => handleModalUpdate(category)}>
             <EditOutlined />
           </Button>
           <Popconfirm
             title="Xóa danh mục"
             description="Bạn có muốn danh mục này không?"
-            okText="Yes"
-            cancelText="No"
-            onConfirm={() => deleteCategory(category._id)}
+            okText="Có"
+            cancelText="Sửa"
+            onConfirm={() => deleteCategory(category)}
           >
             <Button type="primary" danger>
               <DeleteOutlined />
@@ -85,20 +68,20 @@ const Category = () => {
     },
   ];
 
-  const dataSource = categories?.map((item, index) => ({
-    key: item._id,
+  const dataSource = categories?.data.data.map((category, index) => ({
+    key: category.id,
     index: index + 1,
-    ...item,
+    ...category,
   }));
 
-  const hanldeModalUpdate = (category) => {
+  const handleModalUpdate = (category) => {
     setSelectedCategory(category);
     setModalUpdateOpen(true);
   };
 
-  const onChange = (pagination, filters, sorter, extra) => {
-    // Handle table change events if needed
-  };
+  if (isError) {
+    return <div>Error: {isError.message}</div>;
+  }
 
   return (
     <>
@@ -110,7 +93,20 @@ const Category = () => {
           Thêm
         </Button>
       </div>
-      <Table columns={columns} dataSource={dataSource} onChange={onChange} />
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        loading={isLoading}
+        pagination={false}
+      />
+      <Pagination
+        align="end"
+        defaultCurrent={1}
+        total={categories?.data.total}
+        pageSize={5}
+        onChange={(page) => setPageCategory(page)}
+      />
+
       <CreateCategory
         open={modalCreateOpen}
         onCancel={() => setModalCreateOpen(false)}

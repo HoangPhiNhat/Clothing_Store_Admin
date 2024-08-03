@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Modal, Form, Input, message, Spin } from "antd";
+/* eslint-disable react/prop-types */
+import { Button, Modal, Form, Input, message } from "antd";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 
 const CreateCategory = ({ open, onCancel }) => {
@@ -19,7 +19,7 @@ const CreateCategory = ({ open, onCancel }) => {
   });
 
   const onFinish = (values) => {
-    createCategory(values); // Gọi mutate để thêm danh mục
+    createCategory(values);
   };
 
   return (
