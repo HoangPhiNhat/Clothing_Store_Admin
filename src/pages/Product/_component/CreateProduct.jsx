@@ -21,6 +21,7 @@ import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
 import { uploadFileCloudinary } from "../../../services/cloudinary";
 import { colors, sizes } from "../../../../data-example";
+import { validateFieldNumber } from "../../../validations/Product";
 
 const CreateProduct = () => {
   const { data: categories } = useCategoryQuery();
@@ -47,8 +48,6 @@ const CreateProduct = () => {
   const onFinish = async (values) => {
     try {
       const image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
-      console.log(values);
-
       createProduct({ ...values, thumbnail: image });
       console.log({ ...values, thumbnail: image });
     } catch (error) {
@@ -151,12 +150,12 @@ const CreateProduct = () => {
       dataIndex: "action",
       fixed: "right",
       render: (_, field) => {
-     if(field.length>1){
-        
-        <MinusCircleOutlined
-          onClick={() => remove(field.name)}
-          className="red"
-        />}
+        if (field.length > 1) {
+          <MinusCircleOutlined
+            onClick={() => remove(field.name)}
+            className="red"
+          />;
+        }
       },
     },
   ];
@@ -233,18 +232,21 @@ const CreateProduct = () => {
                   label="Regular price"
                   name="regular_price"
                   rules={[
-                    { required: true },
-                    { type: "number", message: "Nhập số" },
+                    // { required: true, message: "Vui lòng nhập giá "},
+                    {
+                      validator: (_, value) =>
+                        validateFieldNumber("giá", value),
+                    },
                   ]}
                 >
-                  <InputNumber />
+                  <Input />
                 </Form.Item>
                 <Form.Item
                   label="Reduced price"
                   name="reduced_price"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber />
+                  <Input />
                 </Form.Item>
                 <Form.Item
                   name="material"

@@ -12,7 +12,10 @@ import {
 import { Link, useParams } from "react-router-dom";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
-import { uploadFileCloudinary } from "../../../services/cloudinary";
+import {
+  deleteFileCloudinary,
+  uploadFileCloudinary,
+} from "../../../services/cloudinary";
 import useProductQuery from "../../../hooks/Product/useProductQuery";
 
 const UpdateProduct = () => {
@@ -20,8 +23,8 @@ const UpdateProduct = () => {
   const { data: categories } = useCategoryQuery();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
-   const [thumbnail, setThumbnail] = useState(null);
-  const { data:product } = useProductQuery(id);
+  const [thumbnail, setThumbnail] = useState(null);
+  const { data: product } = useProductQuery(id);
   const { mutate: updateProduct } = useProductMutation({
     action: "UPDATE",
     onSuccess: () => {
@@ -37,38 +40,42 @@ const UpdateProduct = () => {
       },
     },
   });
-
-console.log(id);
-console.log(product);
   const onFinish = async (values) => {
     try {
-      const image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
+      let image;
+      if (values.thumbnail[0].uid === "-1") {
+        image = values.thumbnail[0].thumbUrl;
+      } else {
+        const match = thumbnail.match(/clothing[^.]*/);
+        deleteFileCloudinary(match[0]);
+        image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
+      }
       console.log(values);
 
-      updateProduct({ ...values, thumbnail: image });
+      updateProduct({ ...values, id: id, thumbnail: image });
     } catch (error) {
       console.log(error);
     }
   };
 
-useEffect(() => {
-  if (product) {
-    form.setFieldsValue({
-      ...product,
-      thumbnail: product.thumbnail
-        ? [
-            {
-              uid: "-1",
-              name: "thumbnail.png",
-              status: "done",
-              thumbUrl: product.thumbnail,
-            },
-          ]
-        : [],
-    });
-  }
-}, [form, product]);
-
+  useEffect(() => {
+    if (product) {
+      form.setFieldsValue({
+        ...product,
+        thumbnail: product.thumbnail
+          ? [
+              {
+                uid: "-1",
+                name: "thumbnail.png",
+                status: "done",
+                thumbUrl: product.thumbnail,
+              },
+            ]
+          : [],
+      });
+      setThumbnail(product.thumbnail);
+    }
+  }, [form, product]);
 
   return (
     <div className="container mx-auto">
