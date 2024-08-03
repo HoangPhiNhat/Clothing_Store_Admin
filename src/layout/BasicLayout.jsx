@@ -21,11 +21,11 @@ const LayoutAdmin = () => {
   const location = useLocation();
 
   const items = [
-    {
-      key: "/admin/users",
-      icon: <PieChartOutlined />,
-      label: <Link to="/admin/users">Dashboard</Link>,
-    },
+    // {
+    //   // key: "/admin/users",
+    //   icon: <PieChartOutlined />,
+    //   label: <Link to="/admin/users">Dashboard</Link>,
+    // },
     {
       key: "sub1",
       icon: <UserOutlined />,

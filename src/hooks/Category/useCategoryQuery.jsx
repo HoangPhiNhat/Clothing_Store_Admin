@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAll } from "../../services/category";
+import { getCategories } from "../../services/category";
 
 const useCategoryQuery = () => {
   const queryKey = ["CATEGORY_KEY"];
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
-      return await getAll();
+      return await getCategories();
     },
   });
   return { data, ...rest };

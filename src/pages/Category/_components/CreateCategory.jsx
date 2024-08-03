@@ -14,14 +14,14 @@ const CreateCategory = ({ open, onCancel }) => {
       messageApi.success("Thêm danh mục thành công");
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi thêm danh mục: ${error.message}`);
+      messageApi.error(`Lỗi khi thêm danh mục: ${error.response.data.message}`);
     },
   });
 
   const onFinish = (values) => {
     createCategory(values); // Gọi mutate để thêm danh mục
   };
-
+console.log(createCategory);
   return (
     <>
       {contextHolder}

@@ -1,4 +1,8 @@
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Popconfirm, Space, Table, message } from "antd";
 import React, { useState } from "react";
@@ -19,10 +23,10 @@ const Category = () => {
     action: "DELETE",
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
-      messageApi.success("Xóa danh mục thành công");
+      messageApi.success("Delete category successfully");
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi xóa danh mục: ${error.message}`);
+      messageApi.error(`Delete category fail: ${error.message}`);
     },
   });
 
@@ -36,7 +40,7 @@ const Category = () => {
 
   const columns = [
     {
-      title: "#",
+      title: "No.",
       dataIndex: "index",
       rowScope: "row",
       sorter: (a, b) => a.index - b.index,
@@ -66,7 +70,11 @@ const Category = () => {
       key: "action",
       render: (_, category) => (
         <Space size="middle">
-          <Button onClick={() => hanldeModalUpdate(category)}>
+          <Button
+            type="default"
+            className="bg-[#fadd04]"
+            onClick={() => hanldeModalUpdate(category)}
+          >
             <EditOutlined />
           </Button>
           <Popconfirm
@@ -85,8 +93,8 @@ const Category = () => {
     },
   ];
 
-  const dataSource = categories?.map((item, index) => ({
-    key: item._id,
+  const dataSource = categories?.data?.map((item, index) => ({
+    key: item.id,
     index: index + 1,
     ...item,
   }));
@@ -107,7 +115,7 @@ const Category = () => {
         <h1 className="text-xl">Quản lý danh mục</h1>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
           <PlusCircleOutlined />
-          Thêm
+          Add Category
         </Button>
       </div>
       <Table columns={columns} dataSource={dataSource} onChange={onChange} />

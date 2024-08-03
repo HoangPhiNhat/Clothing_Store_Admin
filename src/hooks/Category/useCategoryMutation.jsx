@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  create,
-  remove,
-  update,
+  createCategory,
+  removeCategory,
+  updateCategory,
 } from "../../services/category";
 
 const useCategoryMutation = ({ action, onSuccess, onError }) => {
@@ -12,11 +12,11 @@ const useCategoryMutation = ({ action, onSuccess, onError }) => {
     mutationFn: async (category) => {
       switch (action) {
         case "CREATE":
-          return await create(category);
+          return await createCategory(category);
         case "DELETE":
-          return await remove(category);
+          return await removeCategory(category);
         case "UPDATE":
-          return await update(category);
+          return await updateCategory(category);
         default:
           return null;
       }
