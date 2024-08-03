@@ -1,11 +1,22 @@
 /* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
 let size = 5;
+
 export const getAllCategory = async (page) => {
   try {
     let queryCategory = `/categories?size=${size}`;
     if (page) queryCategory += `&page=${page}`;
     return await instance.get(`${queryCategory}&sort=DESC`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllCategoryTrash = async (page) => {
+  try {
+    let queryCategory = `/categories/trash?size=${size}`;
+    if (page) queryCategory += `&page=${page}`;
+    return await instance.get(`${queryCategory}`);
   } catch (error) {
     throw error;
   }

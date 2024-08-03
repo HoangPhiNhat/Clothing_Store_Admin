@@ -14,7 +14,6 @@ const useCategoryMutation = ({ action, onSuccess, onError }) => {
         case "CREATE":
           return await createCategory(category);
         case "DELETE":
-          console.log(category.id);
           return await removeCategory(category);
         case "UPDATE":
           return await updateCategory(category);

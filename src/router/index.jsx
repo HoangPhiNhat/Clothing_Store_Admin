@@ -5,6 +5,7 @@ import Home from "../pages/Home/Home";
 import NotFound from "../pages/NotFound/NotFound";
 import CreateProduct from "../pages/Product/_component/CreateProduct";
 import ProductManagePage from "../pages/Product/page";
+import TrashCategory from "../pages/Category/_components/TrashCategory";
 
 const RouterComponent = () => {
   return (
@@ -15,6 +16,7 @@ const RouterComponent = () => {
           <Route path="/admin" element={<BasicLayout />}>
             <Route index element={<Home />} />
             <Route path="categories" element={<Category />} />
+            <Route path="categories/trash" element={<TrashCategory />} />
             <Route path="products" element={<ProductManagePage />} />
             <Route path="products/add" element={<CreateProduct />} />
             <Route path="products/:id/edit" element={<CreateProduct />} />

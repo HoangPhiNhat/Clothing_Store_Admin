@@ -1,29 +1,19 @@
 /* eslint-disable no-unused-vars */
-import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusCircleOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
-import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
-import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
-import CreateCategory from "./_components/CreateCategory";
-import UpdateCategory from "./_components/UpdateCategory";
+import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
+import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 
-const Category = () => {
+const TrashCategory = () => {
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [modalCreateOpen, setModalCreateOpen] = useState(false);
-  const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [pageCategory, setPageCategory] = useState(1);
 
   const {
     data: categories,
     isLoading,
     isError,
-  } = useCategoryQuery("GET_ALL", null, pageCategory);
+  } = useCategoryQuery("GET_ALL_TRASH", null, pageCategory);
 
   const { mutate: deleteCategory } = useCategoryMutation({
     action: "DELETE",
@@ -31,6 +21,8 @@ const Category = () => {
     onError: (error) => message.error("Xóa danh mục thất bại. " + error),
   });
 
+  console.log(categories.data);
+  
   const columns = [
     {
       title: "#",
@@ -51,9 +43,6 @@ const Category = () => {
       key: "action",
       render: (_, category) => (
         <Space size="small">
-          <Button onClick={() => handleModalUpdate(category)}>
-            <EditOutlined />
-          </Button>
           <Popconfirm
             title="Xóa danh mục"
             description="Bạn có muốn danh mục này không?"
@@ -70,16 +59,11 @@ const Category = () => {
     },
   ];
 
-  const dataSource = categories?.data.data.map((category, index) => ({
+  const dataSource = categories?.data.map((category, index) => ({
     key: category.id,
     index: index + 1,
     ...category,
   }));
-
-  const handleModalUpdate = (category) => {
-    setSelectedCategory(category);
-    setModalUpdateOpen(true);
-  };
 
   if (isError) {
     return <div>Error: {isError.message}</div>;
@@ -89,8 +73,8 @@ const Category = () => {
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl">Quản lý danh mục</h1>
-        <Button type="primary" onClick={() => setModalCreateOpen(true)}>
+        <h1 className="text-xl">Quản lý danh mục đã ẩn</h1>
+        <Button type="primary">
           <PlusCircleOutlined />
           Thêm
         </Button>
@@ -111,18 +95,8 @@ const Category = () => {
         pageSize={5}
         onChange={(page) => setPageCategory(page)}
       />
-
-      <CreateCategory
-        open={modalCreateOpen}
-        onCancel={() => setModalCreateOpen(false)}
-      />
-      <UpdateCategory
-        open={modalUpdateOpen}
-        onCancel={() => setModalUpdateOpen(false)}
-        category={selectedCategory}
-      />
     </>
   );
 };
 
-export default Category;
+export default TrashCategory;
