@@ -24,34 +24,34 @@ const LayoutAdmin = () => {
     {
       key: "/admin/dashboard",
       icon: <PieChartOutlined />,
-      label: <Link to="/admin/users">Dashboard</Link>,
+      label: <Link to="/admin/users">Thống kê</Link>,
     },
     {
       icon: <VideoCameraOutlined />,
-      label: <Link to="/admin/categories">Categories</Link>,
+      label: "Danh mục",
       children: [
         {
           key: "/admin/categories",
-          label: <Link to="/admin/categories">Category list</Link>,
+          label: <Link to="/admin/categories">Danh sách</Link>,
         },
         {
           key: "/admin/categories/trash",
-          label: <Link to="/admin/categories/trash">Category trash</Link>,
+          label: <Link to="/admin/categories/trash">Danh sách đã ẩn</Link>,
         },
       ],
     },
     {
       key: "sub1",
       icon: <UserOutlined />,
-      label: "Products",
+      label: "Sản phẩm",
       children: [
         {
           key: "/admin/products",
-          label: <Link to="/admin/products">Product List</Link>,
+          label: <Link to="/admin/products">Danh sách</Link>,
         },
         {
           key: "/admin/products/add",
-          label: <Link to="/admin/products/add">Add Product</Link>,
+          label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
         },
       ],
     },

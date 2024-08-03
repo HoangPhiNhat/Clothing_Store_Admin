@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { RedoOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
+import { Link } from "react-router-dom";
 
 const TrashCategory = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -13,16 +14,16 @@ const TrashCategory = () => {
     data: categories,
     isLoading,
     isError,
-  } = useCategoryQuery("GET_ALL_TRASH", null, pageCategory);
+  } = useCategoryQuery("GET_ALL_CATEGORY_TRASH", null, pageCategory);
 
-  const { mutate: deleteCategory } = useCategoryMutation({
-    action: "DELETE",
-    onSuccess: () => messageApi.success("Xóa danh mục thành công."),
-    onError: (error) => message.error("Xóa danh mục thất bại. " + error),
+  const { mutate: deleteCategory, isPending } = useCategoryMutation({
+    action: "RESTORE",
+    onSuccess: () => messageApi.success("Khôi phục danh mục thành công."),
+    onError: (error) => message.error("Khôi phục danh mục thất bại. " + error),
   });
 
-  console.log(categories.data);
-  
+  console.log(categories?.data.data);
+
   const columns = [
     {
       title: "#",
@@ -44,14 +45,14 @@ const TrashCategory = () => {
       render: (_, category) => (
         <Space size="small">
           <Popconfirm
-            title="Xóa danh mục"
-            description="Bạn có muốn danh mục này không?"
-            okText="Có"
+            title="Khôi phục danh mục"
+            description="Bạn có muốn khôi phục danh mục này không?"
+            okText={isPending ? `Đang xóa` : `Có`}
             cancelText="Không"
             onConfirm={() => deleteCategory(category)}
           >
-            <Button type="primary" danger>
-              <DeleteOutlined />
+            <Button type="primary" danger loading={isPending}>
+              {isPending ? "" : <RedoOutlined />}
             </Button>
           </Popconfirm>
         </Space>
@@ -59,7 +60,7 @@ const TrashCategory = () => {
     },
   ];
 
-  const dataSource = categories?.data.map((category, index) => ({
+  const dataSource = categories?.data.data.map((category, index) => ({
     key: category.id,
     index: index + 1,
     ...category,
@@ -74,10 +75,12 @@ const TrashCategory = () => {
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý danh mục đã ẩn</h1>
-        <Button type="primary">
-          <PlusCircleOutlined />
-          Thêm
-        </Button>
+        <Link to={"/admin/categories"}>
+          <Button type="primary" disabled={isPending}>
+            <RollbackOutlined />
+            Danh mục
+          </Button>
+        </Link>
       </div>
 
       <Table
@@ -88,6 +91,7 @@ const TrashCategory = () => {
       />
 
       <Pagination
+        disabled={isPending}
         className="mt-5"
         align="end"
         defaultCurrent={1}

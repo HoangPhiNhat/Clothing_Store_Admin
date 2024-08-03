@@ -10,11 +10,13 @@ const CreateCategory = ({ open, onCancel }) => {
     action: "CREATE",
     onSuccess: () => {
       form.resetFields();
-      onCancel(); // Đóng modal sau khi thêm thành công
+      // onCancel(); // Đóng modal sau khi thêm thành công
       messageApi.success("Thêm danh mục thành công");
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi thêm danh mục: ${error.message}`);
+      console.log(error);
+      
+      messageApi.error(`Lỗi khi thêm danh mục: ${error.response.data.message}`);
     },
   });
 
@@ -59,6 +61,10 @@ const CreateCategory = ({ open, onCancel }) => {
               {
                 required: true,
                 message: "Vui lòng nhập danh mục!",
+              },
+              {
+                min: 6,
+                message: "Tên danh mục phải dài hơn 6 kí tự.",
               },
             ]}
           >
