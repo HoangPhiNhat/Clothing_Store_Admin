@@ -9,3 +9,12 @@ export const cinemaValidator = Joi.object({
     "any.required": "Tên sản phẩm không được để trống",
   }),
 });
+export const validateFieldNumber = (label, value) => {
+  if (!value) {
+    return Promise.reject(`Vui lòng nhập ${label}`);
+  }
+  if (!/^\d+$/.test(value)) {
+    return Promise.reject(`Sai định dạng ${label}`);
+  }
+  return Promise.resolve();
+};
