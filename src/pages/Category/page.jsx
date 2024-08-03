@@ -4,6 +4,7 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
+
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
@@ -23,9 +24,9 @@ const Category = () => {
     data: categories,
     isLoading,
     isError,
-  } = useCategoryQuery("GET_ALL", null, pageCategory);
+  } = useCategoryQuery("GET_ALL_CATEGORY", null, pageCategory);
 
-  const { mutate: deleteCategory } = useCategoryMutation({
+  const { mutate: deleteCategory, isPending } = useCategoryMutation({
     action: "DELETE",
     onSuccess: () => messageApi.success("Xóa danh mục thành công."),
     onError: (error) => message.error("Xóa danh mục thất bại. " + error),
@@ -51,18 +52,22 @@ const Category = () => {
       key: "action",
       render: (_, category) => (
         <Space size="small">
-          <Button onClick={() => handleModalUpdate(category)}>
+          <Button
+            disabled={isPending}
+            onClick={() => handleModalUpdate(category)}
+          >
             <EditOutlined />
           </Button>
+
           <Popconfirm
             title="Xóa danh mục"
-            description="Bạn có muốn danh mục này không?"
-            okText="Có"
+            description="Bạn có muốn xóa danh mục này không?"
+            okText={isPending ? `Đang xóa` : `Có`}
             cancelText="Không"
             onConfirm={() => deleteCategory(category)}
           >
-            <Button type="primary" danger>
-              <DeleteOutlined />
+            <Button type="primary" danger loading={isPending}>
+              {isPending ? "" : <DeleteOutlined />}
             </Button>
           </Popconfirm>
         </Space>
@@ -91,7 +96,7 @@ const Category = () => {
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý danh mục</h1>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
-          <PlusCircleOutlined />
+          <PlusCircleOutlined disabled={isPending} />
           Thêm
         </Button>
       </div>
@@ -104,6 +109,7 @@ const Category = () => {
       />
 
       <Pagination
+        disabled={isPending}
         className="mt-5"
         align="end"
         defaultCurrent={1}

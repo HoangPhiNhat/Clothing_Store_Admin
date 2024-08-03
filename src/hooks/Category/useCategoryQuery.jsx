@@ -11,11 +11,11 @@ const useCategoryQuery = (action, id, page) => {
     queryKey,
     queryFn: async () => {
       switch (action) {
-        case "GET_ALL":
+        case "GET_ALL_CATEGORY":
           return await getAllCategory(page);
-        case "GET_BY_ID":
+        case "GET_CATEGORY_BY_ID":
           return await getCategoryById(id);
-        case "GET_ALL_TRASH":
+        case "GET_ALL_CATEGORY_TRASH":
           return await getAllCategoryTrash(page);
         default:
           return null;
