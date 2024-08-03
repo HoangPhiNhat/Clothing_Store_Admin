@@ -27,7 +27,7 @@ const TrashCategory = () => {
   const columns = [
     {
       title: "#",
-      dataIndex: "index",
+      dataIndex: "sku",
       rowScope: "row",
       sorter: (a, b) => a.index - b.index,
     },
