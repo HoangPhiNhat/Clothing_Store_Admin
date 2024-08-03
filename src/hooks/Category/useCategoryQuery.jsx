@@ -1,29 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCategories } from "../../services/category";
 
-const useCategoryQuery = () => {
-  const queryKey = ["CATEGORY_KEY"];
+import {
+  getAllCategory,
+  getAllCategoryTrash,
+  getCategoryById,
+} from "../../services/category";
+
+const useCategoryQuery = (action, id, page) => {
+  const queryKey = id ? ["CATEGORY_KEY", id] : ["CATEGORY_KEY", page];
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
-      return await getCategories();
+      console.log(1);
+      console.log(action);
+      
+      switch (action) {
+        case "GET_ALL_CATEGORY":
+          return await getAllCategory(page);
+        case "GET_BY_ID":
+          return await getCategoryById(id);
+        case "GET_ALL_TRASH":
+          return await getAllCategoryTrash(page);
+        default:
+          return null;
+      }
     },
   });
   return { data, ...rest };
 };
 export default useCategoryQuery;
-
-// import { useQuery } from "@tanstack/react-query";
-// import { getAll, getById } from "../../services/category";
-
-// const useCategoryQuery = (id) => {
-//   const queryKey = id ? ["CATEGORY_KEY", id] : ["CATEGORY_KEY"];
-//   const { data, ...rest } = useQuery({
-//     queryKey,
-//     queryFn: async () => {
-//       return id ? await getById(id) : await getAll();
-//     },
-//   });
-//   return { data, ...rest };
-// };
-// export default useCategoryQuery;

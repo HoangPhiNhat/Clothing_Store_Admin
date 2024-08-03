@@ -293,7 +293,7 @@ const CreateProduct = () => {
               />
             </Form.Item>
           </div>
-          <section>
+          {/* <section>
             <h2 className="mb-2">Attributes</h2>
             <Form.List name="attributes">
               {(fields, { add, remove }) => (
@@ -318,7 +318,7 @@ const CreateProduct = () => {
                 </>
               )}
             </Form.List>
-          </section>
+          </section> */}
           <div className="">
             <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
               <Button

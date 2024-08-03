@@ -1,28 +1,43 @@
+/* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
+let size = 5;
 
-export const getCategories = async () => {
+export const getAllCategory = async (page) => {
   try {
-    const response = await instance.get("/categories");
-
-    return response.data; // []
+    let queryCategory = `/categories?size=${size}`;
+    console.log(queryCategory);
+    console.log(1);
+    
+    if (page) queryCategory += `&page=${page}`;
+    return await instance.get(`${queryCategory}&sort=DESC`);
   } catch (error) {
     throw error;
   }
 };
 
-export const removeCategory = async (id) => {
+export const getAllCategoryTrash = async (page) => {
   try {
-    console.log(id);
-    const response = await instance.delete(`/categories/${id}`);
+    let queryCategory = `/categories/trash?size=${size}`;
+    if (page) queryCategory += `&page=${page}`;
+    return await instance.get(`${queryCategory}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeCategory = async (category) => {
+  try {
+    const response = await instance.delete(`/categories/${category.id}`);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
 export const getCategoryById = async (category) => {
   try {
     console.log(category);
-    const response = await instance.get(`/categories/${category._id}`);
+    const response = await instance.get(`/categories/${category.id}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -33,7 +48,7 @@ export const createCategory = async (category) => {
     const response = await instance.post(`/categories`, category);
     return response.data;
   } catch (error) {
-    throw error; // Bắt và ném lại lỗi để mutation có thể bắt được
+    throw error;
   }
 };
 

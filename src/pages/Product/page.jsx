@@ -35,7 +35,7 @@ const ProductManagePage = () => {
   const dataSource = products?.data?.map((product, index) => ({
     ...product,
     key: product.id,
-    index: product.id,
+    index: index+1,
   }));
 console.log(products);
 
