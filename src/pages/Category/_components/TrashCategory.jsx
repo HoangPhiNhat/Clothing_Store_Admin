@@ -60,7 +60,7 @@ const TrashCategory = () => {
     },
   ];
 
-  const dataSource = categories?.data.data.map((category, index) => ({
+  const dataSource = (categories?.data.data || []).map((category, index) => ({
     key: category.id,
     index: index + 1,
     ...category,
