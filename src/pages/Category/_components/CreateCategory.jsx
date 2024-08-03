@@ -10,7 +10,7 @@ const CreateCategory = ({ open, onCancel }) => {
     action: "CREATE",
     onSuccess: () => {
       form.resetFields();
-      // onCancel(); // Đóng modal sau khi thêm thành công
+      onCancel(); // Đóng modal sau khi thêm thành công
       messageApi.success("Thêm danh mục thành công");
     },
     onError: (error) => {
