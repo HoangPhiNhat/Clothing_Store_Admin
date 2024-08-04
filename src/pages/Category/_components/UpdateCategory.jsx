@@ -14,7 +14,7 @@ const UpdateCategory = ({ open, onCancel, category }) => {
       onCancel(); // Đóng modal sau khi cập nhật thành công
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi cập nhật: ${error.message}`);
+      messageApi.error(`Lỗi khi cập nhật: ${error.response.data.message}`);
     },
   });
 
