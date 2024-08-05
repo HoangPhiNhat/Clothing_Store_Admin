@@ -1,14 +1,13 @@
-/* eslint-disable no-unused-vars */
 import {
   DeleteOutlined,
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
+import { formatBirthDate } from "../../systems/utils/formatDate";
 import CreateCategory from "./_components/CreateCategory";
 import UpdateCategory from "./_components/UpdateCategory";
 
@@ -19,6 +18,7 @@ const Category = () => {
   const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [pageCategory, setPageCategory] = useState(1);
+  const [deletingCategoryId, setDeletingCategoryId] = useState(null);
 
   const {
     data: categories,
@@ -34,7 +34,7 @@ const Category = () => {
 
   const columns = [
     {
-      title: "#",
+      title: "Mã danh mục",
       dataIndex: "sku",
       rowScope: "row",
       sorter: (a, b) => a.index - b.index,
@@ -45,7 +45,19 @@ const Category = () => {
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ["ascend", "descend"],
-      width: "60%",
+      width: "40%",
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "created_at",
+      render: (_, categories) => formatBirthDate(categories.created_at),
+      width: "20%",
+    },
+    {
+      title: "Ngày cập nhật",
+      dataIndex: "updated_at",
+      render: (_, categories) => formatBirthDate(categories.updated_at),
+      width: "20%",
     },
     {
       title: "Hành động",
@@ -53,7 +65,7 @@ const Category = () => {
       render: (_, category) => (
         <Space size="small">
           <Button
-            disabled={isPending}
+            disabled={deletingCategoryId === category.id}
             onClick={() => handleModalUpdate(category)}
           >
             <EditOutlined />
@@ -62,12 +74,19 @@ const Category = () => {
           <Popconfirm
             title="Xóa danh mục"
             description="Bạn có muốn xóa danh mục này không?"
-            okText={isPending ? `Đang xóa` : `Có`}
+            okText={deletingCategoryId === category.id ? `Đang xóa` : `Có`}
             cancelText="Không"
-            onConfirm={() => deleteCategory(category)}
+            onConfirm={() => {
+              setDeletingCategoryId(category.id);
+              deleteCategory(category);
+            }}
           >
-            <Button type="primary" danger loading={isPending}>
-              {isPending ? "" : <DeleteOutlined />}
+            <Button
+              type="primary"
+              danger
+              loading={deletingCategoryId === category.id}
+            >
+              <DeleteOutlined />
             </Button>
           </Popconfirm>
         </Space>

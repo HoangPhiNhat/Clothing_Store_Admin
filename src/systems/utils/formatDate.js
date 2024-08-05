@@ -20,6 +20,7 @@ export const formatDate = (dateString) => {
   }
   return daysOfWeek[date.getDay()];
 };
+
 export const dayAndMonth = (date) => {
   let dateObj = new Date(date);
   let day = dateObj.getDate();
@@ -28,6 +29,7 @@ export const dayAndMonth = (date) => {
     .toString()
     .padStart(2, "0")}`;
 };
+
 export const formatBirthDate = (birthDate) => {
   const dateStr = birthDate;
   const date = new Date(dateStr);
@@ -38,5 +40,5 @@ export const formatBirthDate = (birthDate) => {
   const month = String(date.getUTCMonth() + 1).padStart(2, "0");
   const year = date.getUTCFullYear();
 
-  return `${year}-${month}-${day}`;
+  return `${day}-${month}-${year}`;
 };

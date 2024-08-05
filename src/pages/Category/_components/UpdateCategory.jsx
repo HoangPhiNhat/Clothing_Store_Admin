@@ -2,16 +2,18 @@
 import { useEffect } from "react";
 import { Button, Modal, Form, Input, message } from "antd";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
+import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 
 const UpdateCategory = ({ open, onCancel, category }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const inputRef = useAutoFocus(open);
 
   const { mutate: updateCategory, isPending } = useCategoryMutation({
     action: "UPDATE",
     onSuccess: () => {
       messageApi.success("Cập nhật danh mục thành công");
-      onCancel(); // Đóng modal sau khi cập nhật thành công
+      onCancel();
     },
     onError: (error) => {
       messageApi.error(`Lỗi khi cập nhật: ${error.response.data.message}`);
@@ -71,7 +73,11 @@ const UpdateCategory = ({ open, onCancel, category }) => {
               },
             ]}
           >
-            <Input placeholder="Tên danh mục" disabled={isPending} />
+            <Input
+              ref={inputRef}
+              placeholder="Tên danh mục"
+              disabled={isPending}
+            />
           </Form.Item>
         </Form>
       </Modal>
