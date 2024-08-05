@@ -24,7 +24,7 @@ const LayoutAdmin = () => {
     {
       key: "/admin/dashboard",
       icon: <PieChartOutlined />,
-      label: <Link to="/admin/users">Thống kê</Link>,
+      label: <Link to="/admin/dashboard">Thống kê</Link>,
     },
     {
       icon: <VideoCameraOutlined />,
@@ -41,7 +41,7 @@ const LayoutAdmin = () => {
       ],
     },
     {
-      key: "sub1",
+      key: "/admin/products",
       icon: <UserOutlined />,
       label: "Sản phẩm",
       children: [
