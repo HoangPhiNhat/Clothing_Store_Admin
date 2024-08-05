@@ -1,14 +1,16 @@
-/* eslint-disable no-unused-vars */
 import { RedoOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import { Link } from "react-router-dom";
+import { formatBirthDate } from "../../../systems/utils/formatDate";
 
 const TrashCategory = () => {
   const [messageApi, contextHolder] = message.useMessage();
+
   const [pageCategory, setPageCategory] = useState(1);
+  const [deletingCategoryId, setDeletingCategoryId] = useState(null);
 
   const {
     data: categories,
@@ -21,8 +23,6 @@ const TrashCategory = () => {
     onSuccess: () => messageApi.success("Khôi phục danh mục thành công."),
     onError: (error) => message.error("Khôi phục danh mục thất bại. " + error),
   });
-
-  console.log(categories?.data.data);
 
   const columns = [
     {
@@ -37,7 +37,19 @@ const TrashCategory = () => {
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ["ascend", "descend"],
-      width: "60%",
+      width: "40%",
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "created_at",
+      render: (_, categories) => formatBirthDate(categories.created_at),
+      width: "20%",
+    },
+    {
+      title: "Ngày cập nhật",
+      dataIndex: "updated_at",
+      render: (_, categories) => formatBirthDate(categories.updated_at),
+      width: "20%",
     },
     {
       title: "Hành động",
@@ -49,10 +61,17 @@ const TrashCategory = () => {
             description="Bạn có muốn khôi phục danh mục này không?"
             okText={isPending ? `Đang xóa` : `Có`}
             cancelText="Không"
-            onConfirm={() => deleteCategory(category)}
+            onConfirm={() => {
+              deleteCategory(category);
+              setDeletingCategoryId(category.id);
+            }}
           >
-            <Button type="primary" danger loading={isPending}>
-              {isPending ? "" : <RedoOutlined />}
+            <Button
+              type="primary"
+              danger
+              loading={deletingCategoryId === category.id}
+            >
+              <RedoOutlined />
             </Button>
           </Popconfirm>
         </Space>

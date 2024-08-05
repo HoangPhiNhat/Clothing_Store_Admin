@@ -1,16 +1,18 @@
 /* eslint-disable react/prop-types */
-import { Button, Modal, Form, Input, message } from "antd";
+import { Button, Form, Input, message, Modal } from "antd";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
+import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 
 const CreateCategory = ({ open, onCancel }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
+  const inputRef = useAutoFocus(open);
 
   const { mutate: createCategory, isPending } = useCategoryMutation({
     action: "CREATE",
     onSuccess: () => {
       form.resetFields();
-      onCancel(); // Đóng modal sau khi thêm thành công
+      onCancel();
       messageApi.success("Thêm danh mục thành công");
     },
     onError: (error) => {
@@ -67,7 +69,7 @@ const CreateCategory = ({ open, onCancel }) => {
               },
             ]}
           >
-            <Input />
+            <Input ref={inputRef} />
           </Form.Item>
         </Form>
       </Modal>
