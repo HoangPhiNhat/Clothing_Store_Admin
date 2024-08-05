@@ -23,7 +23,6 @@ const UpdateCategory = ({ open, onCancel, category }) => {
       form.setFieldsValue({
         name: category.name,
       });
-      console.log(category);
     }
   }, [category, form]);
 

@@ -14,9 +14,8 @@ const CreateCategory = ({ open, onCancel }) => {
       messageApi.success("Thêm danh mục thành công");
     },
     onError: (error) => {
-      console.log(error);
-      
       messageApi.error(`Lỗi khi thêm danh mục: ${error.response.data.message}`);
+      console.log(error);
     },
   });
 
