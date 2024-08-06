@@ -11,9 +11,6 @@ const useCategoryQuery = (action, id, page) => {
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
-      console.log(1);
-      console.log(action);
-      
       switch (action) {
         case "GET_ALL_CATEGORY":
           return await getAllCategory(page);

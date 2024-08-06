@@ -24,7 +24,9 @@ import { colors, sizes } from "../../../../data-example";
 import { validateFieldNumber } from "../../../validations/Product";
 
 const CreateProduct = () => {
-  const { data: categories } = useCategoryQuery();
+  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
+  console.log(categories);
+  
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [hasThumbnail, setHasThumbnail] = useState(false);
@@ -288,14 +290,15 @@ const CreateProduct = () => {
                       (optionB?.label?.toString() ?? "").toLowerCase()
                     )
                 }
-                options={categories?.data?.map((category) => ({
+                options={categories?.data?.data?.map((category) => ({
                   value: category.id,
                   label: category.name,
                 }))}
               />
             </Form.Item>
+            
           </div>
-          {/* <section>
+          <section>
             <h2 className="mb-2">Attributes</h2>
             <Form.List name="attributes">
               {(fields, { add, remove }) => (
@@ -320,7 +323,7 @@ const CreateProduct = () => {
                 </>
               )}
             </Form.List>
-          </section> */}
+          </section>
           <div className="">
             <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
               <Button

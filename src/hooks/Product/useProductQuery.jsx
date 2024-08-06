@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getProductById, getProducts } from "../../services/product";
 
-const useProductQuery = (id, page = 1) => {
+const useProductQuery = (id, page) => {
   const queryKey = id ? ["PRODUCT_KEY", id] : ["PRODUCT_KEY", page];
   const { data, ...rest } = useQuery({
     queryKey,
@@ -10,6 +10,7 @@ const useProductQuery = (id, page = 1) => {
     },
     keepPreviousData: true,
   });
+  console.log("useProductQuery", data);
   return { data, ...rest };
 };
 

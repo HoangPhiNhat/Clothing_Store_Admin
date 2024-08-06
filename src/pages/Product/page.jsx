@@ -11,36 +11,36 @@ import { formatDate, formatDMY } from "../../systems/utils/formatDate";
 import { formatMoney } from "../../systems/utils/formatMoney";
 
 const ProductManagePage = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [pageProduct, setPageProduct] = useState(1);
   const {
     data: products,
     isLoading,
     error: productsError,
-  } = useProductQuery(null, currentPage);
-  // const [searchText, setSearchText] = useState("");
+  } = useProductQuery(null, pageProduct);
   const navigate = useNavigate();
-  
+
+  // const [searchText, setSearchText] = useState("");
+
   // const filterOption = (input, item) =>
   //   item.name.toLowerCase().includes(input.toLowerCase()) ||
   //   item.category.name.toLowerCase().includes(input.toLowerCase());
   // const filteredData = products?.data?.filter((product) =>
   //   filterOption(searchText, product)
   // );
-  // useEffect(() => {
-  //   if (currentPage) {
-  //     navigate(`?page=${currentPage}`, { replace: true });
-  //   }
-  // }, [currentPage]);
 
+  useEffect(() => {
+    if (pageProduct) {
+      navigate(`?page=${pageProduct}`, { replace: true });
+    }
+  }, [pageProduct]);
   const dataSource = products?.data?.map((product, index) => ({
     ...product,
     key: product.id,
-    index: index+1,
+    index: index + 1,
   }));
-console.log(products);
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setPageProduct(page);
   };
 
   const handleDelete = (id) => {
@@ -71,9 +71,12 @@ console.log(products);
       dataIndex: "name",
       key: "name",
       width: "25%",
-      render: (name) => (
-        <Link to={"detail"} className="text-slate-950 hover:underline">
-          {name}
+      render: (_, product) => (
+        <Link
+          to={`${product.id}/attributes`}
+          className="text-slate-950 hover:underline"
+        >
+          {product.name}
         </Link>
       ),
     },
@@ -113,7 +116,7 @@ console.log(products);
       render: (_, product) => (
         <div className=" ">
           <Space size="small">
-            <Link to={`edit/${product.id}`}>
+            <Link to={`${product.id}/edit`}>
               <Button type="default" className="bg-[#fadd04] ">
                 <EditOutlined />
               </Button>
@@ -199,9 +202,9 @@ console.log(products);
         pagination={false}
       />
       <Pagination
-        current={currentPage}
+        current={pageProduct}
         onChange={handlePageChange}
-        total={products?.total}
+        total={11}
         showSizeChanger={false}
         align="end"
       />

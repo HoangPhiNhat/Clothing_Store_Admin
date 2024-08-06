@@ -40,6 +40,8 @@ const UpdateProduct = () => {
       },
     },
   });
+  console.log(thumbnail);
+  
   const onFinish = async (values) => {
     try {
       let image;
@@ -60,6 +62,8 @@ const UpdateProduct = () => {
 
   useEffect(() => {
     if (product) {
+   
+      
       form.setFieldsValue({
         ...product,
         thumbnail: product.thumbnail
@@ -81,7 +85,7 @@ const UpdateProduct = () => {
     <div className="container mx-auto">
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-medium">Create Product</h1>
+        <h1 className="text-2xl font-medium">Sửa sản phẩm</h1>
         <Link to="/admin/products">
           <Button className="text-base" type="primary">
             <RollbackOutlined /> Back to List

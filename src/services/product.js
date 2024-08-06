@@ -1,8 +1,12 @@
 import instance from "../configs/axios";
+let size = 5;
 
-export const getProducts = async (page = 1) => {
+export const getProducts = async (page) => {
   try {
-    const response = await instance.get(`/products?page=${page}`);
+    const response = await instance.get(`/products?page=${page}&size=${size}&sort=DESC`);
+console.log(response);
+
+    
     return response.data; // Trả về dữ liệu từ phản hồi API
   } catch (error) {
     throw error;

@@ -1,18 +1,24 @@
-import React, { useState } from "react";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
-  Badge,
   Button,
-  Input,
   Pagination,
   Popconfirm,
   Space,
-  Table,
+  Table
 } from "antd";
-import { Link } from "react-router-dom";
-import { product_attributes, products } from "../../../data-example.js";
+import React from "react";
+import { useParams } from "react-router-dom";
+import { products } from "../../../data-example.js";
+import useAttributeQuery from "../../hooks/Attribute/useAttributeQuery.jsx";
 
 const ProductAttribute = () => {
+  const { id } = useParams();
+
+  const { data: attributes, isLoading, error } = useAttributeQuery(id);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   const columns = [
     {
       title: "No.",
@@ -26,28 +32,30 @@ const ProductAttribute = () => {
       dataIndex: "image",
       key: "image",
       width: "15%",
-    },
-    {
-      title: "Color",
-      dataIndex: "color_id",
-      key: "color_id",
-      width: "15%",
+      render: (image) => (
+        <>
+          <img className="w-20" src={image} alt="" />
+        </>
+      ),
     },
     {
       title: "Size",
-      dataIndex: "size_id",
-      key: "size_id",
+      dataIndex: "size_name",
+      key: "size_name",
       width: "15%",
     },
+    {
+      title: "Color",
+      dataIndex: "color_name",
+      key: "color_name",
+      width: "15%",
+    },
+
     {
       title: "Stock Quantity",
       dataIndex: "stock_quantity",
       key: "stock_quantity",
       width: "15%",
-      // sorter: (a, b) => moment(a.createdAt).unix() - moment(b.createdAt).unix(),
-      // sortDirections: ["descend", "ascend"],
-      // defaultSortOrder: "descend", // This will sort by newest first by default
-      // render: (text) => moment(text).format("YYYY-MM-DD HH:mm:ss"),
     },
 
     {
@@ -57,7 +65,7 @@ const ProductAttribute = () => {
       render: () => (
         <div className=" ">
           <Space size="small">
-            <Button type="default" className="bg-[#fadd04]" >
+            <Button type="default" className="bg-[#fadd04]">
               <EditOutlined />
             </Button>
             <Popconfirm
@@ -76,15 +84,15 @@ const ProductAttribute = () => {
     },
   ];
 
-  const dataSource = product_attributes.map((product, index) => ({
-    ...product,
-    key: product.id,
+  const dataSource = attributes.map((attribute, index) => ({
+    ...attribute,
+    key: index+1,
     index: index + 1,
   }));
 
   return (
     <>
-      <h1 className="text-2xl font-medium mb-2">Product Attributes</h1>
+      <h1 className="text-2xl font-medium mb-2">Các thuộc tính của sản phẩm</h1>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
       <Pagination
         className="mt-4"

@@ -7,6 +7,7 @@ import CreateProduct from "../pages/Product/_component/CreateProduct";
 import ProductAttribute from "../pages/Attribute/page";
 import ProductManagePage from "../pages/Product/page";
 import TrashCategory from "../pages/Category/_components/TrashCategory";
+import UpdateProduct from "../pages/Product/_component/UpdateProduct";
 
 const RouterComponent = () => {
   return (
@@ -19,10 +20,13 @@ const RouterComponent = () => {
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
             <Route path="products" element={<ProductManagePage />} />
-            <Route path="products/detail" element={<ProductAttribute  />} />
+            <Route
+              path="products/:id/attributes"
+              element={<ProductAttribute />}
+            />
             <Route path="products/add" element={<CreateProduct />} />
 
-            <Route path="products/:id/edit" element={<CreateProduct />} />
+            <Route path="products/:id/edit" element={<UpdateProduct />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
