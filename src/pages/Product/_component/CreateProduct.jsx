@@ -5,17 +5,7 @@ import {
   RollbackOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Form,
-  Input,
-  message,
-  Select,
-  Upload,
-  InputNumber,
-  Space,
-  Table,
-} from "antd";
+import { Button, Form, Input, message, Select, Upload, Table } from "antd";
 import { Link } from "react-router-dom";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
@@ -26,7 +16,7 @@ import { validateFieldNumber } from "../../../validations/Product";
 const CreateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
   console.log(categories);
-  
+
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [hasThumbnail, setHasThumbnail] = useState(false);
@@ -61,7 +51,7 @@ const CreateProduct = () => {
     setHasThumbnail(info.fileList.length > 0);
   };
 
-  const columns = (remove) => [
+  const columns = (remove, fields) => [
     {
       title: "Image",
       dataIndex: "image",
@@ -151,14 +141,13 @@ const CreateProduct = () => {
       title: "Action",
       dataIndex: "action",
       fixed: "right",
-      render: (_, field) => {
-        if (field.length > 1) {
+      render: (_, field) =>
+        fields.length > 1 ? (
           <MinusCircleOutlined
             onClick={() => remove(field.name)}
-            className="red"
-          />;
-        }
-      },
+            className="text-red-500 cursor-pointer text-xl"
+          />
+        ) : null,
     },
   ];
 
@@ -186,7 +175,6 @@ const CreateProduct = () => {
               <Form.Item label="Name" name="name" rules={[{ required: true }]}>
                 <Input />
               </Form.Item>
-
               <Form.Item
                 label="Thumbnail"
                 name="thumbnail"
@@ -228,13 +216,12 @@ const CreateProduct = () => {
                   )}
                 </Upload>
               </Form.Item>
-
               <div className="grid grid-cols-3 gap-x-8 ">
                 <Form.Item
                   label="Regular price"
                   name="regular_price"
                   rules={[
-                    // { required: true, message: "Vui lòng nhập giá "},
+                    { required: true, message: "Vui lòng nhập giá " },
                     {
                       validator: (_, value) =>
                         validateFieldNumber("giá", value),
@@ -273,7 +260,6 @@ const CreateProduct = () => {
                 <Input.TextArea showCount maxLength={200} />
               </Form.Item>
             </div>
-
             <Form.Item
               label="Category"
               name="category_id"
@@ -296,7 +282,6 @@ const CreateProduct = () => {
                 }))}
               />
             </Form.Item>
-            
           </div>
           <section>
             <h2 className="mb-2">Attributes</h2>
@@ -314,7 +299,7 @@ const CreateProduct = () => {
                     </Button>
                   </Form.Item>
                   <Table
-                    columns={columns(remove)}
+                    columns={columns(remove, fields)}
                     dataSource={fields}
                     pagination={false}
                     rowKey="key"
