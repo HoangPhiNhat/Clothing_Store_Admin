@@ -1,11 +1,5 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Pagination,
-  Popconfirm,
-  Space,
-  Table
-} from "antd";
+import { Button, Pagination, Popconfirm, Space, Table } from "antd";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { products } from "../../../data-example.js";
@@ -13,7 +7,6 @@ import useAttributeQuery from "../../hooks/Attribute/useAttributeQuery.jsx";
 
 const ProductAttribute = () => {
   const { id } = useParams();
-
   const { data: attributes, isLoading, error } = useAttributeQuery(id);
 
   if (isLoading) return <div>Loading...</div>;
@@ -50,7 +43,6 @@ const ProductAttribute = () => {
       key: "color_name",
       width: "15%",
     },
-
     {
       title: "Stock Quantity",
       dataIndex: "stock_quantity",
@@ -86,7 +78,7 @@ const ProductAttribute = () => {
 
   const dataSource = attributes.map((attribute, index) => ({
     ...attribute,
-    key: index+1,
+    key: index + 1,
     index: index + 1,
   }));
 
