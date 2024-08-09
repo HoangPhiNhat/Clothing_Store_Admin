@@ -1,28 +1,27 @@
-import React, { useState } from "react";
 import {
   DeleteOutlined,
-  MinusCircleOutlined,
   PlusOutlined,
   RollbackOutlined,
-  UploadOutlined,
+  UploadOutlined
 } from "@ant-design/icons";
 import {
   Button,
+  Col,
   Form,
   Input,
-  message,
-  Select,
-  Upload,
-  Table,
   InputNumber,
-  Col,
+  message,
   Row,
+  Select,
+  Table,
+  Upload,
 } from "antd";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { colors, sizes } from "../../../../data-example";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
 import { uploadFileCloudinary } from "../../../services/cloudinary";
-import { colors, sizes } from "../../../../data-example";
 import { validateFieldNumber } from "../../../validations/Product";
 
 const CreateProduct = () => {
