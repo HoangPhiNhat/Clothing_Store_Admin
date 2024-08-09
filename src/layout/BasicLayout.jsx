@@ -41,7 +41,6 @@ const LayoutAdmin = () => {
       ],
     },
     {
-      key: "/admin/products",
       icon: <UserOutlined />,
       label: "Sản phẩm",
       children: [
