@@ -56,121 +56,122 @@ const CreateProduct = () => {
     try {
       console.log(values);
       const image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
+      // createProduct({ ...values, thumbnail: image });
       console.log({ ...values, thumbnail: image });
     } catch (error) {
       console.log(error);
     }
   };
 
- const columns = (remove, fields) => [
-   {
-     title: "Hình ảnh",
-     dataIndex: "image",
-     width: 150,
-     render: (_, field) => (
-       <Form.Item
-         name={[field.name, "image"]}
-         rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
-       >
-         <Upload
-           maxCount={1}
-           listType="picture-card"
-           beforeUpload={() => false}
-           className="avatar-uploader"
-         >
-           <div>
-             <UploadOutlined className="text-2xl" />
-             <div className="mt-2">Tải lên</div>
-           </div>
-         </Upload>
-       </Form.Item>
-     ),
-   },
-   {
-     title: "Màu sắc",
-     dataIndex: "color",
-     width: 200,
-     render: (_, field) => (
-       <Form.Item
-         name={[field.name, "color"]}
-         rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
-       >
-         <Select
-           showSearch
-           placeholder="Chọn màu sắc"
-           optionFilterProp="label"
-           className="w-full"
-           filterSort={(optionA, optionB) =>
-             (optionA?.label?.toString() ?? "")
-               .toLowerCase()
-               .localeCompare((optionB?.label?.toString() ?? "").toLowerCase())
-           }
-           options={colors?.map((color) => ({
-             value: color.id,
-             label: (
-               <div className="flex items-center">
-                 <div
-                   className="w-4 h-4 rounded-full mr-2"
-                   style={{ backgroundColor: color.hex }}
-                 ></div>
-                 {color.name}
-               </div>
-             ),
-           }))}
-         />
-       </Form.Item>
-     ),
-   },
-   {
-     title: "Kích thước",
-     dataIndex: "size",
-     width: 200,
-     render: (_, field) => (
-       <Form.Item
-         name={[field.name, "size"]}
-         rules={[{ required: true, message: "Vui lòng chọn kích thước" }]}
-       >
-         <Select
-           placeholder="Kích thước"
-           options={sizes?.map((size) => ({
-             value: size.id,
-             label: size.name,
-           }))}
-           className="w-full"
-         />
-       </Form.Item>
-     ),
-   },
-   {
-     title: "Số lượng",
-     dataIndex: "stock_quantity",
-     width: 150,
-     render: (_, field) => (
-       <Form.Item
-         name={[field.name, "stock_quantity"]}
-         rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
-       >
-         <InputNumber placeholder="Số lượng" min={0} className="w-full" />
-       </Form.Item>
-     ),
-   },
-   {
-     title: "Hành động",
-     key: "action",
-     width: 100,
-     render: (_, field) =>
-       fields.length > 1 ? (
-         <Button
-           danger
-           icon={<DeleteOutlined />}
-           onClick={() => remove(field.name)}
-           className="flex items-center justify-center"
-         >
-           Xóa
-         </Button>
-       ) : null,
-   },
- ];
+  const columns = (remove, fields) => [
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      width: 150,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "image"]}
+          rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
+        >
+          <Upload
+            maxCount={1}
+            listType="picture-card"
+            beforeUpload={() => false}
+            className="avatar-uploader"
+          >
+            <div>
+              <UploadOutlined className="text-2xl" />
+              <div className="mt-2">Tải lên</div>
+            </div>
+          </Upload>
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Màu sắc",
+      dataIndex: "color",
+      width: 200,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "color"]}
+          rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
+        >
+          <Select
+            showSearch
+            placeholder="Chọn màu sắc"
+            optionFilterProp="label"
+            className="w-full"
+            filterSort={(optionA, optionB) =>
+              (optionA?.label?.toString() ?? "")
+                .toLowerCase()
+                .localeCompare((optionB?.label?.toString() ?? "").toLowerCase())
+            }
+            options={colors?.map((color) => ({
+              value: color.id,
+              label: (
+                <div className="flex items-center">
+                  <div
+                    className="w-4 h-4 rounded-full mr-2"
+                    style={{ backgroundColor: color.hex }}
+                  ></div>
+                  {color.name}
+                </div>
+              ),
+            }))}
+          />
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Kích thước",
+      dataIndex: "size",
+      width: 200,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "size"]}
+          rules={[{ required: true, message: "Vui lòng chọn kích thước" }]}
+        >
+          <Select
+            placeholder="Kích thước"
+            options={sizes?.map((size) => ({
+              value: size.id,
+              label: size.name,
+            }))}
+            className="w-full"
+          />
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "stock_quantity",
+      width: 150,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "stock_quantity"]}
+          rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+        >
+          <InputNumber placeholder="Số lượng" min={0} className="w-full" />
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: 100,
+      render: (_, field) =>
+        fields.length > 1 ? (
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => remove(field.name)}
+            className="flex items-center justify-center  mb-6"
+          >
+            Xóa
+          </Button>
+        ) : null,
+    },
+  ];
 
   return (
     <div className="container mx-auto">
@@ -305,9 +306,8 @@ const CreateProduct = () => {
                 ]}
               >
                 {imageUrl == null && (
-                  <Upload
-                    onDownload={(file) => window.open(file.url)}
-                    listType="picture-card"
+                  <Upload.Dragger
+                    listType="picture"
                     maxCount={1}
                     beforeUpload={() => false}
                     onRemove={() => setImageUrl(null)}
@@ -322,11 +322,13 @@ const CreateProduct = () => {
                       });
                     }}
                   >
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Tải lên</div>
-                    </div>
-                  </Upload>
+                    <p className="ant-upload-drag-icon">
+                      <UploadOutlined />
+                    </p>
+                    <p className="ant-upload-text">
+                      Kéo thả hoặc nhấn để tải lên
+                    </p>
+                  </Upload.Dragger>
                 )}
                 {imageUrl && (
                   <div className="relative w-60 h-80">
@@ -346,43 +348,41 @@ const CreateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
-          <section className="mt-8 space-y-4">
-            <Form.List name="attributes" initialValue={[{}]}>
-              {(fields, { add, remove }) => (
-                <>
-                  <Table
-                    className="mb-4"
-                    columns={columns(remove, fields)}
-                    dataSource={fields}
-                    pagination={false}
-                    rowKey="key"
-                    scroll={{ x: "max-content" }}
-                    bordered
-                    size="middle"
-                  />
-                  <Form.Item>
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      block
-                      icon={<PlusOutlined />}
-                      className="h-12 text-lg"
-                    >
-                      Thêm biến thể mới
-                    </Button>
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
-          </section>
-          <div className="">
-            <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="flex bottom-0 right-0 mx-[83px] my-10 fixed z-10"
-              >
-                Gửi
+          <Row gutter={16} className="mt-8">
+            <Col span={24}>
+              <Form.List name="attributes" initialValue={[{}]}>
+                {(fields, { add, remove }) => (
+                  <>
+                    <Table
+                      className="mb-4"
+                      columns={columns(remove, fields)}
+                      dataSource={fields}
+                      pagination={false}
+                      rowKey="key"
+                      scroll={{ x: "max-content" }}
+                      bordered
+                      size="middle"
+                    />
+                    <Form.Item>
+                      <Button
+                        type="dashed"
+                        onClick={() => add()}
+                        block
+                        icon={<PlusOutlined />}
+                        className="h-12 text-lg"
+                      >
+                        Thêm biến thể mới
+                      </Button>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
+            </Col>
+          </Row>
+          <div className="flex justify-end">
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className="my-4">
+                Thêm sản phẩm
               </Button>
             </Form.Item>
           </div>
