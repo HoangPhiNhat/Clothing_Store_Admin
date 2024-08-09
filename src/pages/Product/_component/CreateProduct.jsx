@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 import {
   DeleteOutlined,
   PlusOutlined,
   RollbackOutlined,
-  UploadOutlined
+  UploadOutlined,
 } from "@ant-design/icons";
+
 import {
   Button,
   Col,
@@ -16,19 +18,22 @@ import {
   Table,
   Upload,
 } from "antd";
-import React, { useState } from "react";
+
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { colors, sizes } from "../../../../data-example";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
 import { uploadFileCloudinary } from "../../../services/cloudinary";
 import { validateFieldNumber } from "../../../validations/Product";
+import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 
 const CreateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
+  const inputRef = useAutoFocus(open);
 
   const { mutate: createProduct } = useProductMutation({
     action: "CREATE",
@@ -183,6 +188,7 @@ const CreateProduct = () => {
           </Button>
         </Link>
       </div>
+
       <div>
         <Form
           form={form}
@@ -191,6 +197,7 @@ const CreateProduct = () => {
           onFinish={onFinish}
           initialValues={{ attributes: [{}] }}
         >
+          {/* Form product */}
           <Row gutter={30}>
             <Col span={18}>
               <Row gutter={16}>
@@ -202,7 +209,7 @@ const CreateProduct = () => {
                       { required: true, message: "Vui lòng nhập tên sản phẩm" },
                     ]}
                   >
-                    <Input />
+                    <Input ref={inputRef} />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -306,6 +313,7 @@ const CreateProduct = () => {
               >
                 {imageUrl == null && (
                   <Upload.Dragger
+                    accept=".jpg, .jpeg, .png, .gif"
                     listType="picture"
                     maxCount={1}
                     beforeUpload={() => false}
@@ -347,6 +355,8 @@ const CreateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
+
+          {/* Form Product Attribute */}
           <Row gutter={16} className="mt-8">
             <Col span={24}>
               <Form.List name="attributes" initialValue={[{}]}>
@@ -378,6 +388,8 @@ const CreateProduct = () => {
               </Form.List>
             </Col>
           </Row>
+
+          {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
               <Button type="primary" htmlType="submit" className="my-4">

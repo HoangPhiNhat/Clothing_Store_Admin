@@ -7,7 +7,7 @@ export const getProducts = async (page) => {
 console.log(response);
 
     
-    return response.data; // Trả về dữ liệu từ phản hồi API
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -37,7 +37,7 @@ export const createProduct = async (product) => {
     const response = await instance.post(`/products`, product);
     return response.data;
   } catch (error) {
-    throw error; // Bắt và ném lại lỗi để mutation có thể bắt được
+    throw error; 
   }
 };
 
