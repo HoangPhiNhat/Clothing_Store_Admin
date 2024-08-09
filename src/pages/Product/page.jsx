@@ -53,13 +53,13 @@ const ProductManagePage = () => {
       title: "No.",
       dataIndex: "index",
       key: "index",
-      width: "5%",
+      width: "10%",
     },
     {
       title: "Image",
       dataIndex: "thumbnail",
       key: "thumbnail",
-      width: "15%",
+      width: "20%",
       render: (thumbnail) => (
         <>
           <img className="w-20" src={thumbnail} alt="" />
@@ -70,7 +70,7 @@ const ProductManagePage = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width: "25%",
+      width: "30%",
       render: (_, product) => (
         <Link
           to={`${product.id}/attributes`}
@@ -99,15 +99,6 @@ const ProductManagePage = () => {
       key: "reduced_price",
       width: "10%",
       render: (reduced_price) => <div>{formatMoney(reduced_price)}đ</div>,
-    },
-    {
-      title: "Create Date",
-      dataIndex: "created_at",
-      key: "created_at",
-      width: "15%",
-      render: (created_at) => (
-        <div>{formatDate(created_at) + " " + formatDMY(created_at)}</div>
-      ),
     },
     {
       title: "Action",
@@ -153,6 +144,15 @@ const ProductManagePage = () => {
         width: "60%",
       },
       {
+        title: "Create Date",
+        dataIndex: "created_at",
+        key: "created_at",
+        width: "15%",
+        render: (created_at) => (
+          <div>{formatDate(created_at) + " " + formatDMY(created_at)}</div>
+        ),
+      },
+      {
         title: "Update Date",
         dataIndex: "updated_at",
         key: "updated_at",
@@ -168,6 +168,7 @@ const ProductManagePage = () => {
         key: record.key,
         material: record.material,
         long_description: record.long_description,
+        created_at: record.created_at,
         updated_at: record.updated_at,
       },
     ];

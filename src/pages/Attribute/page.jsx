@@ -32,15 +32,15 @@ const ProductAttribute = () => {
       ),
     },
     {
-      title: "Size",
-      dataIndex: "size_name",
-      key: "size_name",
-      width: "15%",
-    },
-    {
       title: "Color",
       dataIndex: "color_name",
       key: "color_name",
+      width: "15%",
+    },
+    {
+      title: "Size",
+      dataIndex: "size_name",
+      key: "size_name",
       width: "15%",
     },
     {

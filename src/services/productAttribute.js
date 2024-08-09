@@ -3,7 +3,6 @@ import instance from "../configs/axios";
 export const getAllAttribute = async (productId) => {
   try {
     console.log(productId);
-    
     const response = await instance.get(`/products/${productId}/productAtts`);
     console.log(response);
 
@@ -13,37 +12,57 @@ export const getAllAttribute = async (productId) => {
   }
 };
 
-export const removeProduct = async (id) => {
+export const createProduct = async ({ productId, attributes }) => {
   try {
-    console.log(id);
-    const response = await instance.delete(`/products/${data.product_id}/productAtts/${id}`);
+    const response = await instance.post(
+      `/products/${productId}/productAtts`,
+      attributes
+    );
     return response.data;
   } catch (error) {
     throw error;
-  }
-};
-export const getProductById = async (data) => {
-  try {
-    console.log(product);
-    const response = await instance.get(`/products/${data.product_id}/productAtts/${data.id}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-export const createProduct = async (data) => {
-  try {
-    const response = await instance.post(`/products/${data.product_id}/productAtts`, product);
-    return response.data;
-  } catch (error) {
-    throw error; // Bắt và ném lại lỗi để mutation có thể bắt được
   }
 };
 
-export const updateProduct = async (data) => {
-  console.log(product);
+export const removeAttribute = async (productId, attributeId, sizeId) => {
   try {
-    const response = await instance.put(`/products/${data.product_id}/productAtts/${product.id}`, product);
+    console.log(productId);
+    console.log(attributeId);
+    console.log(sizeId);
+    const response = await instance.delete(
+      `/products/${productId}/productAtts/${attributeId}/size/${sizeId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAttributeById = async (productId, attributeId, sizeId) => {
+  try {
+    console.log(productId);
+    console.log(attributeId);
+    console.log(sizeId);
+    const response = await instance.get(
+      `/products/${productId}/productAtts/${attributeId}/size/${sizeId}/show`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateAttribute = async (
+  attribute,
+  productId,
+  attributeId,
+  sizeId
+) => {
+  try {
+    const response = await instance.put(
+      `/products/${productId}/productAtts/${attributeId}/size/${sizeId}`,
+      attribute
+    );
     return response.data;
   } catch (error) {
     throw error;
