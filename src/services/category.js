@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
-let size = 5;
+import { PAGING } from "../systems/constants";
+const size = PAGING.SIZE;
 
 export const getAllCategory = async (page) => {
   try {
