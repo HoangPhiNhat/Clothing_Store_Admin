@@ -24,7 +24,7 @@ const UpdateProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [thumbnail, setThumbnail] = useState(null);
-  const { data: product } = useProductQuery(id);
+  const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id,null);
   const { mutate: updateProduct } = useProductMutation({
     action: "UPDATE",
     onSuccess: () => {
@@ -40,30 +40,32 @@ const UpdateProduct = () => {
       },
     },
   });
-  console.log(thumbnail);
+  console.log(categories);
   
   const onFinish = async (values) => {
-    try {
+    console.log(values);
+    
       let image;
       if (values.thumbnail[0].uid === "-1") {
         image = values.thumbnail[0].thumbUrl;
+        console.log(image);
+        
       } else {
+        console.log(thumbnail);
+        
         const match = thumbnail.match(/clothing[^.]*/);
+        console.log(match);
+        
         deleteFileCloudinary(match[0]);
         image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
       }
       console.log(values);
 
       updateProduct({ ...values, id: id, thumbnail: image });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   useEffect(() => {
     if (product) {
-   
-      
       form.setFieldsValue({
         ...product,
         thumbnail: product.thumbnail

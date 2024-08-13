@@ -21,18 +21,27 @@ import {
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { colors, sizes } from "../../../../data-example";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
-import { uploadFileCloudinary } from "../../../services/cloudinary";
+import {
+  deleteFileCloudinary,
+  extractPublicId,
+  uploadFileCloudinary,
+} from "../../../services/cloudinary";
 import { validateFieldNumber } from "../../../validations/Product";
 import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
+import useSizeQuery from "../../../hooks/Size/useSizeQuery";
+import useColorQuery from "../../../hooks/Color/useColorQuery";
+import useAttributeMutation from "../../../hooks/Attribute/useAttributeMutation";
 
 const CreateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
+  const [publicIds, setPublicIds] = useState([]);
+  const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
+  const { data: colors } = useColorQuery("GET_ALL_COLOR");
   const inputRef = useAutoFocus(open);
 
   const { mutate: createProduct } = useProductMutation({
@@ -43,11 +52,11 @@ const CreateProduct = () => {
     },
     onError: (error) => {
       messageApi.error(`Lỗi khi thêm sản phẩm: ${error.response.data.message}`);
-    },
-    config: {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      publicIds.map((publicId) => {
+        console.log(publicId);
+        deleteFileCloudinary(publicId);
+      });
+      setPublicIds([]);
     },
   });
 
@@ -57,14 +66,33 @@ const CreateProduct = () => {
   };
 
   const onFinish = async (values) => {
-    try {
-      console.log(values);
-      const image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
-      // createProduct({ ...values, thumbnail: image });
-      console.log({ ...values, thumbnail: image });
-    } catch (error) {
-      console.log(error);
-    }
+    const { attributes, ...data } = values;
+    const thumbnail = await uploadFileCloudinary(data.thumbnail[0].thumbUrl);
+    const productResponse = {
+      ...data,
+      thumbnail: thumbnail,
+    };
+
+    const attributesWithImages = await Promise.all(
+      attributes.map(async (attribute) => {
+        const imageUrl = await uploadFileCloudinary(
+          attribute.image.fileList[0].thumbUrl
+        );
+        const publicId = extractPublicId(imageUrl);
+        setPublicIds((prev) => [...prev, publicId]);
+        
+        return {
+          ...attribute,
+          image: imageUrl,
+        };
+      })
+    );
+    const finalData = {
+      ...productResponse,
+      product_att: attributesWithImages,
+    };
+
+    createProduct(finalData);
   };
 
   const columns = (remove, fields) => [
@@ -73,10 +101,7 @@ const CreateProduct = () => {
       dataIndex: "image",
       width: 150,
       render: (_, field) => (
-        <Form.Item
-          name={[field.name, "image"]}
-          rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
-        >
+        <Form.Item name={[field.name, "image"]}>
           <Upload
             maxCount={1}
             listType="picture-card"
@@ -97,7 +122,7 @@ const CreateProduct = () => {
       width: 200,
       render: (_, field) => (
         <Form.Item
-          name={[field.name, "color"]}
+          name={[field.name, "color_id"]}
           rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
         >
           <Select
@@ -132,7 +157,7 @@ const CreateProduct = () => {
       width: 200,
       render: (_, field) => (
         <Form.Item
-          name={[field.name, "size"]}
+          name={[field.name, "size_id"]}
           rules={[{ required: true, message: "Vui lòng chọn kích thước" }]}
         >
           <Select
@@ -355,8 +380,7 @@ const CreateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
-
-          {/* Form Product Attribute */}
+          Form Product Attribute
           <Row gutter={16} className="mt-8">
             <Col span={24}>
               <Form.List name="attributes" initialValue={[{}]}>
@@ -388,7 +412,6 @@ const CreateProduct = () => {
               </Form.List>
             </Col>
           </Row>
-
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>

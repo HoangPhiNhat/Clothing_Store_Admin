@@ -1,14 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProductById, getProducts } from "../../services/product";
+import { getAllProductTrash, getProductAll, getProductById } from "../../services/product";
 
-const useProductQuery = (id, page) => {
+const useProductQuery = (action, id, page) => {
   const queryKey = id ? ["PRODUCT_KEY", id] : ["PRODUCT_KEY", page];
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
-      return id ? await getProductById(id) : await getProducts(page);
+      switch (action) {
+        case "GET_ALL_PRODUCT":
+          return await getProductAll(page);
+        case "GET_PRODUCT_BY_ID":
+          return await getProductById(id);
+        case "GET_ALL_PRODUCT_TRASH":
+          return await getAllProductTrash(page);
+        default:
+          return null;
+      }
     },
-    keepPreviousData: true,
   });
   console.log("useProductQuery", data);
   return { data, ...rest };

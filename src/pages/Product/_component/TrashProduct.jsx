@@ -3,15 +3,7 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Input,
-  message,
-  Pagination,
-  Popconfirm,
-  Space,
-  Table,
-} from "antd";
+import { Button, Input, Pagination, Popconfirm, Space, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useProductQuery from "../../hooks/Product/useProductQuery";
@@ -20,21 +12,22 @@ import { formatMoney } from "../../systems/utils/formatMoney";
 import useProductMutation from "../../hooks/Product/useProductMutation";
 
 const ProductManagePage = () => {
+  const [publicId, setPublicId] = useState(null);
   const [pageProduct, setPageProduct] = useState(1);
-  const [messageApi, contextHolder] = message.useMessage();
-  const [deletingProductId, setDeletingProductId] = useState(null);
 
-  const { data: products, isLoading } = useProductQuery(
-    "GET_ALL_PRODUCT",
-    null,
-    pageProduct
-  );
+  const {
+    data: products,
+    isLoading,
+    error: productsError,
+  } = useProductQuery(null, pageProduct);
   const navigate = useNavigate();
 
-  const { mutate: deleteProduct, isPending } = useProductMutation({
+  const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
       messageApi.success("Xóa sản phẩm thành công.");
+      deleteFileCloudinary(publicId);
+      setPublicId(null);
       console.log("Deleted attribute:", data);
     },
     onError: (error) =>
@@ -59,6 +52,10 @@ const ProductManagePage = () => {
     key: product.id,
     index: index + 1,
   }));
+
+  const handlePageChange = (page) => {
+    setPageProduct(page);
+  };
 
   const columns = [
     {
@@ -117,14 +114,10 @@ const ProductManagePage = () => {
       key: "operation",
       width: "10%",
       render: (_, product) => (
-        <div className="">
+        <div className=" ">
           <Space size="small">
             <Link to={`${product.id}/edit`}>
-              <Button
-                disabled={deletingProductId === product.id}
-                type="default"
-                className="bg-[#fadd04] "
-              >
+              <Button type="default" className="bg-[#fadd04] ">
                 <EditOutlined />
               </Button>
             </Link>
@@ -133,16 +126,9 @@ const ProductManagePage = () => {
               description="Bạn có muốn xóa sản phẩm này không?"
               okText="Yes"
               cancelText="No"
-              onConfirm={() => {
-                deleteProduct(product.id);
-                setDeletingProductId(product.id);
-              }}
+              onConfirm={() => deleteProduct(product.id)}
             >
-              <Button
-                loading={deletingProductId === product.id}
-                type="primary"
-                danger
-              >
+              <Button type="primary" danger>
                 <DeleteOutlined />
               </Button>
             </Popconfirm>
@@ -203,7 +189,6 @@ const ProductManagePage = () => {
 
   return (
     <>
-      {contextHolder}
       <h1 className="text-2xl font-medium mb-2">List Product</h1>
       <div className="flex justify-between">
         <Input
@@ -228,10 +213,8 @@ const ProductManagePage = () => {
       />
       <Pagination
         current={pageProduct}
-        onChange={(page) => {
-          setPageProduct(page);
-        }}
-        total={products?.data.total}
+        onChange={handlePageChange}
+        total={11}
         showSizeChanger={false}
         align="end"
       />

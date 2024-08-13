@@ -1,23 +1,34 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { removeAttribute } from "../../services/productAttribute";
+import {
+  createAttribute,
+  removeAttribute,
+  updateAttribute,
+} from "../../services/productAttribute";
 
-
-const useProductMutation = ({ action, onSuccess, onError }) => {
+const useAttributeMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
 
   const { mutate, ...rest } = useMutation({
-    mutationFn: async (product) => {
+    mutationFn: async (params) => {
       switch (action) {
+        case "CREATE":
+          return await createAttribute(params.productId, params.attributes);
+        case "UPDATE":
+          return await updateAttribute(
+            params.productId,
+            params.attributeId,
+            params.attribute
+          );
         case "DELETE":
-          return await removeAttribute(product);
+          return await removeAttribute(params.productId, params.attributeId);
         default:
           return null;
       }
     },
-    onSuccess: () => {
-      onSuccess && onSuccess();
+    onSuccess: (data, variables) => {
+      onSuccess && onSuccess(data);
       queryClient.invalidateQueries({
-        queryKey: ["PRODUCT_KEY"],
+        queryKey: ["ATTRIBUTE_KEY", variables.productId],
       });
     },
     onError: (error) => {
@@ -29,4 +40,4 @@ const useProductMutation = ({ action, onSuccess, onError }) => {
   return { mutate, ...rest };
 };
 
-export default useProductMutation;
+export default useAttributeMutation;

@@ -13,7 +13,6 @@ import UpdateCategory from "./_components/UpdateCategory";
 
 const Category = () => {
   const [messageApi, contextHolder] = message.useMessage();
-
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
   const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);

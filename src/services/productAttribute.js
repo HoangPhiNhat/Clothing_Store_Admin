@@ -1,18 +1,15 @@
 import instance from "../configs/axios";
 
-export const getAllAttribute = async (productId) => {
+export const getAllAttribute = async (productId,page,limit) => {
   try {
-    console.log(productId);
     const response = await instance.get(`/products/${productId}/productAtts`);
-    console.log(response);
-
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const createProduct = async ({ productId, attributes }) => {
+export const createAttribute = async (productId, attributes) => {
   try {
     const response = await instance.post(
       `/products/${productId}/productAtts`,
@@ -24,13 +21,10 @@ export const createProduct = async ({ productId, attributes }) => {
   }
 };
 
-export const removeAttribute = async (productId, attributeId, sizeId) => {
+export const removeAttribute = async (productId, attributeId) => {
   try {
-    console.log(productId);
-    console.log(attributeId);
-    console.log(sizeId);
     const response = await instance.delete(
-      `/products/${productId}/productAtts/${attributeId}/size/${sizeId}`
+      `/products/${productId}/productAtts/${attributeId}`
     );
     return response.data;
   } catch (error) {
@@ -38,29 +32,10 @@ export const removeAttribute = async (productId, attributeId, sizeId) => {
   }
 };
 
-export const getAttributeById = async (productId, attributeId, sizeId) => {
-  try {
-    console.log(productId);
-    console.log(attributeId);
-    console.log(sizeId);
-    const response = await instance.get(
-      `/products/${productId}/productAtts/${attributeId}/size/${sizeId}/show`
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const updateAttribute = async (
-  attribute,
-  productId,
-  attributeId,
-  sizeId
-) => {
+export const updateAttribute = async (productId, attributeId, attribute) => {
   try {
     const response = await instance.put(
-      `/products/${productId}/productAtts/${attributeId}/size/${sizeId}`,
+      `/products/${productId}/productAtts/${attributeId}`,
       attribute
     );
     return response.data;

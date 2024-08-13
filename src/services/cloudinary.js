@@ -11,12 +11,16 @@ export const uploadFileCloudinary = async (file) => {
             "https://api.cloudinary.com/v1_1/dqxshljwn/upload",
             formData
         );
-        console.log(response);
 
         return response.data.url;
     } catch (error) {
         throw error;
     }
+};
+
+export const extractPublicId = (url) => {
+  const match = url.match(/\/v\d+\/(.+?)\./);
+  return match ? match[1] : null;
 };
 
 export const deleteFileCloudinary = async (publicId) => {
