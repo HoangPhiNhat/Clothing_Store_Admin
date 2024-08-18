@@ -1,68 +1,58 @@
 import React, { useEffect, useState } from "react";
-import { PlusOutlined, RollbackOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  RollbackOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import {
   Button,
+  Col,
   Form,
   Input,
+  InputNumber,
   message,
+  Row,
   Select,
   Upload,
-  InputNumber,
 } from "antd";
 import { Link, useParams } from "react-router-dom";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
 import {
   deleteFileCloudinary,
+  extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
 import useProductQuery from "../../../hooks/Product/useProductQuery";
 
 const UpdateProduct = () => {
-  const { id } = useParams();
-  const { data: categories } = useCategoryQuery();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
-  const [thumbnail, setThumbnail] = useState(null);
-  const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id,null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [publicId, setPublicId] = useState(null);
+  const [newpublicId, setNewPublicId] = useState(null);
+
+  const { id } = useParams();
+  const { data: categories } = useCategoryQuery();
+  const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id, null);
   const { mutate: updateProduct } = useProductMutation({
     action: "UPDATE",
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (publicId) {
+        deleteFileCloudinary(publicId);
+      }
       form.resetFields();
-      messageApi.success("Sửa sản phẩm thành công");
+      messageApi.success(data.message);
     },
     onError: (error) => {
       messageApi.error(`Lỗi khi sửa sản phẩm: ${error.response.data.message}`);
-    },
-    config: {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      if (newpublicId) {
+        deleteFileCloudinary(newpublicId);
+      }
     },
   });
-  console.log(categories);
-  
-  const onFinish = async (values) => {
-    console.log(values);
-    
-      let image;
-      if (values.thumbnail[0].uid === "-1") {
-        image = values.thumbnail[0].thumbUrl;
-        console.log(image);
-        
-      } else {
-        console.log(thumbnail);
-        
-        const match = thumbnail.match(/clothing[^.]*/);
-        console.log(match);
-        
-        deleteFileCloudinary(match[0]);
-        image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
-      }
-      console.log(values);
-
-      updateProduct({ ...values, id: id, thumbnail: image });
-  };
 
   useEffect(() => {
     if (product) {
@@ -79,9 +69,37 @@ const UpdateProduct = () => {
             ]
           : [],
       });
-      setThumbnail(product.thumbnail);
+      setImageUrl(product.thumbnail);
+      setPreviewImage(product.thumbnail);
     }
   }, [form, product]);
+
+  const onFinish = async (values) => {
+    let image = imageUrl
+    console.log(values);
+    setPreviewImage(values.thumbnail[0].thumbUrl);
+    if (values.thumbnail[0].uid !== "-1") {
+      image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
+      setImageUrl(image);
+      setPublicId(extractPublicId(product.thumbnail));
+      setNewPublicId(extractPublicId(image));
+    }
+    updateProduct({ ...values, id: id, thumbnail: image });
+  };
+
+  const onFinishFailed = (values) => {
+    console.log(values);
+    setPreviewImage(values.thumbnail[0].thumbUrl);
+  };
+
+  const handleImageDelete = () => {
+    setPreviewImage(null);
+    setImageUrl(null);
+    form.setFieldsValue({ thumbnail: null });
+  };
+
+  console.log(imageUrl);
+  console.log(previewImage);
 
   return (
     <div className="container mx-auto">
@@ -90,26 +108,118 @@ const UpdateProduct = () => {
         <h1 className="text-2xl font-medium">Sửa sản phẩm</h1>
         <Link to="/admin/products">
           <Button className="text-base" type="primary">
-            <RollbackOutlined /> Back to List
+            <RollbackOutlined /> Quay lại danh sách
           </Button>
         </Link>
       </div>
+
       <div>
         <Form
           form={form}
           name="basic"
           layout="vertical"
           onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
           initialValues={{ attributes: [{}] }}
         >
-          <div className="grid grid-cols-[auto,300px] gap-8">
-            <div>
-              <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-                <Input />
-              </Form.Item>
-
+          <Row gutter={30}>
+            <Col span={18}>
+              <Row gutter={16}>
+                <Col span={16}>
+                  <Form.Item
+                    label="Tên sản phẩm"
+                    name="name"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập tên sản phẩm" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    label="Danh mục"
+                    name="category_id"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn danh mục" },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Chọn danh mục"
+                      optionFilterProp="children"
+                      options={categories?.data?.map((category) => ({
+                        value: category.id,
+                        label: category.name,
+                      }))}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item
+                    name="material"
+                    label="Chất liệu"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập chất liệu" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    label="Giá gốc"
+                    name="regular_price"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập giá gốc" },
+                      {
+                        type: "number",
+                        message: "Vui lòng nhập số hợp lệ",
+                      },
+                    ]}
+                  >
+                    <InputNumber min={0} className="w-full" />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    label="Giá khuyến mãi"
+                    name="reduced_price"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập giá khuyến mãi",
+                      },
+                    ]}
+                  >
+                    <InputNumber min={0} className="w-full" />
+                  </Form.Item>
+                </Col>
+              </Row>
               <Form.Item
-                label="Thumbnail"
+                name="short_description"
+                label="Mô tả ngắn"
+                rules={[
+                  { required: true, message: "Vui lòng nhập mô tả ngắn" },
+                ]}
+              >
+                <Input.TextArea showCount maxLength={200} />
+              </Form.Item>
+              <Form.Item
+                name="long_description"
+                label="Mô tả chi tiết"
+                rules={[
+                  { required: true, message: "Vui lòng nhập mô tả chi tiết" },
+                ]}
+              >
+                <Input.TextArea showCount maxLength={200} />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item
+                label="Hình ảnh đại diện"
                 name="thumbnail"
                 valuePropName="fileList"
                 getValueFromEvent={(e) => {
@@ -121,108 +231,60 @@ const UpdateProduct = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please upload a thumbnail image",
+                    message: "Vui lòng tải lên hình ảnh đại diện",
                   },
                 ]}
               >
-                <Upload
-                  listType="picture-card"
-                  maxCount={1}
-                  beforeUpload={() => false}
-                  previewFile={(file) => {
-                    return new Promise((resolve) => {
-                      const reader = new FileReader();
-                      reader.readAsDataURL(file);
-                      reader.onload = () => {
-                        resolve(reader.result);
-                      };
-                    });
-                  }}
-                >
-                  <div>
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
+                {previewImage == null && (
+                  <Upload.Dragger
+                    accept=".jpg, .jpeg, .png, .gif"
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false}
+                    // onRemove={() => setImageUrl(null)}
+                    previewFile={(file) => {
+                      return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => {
+                          resolve(reader.result);
+                          setImageUrl(reader.result);
+                          setPreviewImage(reader.result);
+                        };
+                      });
+                    }}
+                  >
+                    <p className="ant-upload-drag-icon">
+                      <UploadOutlined />
+                    </p>
+                    <p className="ant-upload-text">
+                      Kéo thả hoặc nhấn để tải lên
+                    </p>
+                  </Upload.Dragger>
+                )}
+                {previewImage && (
+                  <div className="relative w-60 h-80">
+                    <img
+                      src={previewImage}
+                      alt="Xem trước hình ảnh đại diện"
+                      className="w-[18rem] h-[22rem] object-cover rounded-lg"
+                    />
+                    <button
+                      onClick={handleImageDelete}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <DeleteOutlined />
+                    </button>
                   </div>
-                </Upload>
+                )}
               </Form.Item>
-
-              <div className="grid grid-cols-3 gap-x-8 ">
-                <Form.Item label="Sku" name="sku" rules={[{ required: true }]}>
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  label="Regular price"
-                  name="regular_price"
-                  rules={[
-                    { required: true },
-                    { type: "number", message: "Nhập số" },
-                  ]}
-                >
-                  <InputNumber />
-                </Form.Item>
-                <Form.Item
-                  label="Reduced price"
-                  name="reduced_price"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber />
-                </Form.Item>
-                <Form.Item
-                  label="Material"
-                  name="material"
-                  rules={[{ required: true }]}
-                >
-                  <Input />
-                </Form.Item>
-              </div>
-              <Form.Item
-                name="short_description"
-                label="Short Description"
-                rules={[{ required: true }]}
-              >
-                <Input.TextArea showCount maxLength={200} />
-              </Form.Item>
-              <Form.Item
-                name="long_description"
-                label="Long Description"
-                rules={[{ required: true }]}
-              >
-                <Input.TextArea showCount maxLength={200} />
-              </Form.Item>
-            </div>
-
-            <Form.Item
-              label="Category"
-              name="category_id"
-              rules={[{ required: true }]}
-            >
-              <Select
-                showSearch
-                placeholder="Search to Select"
-                optionFilterProp="label"
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label?.toString() ?? "")
-                    .toLowerCase()
-                    .localeCompare(
-                      (optionB?.label?.toString() ?? "").toLowerCase()
-                    )
-                }
-                options={categories?.data?.map((category) => ({
-                  value: category.id,
-                  label: category.name,
-                }))}
-              />
-            </Form.Item>
-          </div>
-
-          <div className="">
-            <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className=" flex bottom-0 right-0 mx-[83px] my-10 fixed "
-              >
-                Submit
+            </Col>
+          </Row>
+          {/* Button add product */}
+          <div className="flex justify-end">
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className="my-4">
+                Cập nhật sản phẩm
               </Button>
             </Form.Item>
           </div>

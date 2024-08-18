@@ -7,7 +7,6 @@ import {
 
 const useProductMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
-
   const { mutate, ...rest } = useMutation({
     mutationFn: async (product) => {
       switch (action) {
@@ -21,8 +20,8 @@ const useProductMutation = ({ action, onSuccess, onError }) => {
           return null;
       }
     },
-    onSuccess: () => {
-      onSuccess && onSuccess();
+    onSuccess: (data, variables) => {
+      onSuccess && onSuccess(data);
       queryClient.invalidateQueries({
         queryKey: ["PRODUCT_KEY"],
       });
