@@ -32,38 +32,32 @@ import { validateFieldNumber } from "../../../validations/Product";
 import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 import useSizeQuery from "../../../hooks/Size/useSizeQuery";
 import useColorQuery from "../../../hooks/Color/useColorQuery";
-import useAttributeMutation from "../../../hooks/Attribute/useAttributeMutation";
 
 const CreateProduct = () => {
-  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
+  const inputRef = useAutoFocus(open);
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
   const [publicIds, setPublicIds] = useState([]);
+
+  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
-  const inputRef = useAutoFocus(open);
-
   const { mutate: createProduct } = useProductMutation({
     action: "CREATE",
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setImageUrl(null);
       form.resetFields();
-      messageApi.success("Thêm sản phẩm thành công");
+      messageApi.success(data.message);
     },
     onError: (error) => {
       messageApi.error(`Lỗi khi thêm sản phẩm: ${error.response.data.message}`);
       publicIds.map((publicId) => {
-        console.log(publicId);
         deleteFileCloudinary(publicId);
       });
       setPublicIds([]);
     },
   });
-
-  const handleImageDelete = () => {
-    setImageUrl(null);
-    form.setFieldsValue({ thumbnail: null });
-  };
 
   const onFinish = async (values) => {
     const { attributes, ...data } = values;
@@ -72,19 +66,27 @@ const CreateProduct = () => {
       ...data,
       thumbnail: thumbnail,
     };
+    const publicIdProduct = extractPublicId(thumbnail);
+    console.log(publicIdProduct);
+
+    setPublicIds((prev) => [...prev, publicIdProduct]);
+    console.log(attributes);
 
     const attributesWithImages = await Promise.all(
       attributes.map(async (attribute) => {
-        const imageUrl = await uploadFileCloudinary(
-          attribute.image.fileList[0].thumbUrl
-        );
-        const publicId = extractPublicId(imageUrl);
-        setPublicIds((prev) => [...prev, publicId]);
-        
-        return {
-          ...attribute,
-          image: imageUrl,
-        };
+        if (attribute?.image?.fileList[0]?.thumbUrl) {
+          const imageUrl = await uploadFileCloudinary(
+            attribute?.image?.fileList[0].thumbUrl
+          );
+          const publicIdAttrbutes = extractPublicId(imageUrl);
+          setPublicIds((prev) => [...prev, publicIdAttrbutes]);
+          return {
+            ...attribute,
+            image: imageUrl,
+          };
+        }
+
+        return attribute;
       })
     );
     const finalData = {
@@ -202,6 +204,11 @@ const CreateProduct = () => {
     },
   ];
 
+  const handleImageDelete = () => {
+    setImageUrl(null);
+    form.setFieldsValue({ thumbnail: null });
+  };
+
   return (
     <div className="container mx-auto">
       {contextHolder}
@@ -234,7 +241,7 @@ const CreateProduct = () => {
                       { required: true, message: "Vui lòng nhập tên sản phẩm" },
                     ]}
                   >
-                    <Input ref={inputRef} />
+                    <Input ref={inputRef} placeholder="Nhập tên" />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -266,7 +273,7 @@ const CreateProduct = () => {
                       { required: true, message: "Vui lòng nhập chất liệu" },
                     ]}
                   >
-                    <Input />
+                    <Input placeholder="Nhập chất liệu" />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -281,7 +288,10 @@ const CreateProduct = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      className="w-full"
+                      placeholder="Nhập giá gốc"
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -295,7 +305,10 @@ const CreateProduct = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      className="w-full"
+                      placeholder="Nhập giá khuyến mãi"
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -306,7 +319,11 @@ const CreateProduct = () => {
                   { required: true, message: "Vui lòng nhập mô tả ngắn" },
                 ]}
               >
-                <Input.TextArea showCount maxLength={200} />
+                <Input.TextArea
+                  showCount
+                  maxLength={200}
+                  placeholder="Nhập giá mô tả ngắn"
+                />
               </Form.Item>
               <Form.Item
                 name="long_description"
@@ -315,7 +332,11 @@ const CreateProduct = () => {
                   { required: true, message: "Vui lòng nhập mô tả chi tiết" },
                 ]}
               >
-                <Input.TextArea showCount maxLength={200} />
+                <Input.TextArea
+                  showCount
+                  maxLength={200}
+                  placeholder="Nhập giá mô tả chi tiết"
+                />
               </Form.Item>
             </Col>
             <Col span={6}>

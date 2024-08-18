@@ -9,6 +9,8 @@ const useAttributeQuery = (productId) => {
       return await getAllAttribute(productId);
     },
     keepPreviousData: true,
+    enabled: !!productId,
+    cacheTime: 0,
   });
 
   return { data, ...rest };

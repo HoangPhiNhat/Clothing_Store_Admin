@@ -34,7 +34,7 @@ const ProductManagePage = () => {
   const { mutate: deleteProduct, isPending } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
-      messageApi.success("Xóa sản phẩm thành công.");
+      messageApi.success(data.message);
       console.log("Deleted attribute:", data);
     },
     onError: (error) =>

@@ -29,18 +29,18 @@ import {
 
 const CreateAttribute = () => {
   const [form] = Form.useForm();
-  const { id } = useParams();
   const [publicIds, setPublicIds] = useState([]);
   const [open, setOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+
+  const { id } = useParams();
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
 
   const { mutate: createAttribute } = useAttributeMutation({
     action: "CREATE",
     onSuccess: (data) => {
-      messageApi.success("Thêm thuộc tính thành công.");
-      console.log("Added attribute:", data);
+      messageApi.success(data.message);
       form.resetFields();
     },
     onError: (error) => {
@@ -61,28 +61,30 @@ const CreateAttribute = () => {
   });
 
   const onFinish = async (values) => {
-    try {
-      const attributesWithImages = await Promise.all(
-        values.attributes.map(async (attribute) => {
+    const attributesWithImages = await Promise.all(
+      values.attributes.map(async (attribute) => {
+        if (attribute?.image?.fileList[0]?.thumbUrl) {
           const imageUrl = await uploadFileCloudinary(
             attribute.image.fileList[0].thumbUrl
           );
           console.log(imageUrl);
           const publicId = extractPublicId(imageUrl);
           setPublicIds((prev) => [...prev, publicId]);
+
           return {
             ...attribute,
             image: imageUrl,
           };
-        })
-      );
+        } else {
+          return attribute;
+        }
+      })
+    );
+    console.log(attributesWithImages);
 
-      const finalData = { productId: id, attributes: attributesWithImages };
-      console.log(finalData);
-      createAttribute(finalData);
-    } catch (error) {
-      console.log(error);
-    }
+    const finalData = { productId: id, attributes: attributesWithImages };
+    // console.log(finalData);
+    createAttribute(finalData);
   };
 
   const columns = (remove, fields) => [
@@ -91,10 +93,7 @@ const CreateAttribute = () => {
       dataIndex: "image",
       width: 150,
       render: (_, field) => (
-        <Form.Item
-          name={[field.name, "image"]}
-          rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
-        >
+        <Form.Item name={[field.name, "image"]}>
           <Upload
             maxCount={1}
             listType="picture-card"
@@ -194,7 +193,7 @@ const CreateAttribute = () => {
     <>
       {contextHolder}
       <Button type="primary" onClick={() => setOpen(true)}>
-        New Collection
+        Thêm thuộc tính
       </Button>
       <Modal
         width={1400}
