@@ -35,7 +35,13 @@ const UpdateProduct = () => {
   const [newpublicId, setNewPublicId] = useState(null);
 
   const { id } = useParams();
-  const { data: categories } = useCategoryQuery();
+  const { data: categories } = useCategoryQuery(
+    "GET_ALL_CATEGORY",
+    null,
+    1
+  );
+  console.log(categories);
+  
   const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id, null);
   const { mutate: updateProduct } = useProductMutation({
     action: "UPDATE",
@@ -148,7 +154,7 @@ const UpdateProduct = () => {
                       showSearch
                       placeholder="Chọn danh mục"
                       optionFilterProp="children"
-                      options={categories?.data?.map((category) => ({
+                      options={categories?.data?.data?.map((category) => ({
                         value: category.id,
                         label: category.name,
                       }))}

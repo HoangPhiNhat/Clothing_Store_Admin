@@ -18,7 +18,6 @@ export const getAllProductTrash = async (page) => {
    const response = await instance.get(
      `/products/trash?page=${page}&size=${size}&sort=DESC`
    );
-   console.log(response);
    return response.data;
   } catch (error) {
     throw error;
