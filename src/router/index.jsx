@@ -1,13 +1,15 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import BasicLayout from "../layout/BasicLayout";
+import ProductAttribute from "../pages/Attribute/page";
+import Signin from "../pages/Auth/Signin";
+import Signup from "../pages/Auth/Signup";
+import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 import Home from "../pages/Home/Home";
 import NotFound from "../pages/NotFound/NotFound";
 import CreateProduct from "../pages/Product/_component/CreateProduct";
-import ProductAttribute from "../pages/Attribute/page";
-import ProductManagePage from "../pages/Product/page";
-import TrashCategory from "../pages/Category/_components/TrashCategory";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
+import ProductManagePage from "../pages/Product/page";
 
 const RouterComponent = () => {
   return (
@@ -28,6 +30,8 @@ const RouterComponent = () => {
 
             <Route path="products/:id/edit" element={<UpdateProduct />} />
           </Route>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signin" element={<Signin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
