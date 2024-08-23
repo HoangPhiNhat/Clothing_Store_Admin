@@ -35,13 +35,7 @@ const UpdateProduct = () => {
   const [newpublicId, setNewPublicId] = useState(null);
 
   const { id } = useParams();
-  const { data: categories } = useCategoryQuery(
-    "GET_ALL_CATEGORY",
-    null,
-    1
-  );
-  console.log(categories);
-  
+  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY", null, 1);
   const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id, null);
   const { mutate: updateProduct } = useProductMutation({
     action: "UPDATE",
@@ -81,7 +75,7 @@ const UpdateProduct = () => {
   }, [form, product]);
 
   const onFinish = async (values) => {
-    let image = imageUrl
+    let image = imageUrl;
     console.log(values);
     setPreviewImage(values.thumbnail[0].thumbUrl);
     if (values.thumbnail[0].uid !== "-1") {
@@ -182,25 +176,47 @@ const UpdateProduct = () => {
                       { required: true, message: "Vui lòng nhập giá gốc" },
                       {
                         type: "number",
-                        message: "Vui lòng nhập số hợp lệ",
+                        min: 0,
+                        message: "Giá gốc cần lớn hơn 1 đồng",
                       },
                     ]}
                   >
-                    <InputNumber min={0} className="w-full" />
+                    <InputNumber
+                      className="w-full"
+                      placeholder="Nhập giá gốc"
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
                   <Form.Item
                     label="Giá khuyến mãi"
                     name="reduced_price"
+                    dependencies={["regular_price"]}
                     rules={[
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          const regularPrice = getFieldValue("regular_price");
+                          return !regularPrice
+                            ? Promise.reject("Vui lòng nhập giá gốc trước")
+                            : !value || regularPrice > value
+                            ? Promise.resolve()
+                            : Promise.reject(
+                                "Giá khuyến mãi phải thấp hơn giá gốc"
+                              );
+                        },
+                      }),
                       {
                         required: true,
                         message: "Vui lòng nhập giá khuyến mãi",
                       },
+                      {
+                        type: "number",
+                        min: 0,
+                        message: "Giá khuyến mãi từ 0 đồng trở lên",
+                      },
                     ]}
                   >
-                    <InputNumber min={0} className="w-full" />
+                    <InputNumber className="w-full" />
                   </Form.Item>
                 </Col>
               </Row>

@@ -9,6 +9,7 @@ import {
   Button,
   Form,
   Input,
+  InputNumber,
   message,
   Pagination,
   Popconfirm,
@@ -52,14 +53,17 @@ const ProductAttribute = () => {
     onError: (error) =>
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
-  const { mutate: updateAttribute, isPending:updatePending } = useAttributeMutation({
-    action: "UPDATE",
-    onSuccess: (data) => {
-      messageApi.success(data.message);
-    },
-    onError: (error) =>
-      message.error("Sửa thuộc tính thất bại: " + error.response.data.message),
-  });
+  const { mutate: updateAttribute, isPending: updatePending } =
+    useAttributeMutation({
+      action: "UPDATE",
+      onSuccess: (data) => {
+        messageApi.success(data.message);
+      },
+      onError: (error) =>
+        message.error(
+          "Sửa thuộc tính thất bại: " + error.response.data.message
+        ),
+    });
 
   useEffect(() => {
     if (editingKey !== null) {
@@ -163,7 +167,7 @@ const ProductAttribute = () => {
               beforeUpload={() => false}
               onChange={({ fileList }) => {
                 setFileList(fileList.slice(0, 1));
-                setHasChanged(true); // Track file changes
+                setHasChanged(true);
               }}
               previewFile={(file) => {
                 return new Promise((resolve) => {
@@ -182,7 +186,7 @@ const ProductAttribute = () => {
             </Upload>
           </Form.Item>
         ) : (
-          <img className="w-20" src={attribute.image} alt="" />
+          <img className="w-[98px] h-[98px] object-cover" src={attribute.image} alt="" />
         );
       },
     },
@@ -207,8 +211,18 @@ const ProductAttribute = () => {
       width: "15%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
-          <Form.Item name="stock_quantity">
-            <Input onChange={handleFieldChange} />
+          <Form.Item
+            rules={[
+              { required: true, message: "Vui lòng nhập số lượng" },
+              {
+                type: "number",
+                min: 1,
+                message: "Vui lòng nhập số lượng tối thiểu là 1",
+              },
+            ]}
+            name="stock_quantity"
+          >
+            <InputNumber className="w-[90%]" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
           <span>{attribute.stock_quantity}</span>
@@ -223,10 +237,18 @@ const ProductAttribute = () => {
         return editable ? (
           <Form.Item>
             <Space size="small">
-              <Button type="default" htmlType="submit" className="bg-[#4CAF50]">
+              <Button
+                type="default"
+                htmlType="submit"
+                className="bg-green-500 text-white py-2 px-4 rounded border-green-500"
+              >
                 <SaveOutlined />
               </Button>
-              <Button type="default" onClick={cancel} className="bg-[#FF5252]">
+              <Button
+                type="default"
+                onClick={cancel}
+                className="bg-[#FF5252] text-white border-[#FF5252]"
+              >
                 <CloseOutlined />
               </Button>
             </Space>
@@ -234,10 +256,10 @@ const ProductAttribute = () => {
         ) : (
           <Space size="small">
             <Button
-              disabled={deletingAttributeId === attribute.id}
               type="default"
+              disabled={deletingAttributeId === attribute.id}
               onClick={() => edit(attribute)}
-              className="bg-[#fadd04]"
+              className="bg-green-500 border-green-500 text-white py-2 px-4 rounded"
             >
               <EditOutlined />
             </Button>

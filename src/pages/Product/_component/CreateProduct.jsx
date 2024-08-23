@@ -43,7 +43,7 @@ const CreateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
-  const { mutate: createProduct } = useProductMutation({
+  const { mutate: createProduct, isPending } = useProductMutation({
     action: "CREATE",
     onSuccess: (data) => {
       setImageUrl(null);
@@ -180,9 +180,16 @@ const CreateProduct = () => {
       render: (_, field) => (
         <Form.Item
           name={[field.name, "stock_quantity"]}
-          rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập số lượng" },
+            {
+              type: "number",
+              min: 1,
+              message: "Vui lòng nhập số lượng tối thiểu là 1",
+            },
+          ]}
         >
-          <InputNumber placeholder="Số lượng" min={0} className="w-full" />
+          <InputNumber placeholder="Số lượng" className="w-full" />
         </Form.Item>
       ),
     },
@@ -241,7 +248,11 @@ const CreateProduct = () => {
                       { required: true, message: "Vui lòng nhập tên sản phẩm" },
                     ]}
                   >
-                    <Input ref={inputRef} placeholder="Nhập tên" />
+                    <Input
+                      disabled={isPending}
+                      ref={inputRef}
+                      placeholder="Nhập tên"
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -283,8 +294,9 @@ const CreateProduct = () => {
                     rules={[
                       { required: true, message: "Vui lòng nhập giá gốc" },
                       {
-                        validator: (_, value) =>
-                          validateFieldNumber("giá gốc", value),
+                        type: "number",
+                        min: 0,
+                        message: "Giá gốc cần lớn hơn 1 đồng",
                       },
                     ]}
                   >
@@ -298,17 +310,32 @@ const CreateProduct = () => {
                   <Form.Item
                     label="Giá khuyến mãi"
                     name="reduced_price"
+                    dependencies={["regular_price"]}
                     rules={[
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          const regularPrice = getFieldValue("regular_price");
+                          return !regularPrice
+                            ? Promise.reject("Vui lòng nhập giá gốc trước")
+                            : !value || regularPrice > value
+                            ? Promise.resolve()
+                            : Promise.reject(
+                                "Giá khuyến mãi phải thấp hơn giá gốc"
+                              );
+                        },
+                      }),
                       {
                         required: true,
                         message: "Vui lòng nhập giá khuyến mãi",
                       },
+                      {
+                        type: "number",
+                        min: 0,
+                        message: "Giá khuyến mãi từ 0 đồng trở lên",
+                      },
                     ]}
                   >
-                    <InputNumber
-                      className="w-full"
-                      placeholder="Nhập giá khuyến mãi"
-                    />
+                    <InputNumber className="w-full" />
                   </Form.Item>
                 </Col>
               </Row>
@@ -401,7 +428,7 @@ const CreateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
-          Form Product Attribute
+          <h2 className="text-2xl font-medium"> Thêm biến thể</h2>
           <Row gutter={16} className="mt-8">
             <Col span={24}>
               <Form.List name="attributes" initialValue={[{}]}>
@@ -436,7 +463,12 @@ const CreateProduct = () => {
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="my-4">
+              <Button
+                loading={isPending}
+                type="primary"
+                htmlType="submit"
+                className="my-4"
+              >
                 Thêm sản phẩm
               </Button>
             </Form.Item>
