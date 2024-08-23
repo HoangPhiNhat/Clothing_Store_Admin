@@ -8,6 +8,7 @@ import ProductAttribute from "../pages/Attribute/page";
 import ProductManagePage from "../pages/Product/page";
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
+import TrashProduct from "../pages/Product/_component/TrashProduct";
 
 const RouterComponent = () => {
   return (
@@ -20,6 +21,7 @@ const RouterComponent = () => {
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
             <Route path="products" element={<ProductManagePage />} />
+            <Route path="products/trash" element={<TrashProduct />} />
             <Route
               path="products/:id/attributes"
               element={<ProductAttribute />}

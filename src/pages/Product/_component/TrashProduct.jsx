@@ -1,46 +1,46 @@
 import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusCircleOutlined,
+  RedoOutlined,
+  RollbackOutlined
 } from "@ant-design/icons";
-import { Button, Input, Pagination, Popconfirm, Space, Table } from "antd";
-import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Input,
+  message,
+  Pagination,
+  Popconfirm,
+  Space,
+  Table,
+} from "antd";
+import  { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useProductQuery from "../../hooks/Product/useProductQuery";
-import { formatDate, formatDMY } from "../../systems/utils/formatDate";
-import { formatMoney } from "../../systems/utils/formatMoney";
-import useProductMutation from "../../hooks/Product/useProductMutation";
+import useProductMutation from "../../../hooks/Product/useProductMutation";
+import useProductQuery from "../../../hooks/Product/useProductQuery";
+import { formatDate, formatDMY } from "../../../systems/utils/formatDate";
+import { formatMoney } from "../../../systems/utils/formatMoney";
 
-const ProductManagePage = () => {
-  const [publicId, setPublicId] = useState(null);
+const TrashProduct = () => {
   const [pageProduct, setPageProduct] = useState(1);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [restorProductId, setRestoringProductId] = useState(null);
 
-  const {
-    data: products,
-    isLoading,
-    error: productsError,
-  } = useProductQuery(null, pageProduct);
+  const { data: products, isLoading } = useProductQuery(
+    "GET_ALL_PRODUCT_TRASH",
+    null,
+    pageProduct
+  );
   const navigate = useNavigate();
 
-  const { mutate: deleteProduct } = useProductMutation({
-    action: "DELETE",
+  const { mutate: restoreProduct, isPending } = useProductMutation({
+    action: "RESTORE",
     onSuccess: (data) => {
-      messageApi.success("Xóa sản phẩm thành công.");
-      deleteFileCloudinary(publicId);
-      setPublicId(null);
-      console.log("Deleted attribute:", data);
+      messageApi.success(data.message);
+      console.log("Restore attribute:", data);
     },
     onError: (error) =>
-      message.error("Xóa sản phẩm thất bại: " + error.response.data.message),
+      message.error(
+        "Khôi phục sản phẩm thất bại: " + error.response.data.message
+      ),
   });
-  // const [searchText, setSearchText] = useState("");
-
-  // const filterOption = (input, item) =>
-  //   item.name.toLowerCase().includes(input.toLowerCase()) ||
-  //   item.category.name.toLowerCase().includes(input.toLowerCase());
-  // const filteredData = products?.data?.`filter((product) =>
-  //   filterOption(searchText, product)
-  // );
 
   useEffect(() => {
     if (pageProduct) {
@@ -52,10 +52,6 @@ const ProductManagePage = () => {
     key: product.id,
     index: index + 1,
   }));
-
-  const handlePageChange = (page) => {
-    setPageProduct(page);
-  };
 
   const columns = [
     {
@@ -71,7 +67,7 @@ const ProductManagePage = () => {
       width: "20%",
       render: (thumbnail) => (
         <>
-          <img className="w-20" src={thumbnail} alt="" />
+          <img className="w-24 h-24 object-cover" src={thumbnail} alt="" />
         </>
       ),
     },
@@ -82,7 +78,7 @@ const ProductManagePage = () => {
       width: "30%",
       render: (_, product) => (
         <Link
-          to={`${product.id}/attributes`}
+          to={`/admin/products/${product.id}/attributes`}
           className="text-slate-950 hover:underline"
         >
           {product.name}
@@ -114,22 +110,26 @@ const ProductManagePage = () => {
       key: "operation",
       width: "10%",
       render: (_, product) => (
-        <div className=" ">
+        <div className="">
           <Space size="small">
-            <Link to={`${product.id}/edit`}>
-              <Button type="default" className="bg-[#fadd04] ">
-                <EditOutlined />
-              </Button>
-            </Link>
             <Popconfirm
-              title="Xóa sản phẩm"
-              description="Bạn có muốn xóa sản phẩm này không?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() => deleteProduct(product.id)}
+              title="Khôi phục sản phẩm"
+              description="Bạn có muốn khôi phục sản phẩm này không?"
+              okText={
+                isPending & (restorProductId === product.id) ? `Đang xóa` : `Có`
+              }
+              cancelText="Không"
+              onConfirm={() => {
+                restoreProduct(product.id);
+                setRestoringProductId(product.id);
+              }}
             >
-              <Button type="primary" danger>
-                <DeleteOutlined />
+              <Button
+                loading={restorProductId === product.id}
+                type="primary"
+                danger
+              >
+                <RedoOutlined />
               </Button>
             </Popconfirm>
           </Space>
@@ -189,18 +189,17 @@ const ProductManagePage = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-medium mb-2">List Product</h1>
+      {contextHolder}
+      <h1 className="text-2xl font-medium mb-2">Quản lý sản phẩm đã ẩn</h1>
       <div className="flex justify-between">
         <Input
           placeholder="Search by name or category"
-          // value={searchText}
-          // onChange={(e) => setSearchText(e.target.value)}
           style={{ width: 300, marginBottom: 16 }}
         />
-        <Link to="add">
-          <Button type="primary">
-            <PlusCircleOutlined />
-            Add Product
+        <Link to="/admin/products">
+          <Button type="primary" disabled={isPending}>
+            <RollbackOutlined />
+            Quay lại danh sách
           </Button>
         </Link>
       </div>
@@ -212,9 +211,12 @@ const ProductManagePage = () => {
         pagination={false}
       />
       <Pagination
+        disabled={isPending}
         current={pageProduct}
-        onChange={handlePageChange}
-        total={11}
+        onChange={(page) => {
+          setPageProduct(page);
+        }}
+        total={products?.data.total}
         showSizeChanger={false}
         align="end"
       />
@@ -222,4 +224,4 @@ const ProductManagePage = () => {
   );
 };
 
-export default ProductManagePage;
+export default TrashProduct;

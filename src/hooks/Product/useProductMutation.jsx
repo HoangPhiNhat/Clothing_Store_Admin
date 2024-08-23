@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createProduct,
   removeProduct,
+  restoreProduct,
   updateProduct,
 } from "../../services/product";
 
@@ -16,6 +17,8 @@ const useProductMutation = ({ action, onSuccess, onError }) => {
           return await removeProduct(product);
         case "UPDATE":
           return await updateProduct(product);
+        case "RESTORE":
+          return await restoreProduct(product);
         default:
           return null;
       }
