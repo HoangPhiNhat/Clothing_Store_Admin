@@ -3,18 +3,34 @@
 import { Button, Form, Input, message } from 'antd';
 import { Link } from 'react-router-dom';
 import useAutoFocus from '../../hooks/customHook/useAutoFocus';
+import { signIn } from '../../services/auth';
+import { useMutation } from '@tanstack/react-query';
 
 const Signin = () => {
     const inputRef = useAutoFocus(open);
     const [messageApi, contextHolder] = message.useMessage();
 
-    const onFinish = (values) => {
-        messageApi.success("Signin success");
-        console.log('Success:', values);
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: async (user) => {
+            return await signIn(user)
+        },
+        onError: ({ response }) => {
+            console.log(response.data.message);
+            messageApi.error(response.data.message)
+        },
+        onSuccess: ({ data }) => {
+            console.log(data);
+            messageApi.success("Đăng nhập thành công.");
+            localStorage.setItem("user", JSON.stringify(data))
+        }
+    })
+    const onFinish = async (values) => {
+        mutate(values);
     };
 
     const onFinishFailed = (errorInfo) => {
-        messageApi.error("Signin fail");
+        messageApi.error("SignIn fail");
         console.log('Failed:', errorInfo);
     };
 

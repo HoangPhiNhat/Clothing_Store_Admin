@@ -2,14 +2,20 @@
 import { Button, Form, Input, message } from 'antd';
 import { Link } from 'react-router-dom';
 import useAutoFocus from '../../hooks/customHook/useAutoFocus';
+import { signUp } from '../../services/auth';
 
 const Signup = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const inputRef = useAutoFocus(open);
 
-    const onFinish = (values) => {
-        messageApi.success("Signup success");
-        console.log('Success:', values);
+    const onFinish = async (values) => {
+        try {
+            const response = await signUp(values);
+            console.log(response);
+            messageApi.success("Dang ki thanh cong");
+        } catch (error) {
+            console.log(error.message);
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -56,7 +62,7 @@ const Signup = () => {
                     </Form.Item>
 
                     <Form.Item
-                        name="confirmPassword"
+                        name="password_confirmation"
                         dependencies={['password']}
                         hasFeedback
                         rules={[
