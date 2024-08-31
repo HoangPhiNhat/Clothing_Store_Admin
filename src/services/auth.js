@@ -1,34 +1,35 @@
 /* eslint-disable no-useless-catch */
 import UnAuthor from "../services/baseApi/UnAuthorApi";
 import instance from "../configs/axios";
+import axios from "axios";
 // import Author from "../services/baseApi/AuthorApi";
 // const url = "/auth";
 
 export const signIn = async (user) => {
-    try {
-        return await instance.post("/login", user);
-    } catch (error) {
-        throw error;
-    }
+  try {
+    return await UnAuthor.post("/login", user);
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const signUp = (user) => {
-    return UnAuthor.post(`/register`, user);
+  return UnAuthor.post(`/register`, user);
 };
 
-// export const refreshToken = async () => {
-//     try {
-//         const data = await UnAuthor.get(`${url}/refreshToken?refreshToken=${storage.getRefreshToken()}`);
-//         storage.saveNewTokenInfo(data.token, data.refreshToken);
-//     } catch (error) {
-//         // refresh token is expired
-//         if (error.response.status === 400) {
-//             window.location.href = "/auth/sign-in";
-//         }
-//     }
-// };
-
-
+export const refreshToken = async () => {
+  try {
+    const data = await UnAuthor.post(
+      `/refresh?refresh_token=${localStorage.getItem("refresh")}`
+    );
+    localStorage.setItem("access", data.access_token);
+  } catch (error) {
+    // refresh token is expired
+    if (error.response.status === 400) {
+      window.location.href = "/signin";
+    }
+  }
+};
 
 // export const resendActiveAccountEmail = (username) => {
 //     return UnauthorApi.get(`${url}/registration/active-mail?username=${username}`);

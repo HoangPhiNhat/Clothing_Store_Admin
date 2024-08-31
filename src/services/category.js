@@ -1,12 +1,13 @@
 /* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
+import Author from "../services/baseApi/AuthorApi";
 let size = 5;
 
 export const getAllCategory = async (page) => {
   try {
     let queryCategory = `/categories?sort=DESC&size=${size}`;
     if (page) queryCategory += `&page=${page}`;
-    return await instance.get(queryCategory);
+    return await Author.get(queryCategory);
   } catch (error) {
     throw error;
   }
@@ -42,7 +43,7 @@ export const getCategoryById = async (category) => {
 };
 export const createCategory = async (category) => {
   try {
-    const response = await instance.post(`/categories`, category);
+    const response = await Author.post(`/categories`, category);
     return response;
   } catch (error) {
     throw error;
@@ -65,4 +66,4 @@ export const restoreCategory = async (category) => {
   } catch (error) {
     throw error;
   }
-}
+};
