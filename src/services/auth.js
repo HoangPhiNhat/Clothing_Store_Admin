@@ -23,6 +23,7 @@ export const refreshToken = async () => {
       `/refresh?refresh_token=${localStorage.getItem("refresh")}`
     );
     localStorage.setItem("access", data.access_token);
+    localStorage.setItem("refresh", data.refresh_token);
   } catch (error) {
     // refresh token is expired
     if (error.response.status === 400) {
