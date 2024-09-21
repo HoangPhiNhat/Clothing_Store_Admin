@@ -22,24 +22,20 @@ axiosClient.interceptors.request.use(
 
 // Interceptor cho các phản hồi
 axiosClient.interceptors.response.use(
-  (response) => {
-    if (response && response.data) {
-      // Chỉ lấy dữ liệu từ phản hồi
-      return response.data;
-    }
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const { response, config } = error;
 
     // Nếu token đã hết hạn
     if (response && response.status === 401) {
+      console.log("Loi me roi");
+    
       try {
         await refreshToken(); // Gọi hàm refreshToken từ AuthApi
         return axiosClient(config); // Thực hiện lại yêu cầu gốc
       } catch (refreshError) {
         // Nếu refreshToken cũng thất bại, chuyển hướng đến trang đăng nhập
-        // window.location.href = "/signin";
+        window.location.href = "/signin";
         return Promise.reject(refreshError);
       }
     }

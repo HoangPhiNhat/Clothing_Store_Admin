@@ -1,10 +1,9 @@
 import { RedoOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
-import { Link } from "react-router-dom";
-import { formatBirthDate } from "../../../systems/utils/formatDate";
 
 const TrashCategory = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -26,8 +25,8 @@ const TrashCategory = () => {
 
   const columns = [
     {
-      title: "#",
-      dataIndex: "sku",
+      title: "Mã danh mục",
+      dataIndex: "category_code",
       rowScope: "row",
       sorter: (a, b) => a.index - b.index,
     },
@@ -42,13 +41,13 @@ const TrashCategory = () => {
     {
       title: "Ngày tạo",
       dataIndex: "created_at",
-      render: (_, categories) => formatBirthDate(categories.created_at),
+      render: (_, categories) => (categories.created_at),
       width: "20%",
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "updated_at",
-      render: (_, categories) => formatBirthDate(categories.updated_at),
+      render: (_, categories) => (categories.updated_at),
       width: "20%",
     },
     {

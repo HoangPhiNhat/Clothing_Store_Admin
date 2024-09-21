@@ -7,7 +7,6 @@ import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
-import { formatBirthDate } from "../../systems/utils/formatDate";
 import CreateCategory from "./_components/CreateCategory";
 import UpdateCategory from "./_components/UpdateCategory";
 
@@ -34,9 +33,7 @@ const Category = () => {
   const columns = [
     {
       title: "Mã danh mục",
-      dataIndex: "sku",
-      rowScope: "row",
-      sorter: (a, b) => a.index - b.index,
+      dataIndex: "category_code",
     },
     {
       title: "Tên danh mục",
@@ -49,13 +46,17 @@ const Category = () => {
     {
       title: "Ngày tạo",
       dataIndex: "created_at",
-      render: (_, categories) => formatBirthDate(categories.created_at),
+      render: (_, categories) => categories.created_at,
+      sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
+      sortDirections: ["ascend", "descend"],
       width: "20%",
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "updated_at",
-      render: (_, categories) => formatBirthDate(categories.updated_at),
+      render: (_, categories) => categories.updated_at,
+      sorter: (a, b) => new Date(a.updated_at) - new Date(b.updated_at),
+      sortDirections: ["ascend", "descend"],
       width: "20%",
     },
     {
@@ -92,7 +93,6 @@ const Category = () => {
       ),
     },
   ];
-console.log(categories);
 
   const dataSource = (categories?.data.data || []).map((category, index) => ({
     key: category.id,

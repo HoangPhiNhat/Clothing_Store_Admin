@@ -6,7 +6,6 @@ import {
 } from "react-router-dom";
 import BasicLayout from "../layout/BasicLayout";
 import ProductAttribute from "../pages/Attribute/page";
-import SignUp from "../pages/Auth/SignUp";
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 import Home from "../pages/Home/Home";
@@ -14,7 +13,9 @@ import NotFound from "../pages/NotFound/NotFound";
 import CreateProduct from "../pages/Product/_component/CreateProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
 import ProductManagePage from "../pages/Product/page";
-import SignIn from "../pages/Auth/SignIn";
+
+import SignUp from "../pages/Auth/Signup";
+import SignIn from "../pages/Auth/Signin";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;

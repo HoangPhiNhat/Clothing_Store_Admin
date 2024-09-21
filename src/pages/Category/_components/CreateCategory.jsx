@@ -24,7 +24,6 @@ const CreateCategory = ({ open, onCancel }) => {
   const onFinish = (values) => {
     createCategory(values);
   };
-console.log(createCategory);
   return (
     <>
       {contextHolder}

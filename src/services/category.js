@@ -7,7 +7,7 @@ export const getAllCategory = async (page) => {
   try {
     let queryCategory = `/categories?sort=DESC&size=${size}`;
     if (page) queryCategory += `&page=${page}`;
-    return await Author.get(queryCategory);
+    return await instance.get(queryCategory);
   } catch (error) {
     throw error;
   }
@@ -17,7 +17,7 @@ export const getAllCategoryTrash = async (page) => {
   try {
     let queryCategory = `/categories/trash?sort=DESC&size=${size}`;
     if (page) queryCategory += `&page=${page}`;
-    return await instance.get(queryCategory);
+    return await Author.get(queryCategory);
   } catch (error) {
     throw error;
   }
@@ -25,7 +25,7 @@ export const getAllCategoryTrash = async (page) => {
 
 export const removeCategory = async (category) => {
   try {
-    const response = await instance.delete(`/categories/${category.id}`);
+    const response = await Author.delete(`/categories/${category.id}`);
     return response;
   } catch (error) {
     throw error;
@@ -52,7 +52,7 @@ export const createCategory = async (category) => {
 
 export const updateCategory = async (category) => {
   try {
-    const response = await instance.put(`/categories/${category.id}`, category);
+    const response = await Author.put(`/categories/${category.id}`, category);
     return response;
   } catch (error) {
     throw error;
@@ -61,7 +61,7 @@ export const updateCategory = async (category) => {
 
 export const restoreCategory = async (category) => {
   try {
-    const response = await instance.put(`/categories/${category.id}/restore`);
+    const response = await Author.put(`/categories/${category.id}/restore`);
     return response.data;
   } catch (error) {
     throw error;
