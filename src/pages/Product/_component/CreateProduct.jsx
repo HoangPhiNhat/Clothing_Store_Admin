@@ -43,7 +43,7 @@ const CreateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
-  const { mutate: createProduct } = useProductMutation({
+  const { mutate: createProduct, isPending } = useProductMutation({
     action: "CREATE",
     onSuccess: (data) => {
       setImageUrl(null);
@@ -281,7 +281,6 @@ const CreateProduct = () => {
                     label="Giá gốc"
                     name="regular_price"
                     rules={[
-                      { required: true, message: "Vui lòng nhập giá gốc" },
                       {
                         validator: (_, value) =>
                           validateFieldNumber("giá gốc", value),
@@ -436,7 +435,7 @@ const CreateProduct = () => {
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="my-4">
+              <Button loading={isPending} type="primary" htmlType="submit" className="my-4">
                 Thêm sản phẩm
               </Button>
             </Form.Item>

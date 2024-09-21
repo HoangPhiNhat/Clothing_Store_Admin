@@ -12,12 +12,11 @@ import {
   Space,
   Table,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useProductQuery from "../../hooks/Product/useProductQuery";
-import { formatDate, formatDMY } from "../../systems/utils/formatDate";
-import { formatMoney } from "../../systems/utils/formatMoney";
 import useProductMutation from "../../hooks/Product/useProductMutation";
+import useProductQuery from "../../hooks/Product/useProductQuery";
+import { formatMoney } from "../../systems/utils/formatMoney";
 
 const ProductManagePage = () => {
   const [pageProduct, setPageProduct] = useState(1);
@@ -31,7 +30,7 @@ const ProductManagePage = () => {
   );
   const navigate = useNavigate();
 
-  const { mutate: deleteProduct, isPending } = useProductMutation({
+  const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
       messageApi.success(data.message);
@@ -40,31 +39,31 @@ const ProductManagePage = () => {
     onError: (error) =>
       message.error("Xóa sản phẩm thất bại: " + error.response.data.message),
   });
-  // const [searchText, setSearchText] = useState("");
-
-  // const filterOption = (input, item) =>
-  //   item.name.toLowerCase().includes(input.toLowerCase()) ||
-  //   item.category.name.toLowerCase().includes(input.toLowerCase());
-  // const filteredData = products?.data?.`filter((product) =>
-  //   filterOption(searchText, product)
-  // );
 
   useEffect(() => {
     if (pageProduct) {
       navigate(`?page=${pageProduct}`, { replace: true });
     }
   }, [pageProduct]);
-  const dataSource = products?.data?.map((product, index) => ({
+
+  const dataSource = products?.data?.map((product) => ({
     ...product,
     key: product.id,
-    index: index + 1,
+
   }));
 
   const columns = [
     {
-      title: "No.",
-      dataIndex: "index",
-      key: "index",
+      title: "Sku",
+      dataIndex: "sku",
+      key: "sku",
+      width: "10%",
+    },
+    {
+      title: "Category",
+      key: "Category",
+      render: ({ category }) => <span>{category.name}</span>
+      ,
       width: "10%",
     },
     {
@@ -72,11 +71,7 @@ const ProductManagePage = () => {
       dataIndex: "thumbnail",
       key: "thumbnail",
       width: "20%",
-      render: (thumbnail) => (
-        <>
-          <img className="w-20" src={thumbnail} alt="" />
-        </>
-      ),
+      render: (thumbnail) => <img className="w-20" src={thumbnail} alt="" />,
     },
     {
       title: "Name",
@@ -91,12 +86,6 @@ const ProductManagePage = () => {
           {product.name}
         </Link>
       ),
-    },
-    {
-      title: "Sku",
-      dataIndex: "sku",
-      key: "sku",
-      width: "10%",
     },
     {
       title: "Regular price",
@@ -164,25 +153,20 @@ const ProductManagePage = () => {
         title: "Description",
         dataIndex: "long_description",
         key: "long_description",
-        width: "60%",
+        width: "40%",
       },
       {
         title: "Create Date",
         dataIndex: "created_at",
         key: "created_at",
-        width: "15%",
-        render: (created_at) => (
-          <div>{formatDate(created_at) + " " + formatDMY(created_at)}</div>
-        ),
+        width: "20%",
+
       },
       {
         title: "Update Date",
         dataIndex: "updated_at",
         key: "updated_at",
         width: "20%",
-        render: (updated_at) => (
-          <div>{formatDate(updated_at) + " " + formatDMY(updated_at)}</div>
-        ),
       },
     ];
 

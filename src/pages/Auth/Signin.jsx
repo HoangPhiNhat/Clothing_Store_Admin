@@ -19,7 +19,6 @@ const SignIn = () => {
       navigate("/admin");
     },
     onError: ({ response }) => {
-      console.log(response.data.message);
       messageApi.error(response.data.message);
     },
     onSuccess: ({ data }) => {

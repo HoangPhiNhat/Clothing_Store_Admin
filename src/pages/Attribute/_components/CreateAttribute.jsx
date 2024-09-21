@@ -48,7 +48,6 @@ const CreateAttribute = () => {
         `Lỗi khi thêm thuộc tính: ${error.response.data.message}`
       );
       publicIds.map((publicId) => {
-        console.log(publicId);
         deleteFileCloudinary(publicId);
       });
       setPublicIds([]);
@@ -67,7 +66,6 @@ const CreateAttribute = () => {
           const imageUrl = await uploadFileCloudinary(
             attribute.image.fileList[0].thumbUrl
           );
-          console.log(imageUrl);
           const publicId = extractPublicId(imageUrl);
           setPublicIds((prev) => [...prev, publicId]);
 
@@ -80,10 +78,8 @@ const CreateAttribute = () => {
         }
       })
     );
-    console.log(attributesWithImages);
 
     const finalData = { productId: id, attributes: attributesWithImages };
-    // console.log(finalData);
     createAttribute(finalData);
   };
 

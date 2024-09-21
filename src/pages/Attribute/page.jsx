@@ -101,7 +101,6 @@ const ProductAttribute = () => {
 
   const save = async () => {
     const values = await form.validateFields();
-    console.log(values);
 
     if (!hasChanged) {
       message.info("No changes were made.");

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
 import {
   DeleteOutlined,
-  PlusOutlined,
   RollbackOutlined,
-  UploadOutlined,
+  UploadOutlined
 } from "@ant-design/icons";
 import {
   Button,
@@ -16,15 +14,17 @@ import {
   Select,
   Upload,
 } from "antd";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
+import useProductQuery from "../../../hooks/Product/useProductQuery";
 import {
   deleteFileCloudinary,
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
-import useProductQuery from "../../../hooks/Product/useProductQuery";
+import { validateFieldNumber } from "../../../validations/Product";
 
 const UpdateProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -35,9 +35,10 @@ const UpdateProduct = () => {
   const [newpublicId, setNewPublicId] = useState(null);
 
   const { id } = useParams();
-  const { data: categories } = useCategoryQuery();
+  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
+
   const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id, null);
-  const { mutate: updateProduct } = useProductMutation({
+  const { mutate: updateProduct, isPending } = useProductMutation({
     action: "UPDATE",
     onSuccess: (data) => {
       if (publicId) {
@@ -60,13 +61,13 @@ const UpdateProduct = () => {
         ...product,
         thumbnail: product.thumbnail
           ? [
-              {
-                uid: "-1",
-                name: "thumbnail.png",
-                status: "done",
-                thumbUrl: product.thumbnail,
-              },
-            ]
+            {
+              uid: "-1",
+              name: "thumbnail.png",
+              status: "done",
+              thumbUrl: product.thumbnail,
+            },
+          ]
           : [],
       });
       setImageUrl(product.thumbnail);
@@ -76,7 +77,6 @@ const UpdateProduct = () => {
 
   const onFinish = async (values) => {
     let image = imageUrl
-    console.log(values);
     setPreviewImage(values.thumbnail[0].thumbUrl);
     if (values.thumbnail[0].uid !== "-1") {
       image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
@@ -97,9 +97,6 @@ const UpdateProduct = () => {
     setImageUrl(null);
     form.setFieldsValue({ thumbnail: null });
   };
-
-  console.log(imageUrl);
-  console.log(previewImage);
 
   return (
     <div className="container mx-auto">
@@ -148,7 +145,7 @@ const UpdateProduct = () => {
                       showSearch
                       placeholder="Chọn danh mục"
                       optionFilterProp="children"
-                      options={categories?.data?.map((category) => ({
+                      options={categories?.data.data.map((category) => ({
                         value: category.id,
                         label: category.name,
                       }))}
@@ -173,14 +170,13 @@ const UpdateProduct = () => {
                     label="Giá gốc"
                     name="regular_price"
                     rules={[
-                      { required: true, message: "Vui lòng nhập giá gốc" },
                       {
-                        type: "number",
-                        message: "Vui lòng nhập số hợp lệ",
+                        validator: (_, value) =>
+                          validateFieldNumber("giá gốc", value),
                       },
                     ]}
                   >
-                    <InputNumber min={0} className="w-full" />
+                    <InputNumber type="number" min={0} className="w-full" />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -283,7 +279,7 @@ const UpdateProduct = () => {
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="my-4">
+              <Button loading={isPending} type="primary" htmlType="submit" className="my-4">
                 Cập nhật sản phẩm
               </Button>
             </Form.Item>

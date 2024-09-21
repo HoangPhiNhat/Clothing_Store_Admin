@@ -1,8 +1,9 @@
-import instance from "../configs/axios";
+/* eslint-disable no-useless-catch */
+import Author from "../services/baseApi/AuthorApi";
 
 export const getAllColor = async () => {
   try {
-    const response = await instance.get(`/colors`);
+    const response = await Author.get(`/colors`);
     return response.data;
   } catch (error) {
     throw error;
@@ -11,7 +12,7 @@ export const getAllColor = async () => {
 
 export const getColorById = async (colorId) => {
   try {
-    const response = await instance.get(`/colors/${colorId}`);
+    const response = await Author.get(`/colors/${colorId}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -20,7 +21,7 @@ export const getColorById = async (colorId) => {
 
 export const createColor = async (color) => {
   try {
-    const response = await instance.post(`/colors`, color);
+    const response = await Author.post(`/colors`, color);
     return response.data;
   } catch (error) {
     throw error;
@@ -29,7 +30,7 @@ export const createColor = async (color) => {
 
 export const removeColor = async (colorId) => {
   try {
-    const response = await instance.delete(`/colors/${colorId}`);
+    const response = await Author.delete(`/colors/${colorId}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -38,7 +39,7 @@ export const removeColor = async (colorId) => {
 
 export const updateColor = async (colorId, color) => {
   try {
-    const response = await instance.put(`/colors/${colorId}`, color);
+    const response = await Author.put(`/colors/${colorId}`, color);
     return response.data;
   } catch (error) {
     throw error;
@@ -47,7 +48,7 @@ export const updateColor = async (colorId, color) => {
 
 export const getAllColorTrash = async () => {
   try {
-    const response = await instance.get(`/colors/trash`);
+    const response = await Author.get(`/colors/trash`);
     return response.data;
   } catch (error) {
     throw error;
@@ -56,7 +57,7 @@ export const getAllColorTrash = async () => {
 
 export const retoreColor = async (colorId) => {
   try {
-    const response = await instance.delete(`/colors/${colorId}/retore`);
+    const response = await Author.delete(`/colors/${colorId}/retore`);
     return response.data;
   } catch (error) {
     throw error;

@@ -18,7 +18,6 @@ const useProductQuery = (action, id, page) => {
       }
     },
   });
-  console.log("useProductQuery", data);
   return { data, ...rest };
 };
 

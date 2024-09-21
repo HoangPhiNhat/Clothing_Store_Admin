@@ -1,4 +1,7 @@
+/* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
+import Author from "../services/baseApi/AuthorApi";
+
 let size = 5;
 
 export const getProductAll = async (page) => {
@@ -15,11 +18,11 @@ export const getProductAll = async (page) => {
 
 export const getAllProductTrash = async (page) => {
   try {
-   const response = await instance.get(
-     `/products/trash?page=${page}&size=${size}&sort=DESC`
-   );
-   console.log(response);
-   return response.data;
+    const response = await Author.get(
+      `/products/trash?page=${page}&size=${size}&sort=DESC`
+    );
+    console.log(response);
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -28,7 +31,7 @@ export const getAllProductTrash = async (page) => {
 export const removeProduct = async (id) => {
   try {
     console.log(id);
-    const response = await instance.delete(`/products/${id}`);
+    const response = await Author.delete(`/products/${id}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -38,7 +41,7 @@ export const removeProduct = async (id) => {
 export const getProductById = async (id) => {
   try {
     console.log(id);
-    const response = await instance.get(`/products/${id}/show`);
+    const response = await Author.get(`/products/${id}/show`);
     return response.data;
   } catch (error) {
     throw error;
@@ -47,9 +50,9 @@ export const getProductById = async (id) => {
 
 export const createProduct = async (product) => {
   try {
-    const response = await instance.post(`/products`, product);
-  console.log(response);
-  
+    const response = await Author.post(`/products`, product);
+    console.log(response);
+
     return response.data;
   } catch (error) {
     throw error;
@@ -59,7 +62,7 @@ export const createProduct = async (product) => {
 export const updateProduct = async (product) => {
   console.log(product);
   try {
-    const response = await instance.put(`/products/${product.id}`, product);
+    const response = await Author.put(`/products/${product.id}`, product);
     return response.data;
   } catch (error) {
     throw error;

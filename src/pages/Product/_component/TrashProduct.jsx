@@ -4,7 +4,7 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Input, Pagination, Popconfirm, Space, Table } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useProductQuery from "../../hooks/Product/useProductQuery";
 import { formatDate, formatDMY } from "../../systems/utils/formatDate";
