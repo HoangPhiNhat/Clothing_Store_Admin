@@ -3,23 +3,26 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Pagination, Popconfirm, Space, Table } from "antd";
+import { Button, Input, message, Pagination, Popconfirm, Space, Table } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useProductQuery from "../../hooks/Product/useProductQuery";
-import { formatDate, formatDMY } from "../../systems/utils/formatDate";
-import { formatMoney } from "../../systems/utils/formatMoney";
-import useProductMutation from "../../hooks/Product/useProductMutation";
 
-const ProductManagePage = () => {
+import { formatMoney } from "../../../systems/utils/formatMoney";
+
+import useProductQuery from "../../../hooks/Product/useProductQuery";
+import useProductMutation from "../../../hooks/Product/useProductMutation";
+
+import { deleteFileCloudinary } from "../../../services/cloudinary";
+
+const TrashProduct = () => {
   const [publicId, setPublicId] = useState(null);
   const [pageProduct, setPageProduct] = useState(1);
-
+  const [messageApi, contextHolder] = message.useMessage();
   const {
     data: products,
     isLoading,
-    error: productsError,
-  } = useProductQuery(null, pageProduct);
+    // error: productsError,
+  } = useProductQuery("GET_ALL_PRODUCT_TRASH", pageProduct);
   const navigate = useNavigate();
 
   const { mutate: deleteProduct } = useProductMutation({
@@ -33,14 +36,6 @@ const ProductManagePage = () => {
     onError: (error) =>
       message.error("Xóa sản phẩm thất bại: " + error.response.data.message),
   });
-  // const [searchText, setSearchText] = useState("");
-
-  // const filterOption = (input, item) =>
-  //   item.name.toLowerCase().includes(input.toLowerCase()) ||
-  //   item.category.name.toLowerCase().includes(input.toLowerCase());
-  // const filteredData = products?.data?.`filter((product) =>
-  //   filterOption(searchText, product)
-  // );
 
   useEffect(() => {
     if (pageProduct) {
@@ -158,7 +153,7 @@ const ProductManagePage = () => {
         key: "created_at",
         width: "15%",
         render: (created_at) => (
-          <div>{formatDate(created_at) + " " + formatDMY(created_at)}</div>
+          <span>{created_at}</span>
         ),
       },
       {
@@ -167,7 +162,7 @@ const ProductManagePage = () => {
         key: "updated_at",
         width: "20%",
         render: (updated_at) => (
-          <div>{formatDate(updated_at) + " " + formatDMY(updated_at)}</div>
+          <span>{updated_at}</span>
         ),
       },
     ];
@@ -190,6 +185,7 @@ const ProductManagePage = () => {
   return (
     <>
       <h1 className="text-2xl font-medium mb-2">List Product</h1>
+      {contextHolder}
       <div className="flex justify-between">
         <Input
           placeholder="Search by name or category"
@@ -222,4 +218,4 @@ const ProductManagePage = () => {
   );
 };
 
-export default ProductManagePage;
+export default TrashProduct;

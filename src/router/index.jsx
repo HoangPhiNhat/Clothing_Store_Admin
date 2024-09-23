@@ -4,18 +4,22 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
-import BasicLayout from "../layout/BasicLayout";
-import ProductAttribute from "../pages/Attribute/page";
-import TrashCategory from "../pages/Category/_components/TrashCategory";
-import Category from "../pages/Category/page";
 import Home from "../pages/Home/Home";
-import NotFound from "../pages/NotFound/NotFound";
-import CreateProduct from "../pages/Product/_component/CreateProduct";
-import UpdateProduct from "../pages/Product/_component/UpdateProduct";
-import ProductManagePage from "../pages/Product/page";
+import BasicLayout from "../layout/BasicLayout";
 
 import SignUp from "../pages/Auth/Signup";
 import SignIn from "../pages/Auth/Signin";
+
+import TrashCategory from "../pages/Category/_components/TrashCategory";
+import Category from "../pages/Category/page";
+
+import NotFound from "../pages/NotFound/NotFound";
+
+import CreateProduct from "../pages/Product/_component/CreateProduct";
+import UpdateProduct from "../pages/Product/_component/UpdateProduct";
+import ProductAttribute from "../pages/Attribute/page";
+import ProductManagePage from "../pages/Product/page";
+import TrashProduct from "../pages/Product/_component/TrashProduct";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -45,6 +49,7 @@ const RouterComponent = () => {
               element={<ProductAttribute />}
             />
             <Route path="products/add" element={<CreateProduct />} />
+            <Route path="products/trash" element={<TrashProduct />} />
             <Route path="products/:id/edit" element={<UpdateProduct />} />
           </Route>
           <Route path="/signup" element={<SignUp />} />

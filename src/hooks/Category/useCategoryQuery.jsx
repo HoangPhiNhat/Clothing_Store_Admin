@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   getAllCategory,
+  getAllCategoryForProduct,
   getAllCategoryTrash,
   getCategoryById,
 } from "../../services/category";
@@ -17,6 +18,8 @@ const useCategoryQuery = (action, id, page) => {
           return await getCategoryById(id);
         case "GET_ALL_CATEGORY_TRASH":
           return await getAllCategoryTrash(page);
+        case "GET_ALL_CATEGORY_FOR_PRODUCT":
+          return await getAllCategoryForProduct();
         default:
           return null;
       }

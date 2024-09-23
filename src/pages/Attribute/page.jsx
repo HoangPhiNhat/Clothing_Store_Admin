@@ -16,7 +16,7 @@ import {
   Table,
   Upload,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAttributeQuery from "../../hooks/Attribute/useAttributeQuery.jsx";
 import useAttributeMutation from "../../hooks/Attribute/useAttributeMutation.jsx";
@@ -39,7 +39,8 @@ const ProductAttribute = () => {
   const [hasChanged, setHasChanged] = useState(false);
 
   const { id } = useParams();
-  const { data: attributes } = useAttributeQuery(id);
+  const { data: attributes, isPending: getStatusPending } = useAttributeQuery(id);
+
   const { mutate: deleteAttribute, isPending } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -52,7 +53,8 @@ const ProductAttribute = () => {
     onError: (error) =>
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
-  const { mutate: updateAttribute, isPending:updatePending } = useAttributeMutation({
+
+  const { mutate: updateAttribute, isPending: updatePending } = useAttributeMutation({
     action: "UPDATE",
     onSuccess: (data) => {
       messageApi.success(data.message);
@@ -70,13 +72,13 @@ const ProductAttribute = () => {
       setFileList(
         editingData.image
           ? [
-              {
-                uid: "-1",
-                name: "image.png",
-                status: "done",
-                url: editingData.image,
-              },
-            ]
+            {
+              uid: "-1",
+              name: "image.png",
+              status: "done",
+              url: editingData.image,
+            },
+          ]
           : []
       );
     }
@@ -253,7 +255,7 @@ const ProductAttribute = () => {
               okText="Yes"
               cancelText="No"
             >
-              <Button loading={isPending} type="primary" danger>
+              <Button loading={updatePending} type="primary" danger>
                 <DeleteOutlined />
               </Button>
             </Popconfirm>
@@ -277,7 +279,7 @@ const ProductAttribute = () => {
         <CreateAttribute />
       </div>
       <Form form={form} onFinish={save}>
-        <Table
+        <Table loading={getStatusPending}
           columns={columns}
           dataSource={dataSource}
           pagination={false}
