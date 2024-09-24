@@ -31,7 +31,7 @@ const ProductManagePage = () => {
   );
   const navigate = useNavigate();
 
-  const { mutate: deleteProduct, isPending } = useProductMutation({
+  const { mutate: deleteProduct, isPending:deletePending } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
       messageApi.success(data.message);
@@ -74,7 +74,7 @@ const ProductManagePage = () => {
       width: "20%",
       render: (thumbnail) => (
         <>
-          <img className="w-20" src={thumbnail} alt="" />
+          <img className="w-24 h-24 object-cover" src={thumbnail} alt="" />
         </>
       ),
     },
@@ -123,7 +123,7 @@ const ProductManagePage = () => {
               <Button
                 disabled={deletingProductId === product.id}
                 type="default"
-                className="bg-[#fadd04] "
+                className="bg-[#fadd04] border-[#fadd04] text-gray-600"
               >
                 <EditOutlined />
               </Button>

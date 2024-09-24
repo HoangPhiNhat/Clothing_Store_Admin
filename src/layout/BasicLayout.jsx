@@ -9,6 +9,7 @@ import {
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import UserProfile from "./_components/UserProfile";
 
 const { Header, Sider, Content } = Layout;
 
@@ -98,7 +99,7 @@ const LayoutAdmin = () => {
         onBreakpoint={handleBreakpoint}
         theme="dark"
       >
-        <div className="demo-logo-vertical" />
+        <div className="text-lime-600 text-3xl text-center">LOGO</div>
         <Menu
           theme="dark"
           mode="inline"
@@ -108,7 +109,10 @@ const LayoutAdmin = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header
+          style={{ background: colorBgContainer }}
+          className="flex justify-between pl-0 "
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -119,6 +123,7 @@ const LayoutAdmin = () => {
               height: 64,
             }}
           />
+          <UserProfile />
         </Header>
         <Content
           style={{

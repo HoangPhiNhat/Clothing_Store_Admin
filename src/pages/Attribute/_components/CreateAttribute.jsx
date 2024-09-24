@@ -165,9 +165,16 @@ const CreateAttribute = () => {
       render: (_, field) => (
         <Form.Item
           name={[field.name, "stock_quantity"]}
-          rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập số lượng" },
+            {
+              type: "number",
+              min: 1,
+              message: "Vui lòng nhập số lượng tối thiểu là 1",
+            },
+          ]}
         >
-          <InputNumber placeholder="Số lượng" min={0} className="w-full" />
+          <InputNumber placeholder="Số lượng" className="w-full" />
         </Form.Item>
       ),
     },
