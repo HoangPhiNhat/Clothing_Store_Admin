@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
+import { useMutation } from "@tanstack/react-query";
 import { Button, Form, Input, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import useAutoFocus from "../../hooks/customHook/useAutoFocus";
-import { useMutation } from "@tanstack/react-query";
 import { signIn } from "../../services/auth";
 
 const SignIn = () => {
@@ -14,22 +14,31 @@ const SignIn = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: async (user) => {
       const res = await signIn(user);
-      localStorage.setItem("access", res.access_token);
-      localStorage.setItem("refresh", res.refresh_token);
-      navigate("/admin");
+
+      if (res.user.role == "user") {
+        throw Error("Bạn không có quyền đăng nhập. Vui lòng liên hệ admin");
+      }
+
+      return res;
     },
-    onError: ({ response }) => {
-      messageApi.error(response.data.message);
+    onError: (error) => {
+      if (error.response && error.response.data) {
+        messageApi.error(error.response.data.message);
+      } else if (error instanceof Error) {
+        messageApi.error(error.message);
+      } else {
+        messageApi.error("Đã xảy ra lỗi không xác định.");
+      }
     },
-    onSuccess: ({ data }) => {
-      console.log(data);
+    onSuccess: (data) => {
       messageApi.success("Đăng nhập thành công.");
-      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("access", data.access_token);
+      localStorage.setItem("refresh", data.refresh_token);
+      navigate("/admin");
     },
   });
   const onFinish = async (values) => {
-    console.log(values);
-
     mutate(values);
   };
 
@@ -69,7 +78,12 @@ const SignIn = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="w-full">
+            <Button
+              loading={isPending}
+              type="primary"
+              htmlType="submit"
+              className="w-full"
+            >
               Log in
             </Button>
           </Form.Item>

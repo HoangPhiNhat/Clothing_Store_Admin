@@ -49,7 +49,7 @@ const LayoutAdmin = () => {
           label: <Link to="/admin/products">Danh sách</Link>,
         },
         {
-          key: "/admin/products/add",
+          key: "/admin/products/trash",
           label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
         },
       ],
