@@ -1,17 +1,6 @@
 /* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
-import Author from "../services/baseApi/AuthorApi";
 let size = 5;
-
-export const getAllCategoryForProduct = async () => {
-  try {
-    let queryCategory = `/categories`;
-    return await instance.get(queryCategory)
-  } catch (error) {
-    throw error
-  }
-}
-
 
 export const getAllCategory = async (page) => {
   try {
