@@ -16,7 +16,7 @@ axiosClient.interceptors.response.use(
 
     // Nếu có lỗi server nội bộ
     if (response && response.status === 500) {
-      window.location.href = "/auth/500";
+      // window.location.href = "/auth/500";
     }
     // Xử lý các lỗi khác
     return Promise.reject(error);

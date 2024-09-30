@@ -278,35 +278,37 @@ const CreateProduct = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Giá gốc"
-                    name="regular_price"
-                    rules={[
-                      {
-                        validator: (_, value) =>
-                          validateFieldNumber("giá gốc", value),
-                      },
-                    ]}
-                  >
-                    <InputNumber
-                      className="w-full"
-                      placeholder="Nhập giá gốc"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
                     label="Giá khuyến mãi"
                     name="reduced_price"
+                    dependencies={["regular_price"]}
                     rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập giá khuyến mãi",
-                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          const regularPrice = getFieldValue("regular_price");
+                          if (!regularPrice) {
+                            return Promise.reject(
+                              "Vui lòng nhập giá gốc trước"
+                            );
+                          }
+                          if (value < 0) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải lớn hơn 0"
+                            );
+                          }
+                          if (value && regularPrice <= value) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải thấp hơn giá gốc"
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
                     ]}
                   >
                     <InputNumber
-                      className="w-full"
+                      type="number"
                       placeholder="Nhập giá khuyến mãi"
+                      className="w-full"
                     />
                   </Form.Item>
                 </Col>
@@ -435,7 +437,12 @@ const CreateProduct = () => {
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
-              <Button loading={isPending} type="primary" htmlType="submit" className="my-4">
+              <Button
+                loading={isPending}
+                type="primary"
+                htmlType="submit"
+                className="my-4"
+              >
                 Thêm sản phẩm
               </Button>
             </Form.Item>
