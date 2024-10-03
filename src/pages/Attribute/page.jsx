@@ -29,6 +29,7 @@ import {
 import { useForm } from "antd/es/form/Form.js";
 
 const ProductAttribute = () => {
+  const [isPending, setIsPending] = useState(false);
   const [form] = useForm();
   const [editingKey, setEditingKey] = useState(null);
   const [editingData, setEditingData] = useState({});
@@ -39,9 +40,10 @@ const ProductAttribute = () => {
   const [hasChanged, setHasChanged] = useState(false);
 
   const { id } = useParams();
-  const { data: attributes, isPending: getStatusPending } = useAttributeQuery(id);
+  const { data: attributes, isPending: getStatusPending } =
+    useAttributeQuery(id);
 
-  const { mutate: deleteAttribute, isPending } = useAttributeMutation({
+  const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
       messageApi.success(data.message);
@@ -54,14 +56,17 @@ const ProductAttribute = () => {
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
 
-  const { mutate: updateAttribute, isPending: updatePending } = useAttributeMutation({
-    action: "UPDATE",
-    onSuccess: (data) => {
-      messageApi.success(data.message);
-    },
-    onError: (error) =>
-      message.error("Sửa thuộc tính thất bại: " + error.response.data.message),
-  });
+  const { mutate: updateAttribute, isPending: updatePending } =
+    useAttributeMutation({
+      action: "UPDATE",
+      onSuccess: (data) => {
+        messageApi.success(data.message);
+      },
+      onError: (error) =>
+        message.error(
+          "Sửa thuộc tính thất bại: " + error.response.data.message
+        ),
+    });
 
   useEffect(() => {
     if (editingKey !== null) {
@@ -72,13 +77,13 @@ const ProductAttribute = () => {
       setFileList(
         editingData.image
           ? [
-            {
-              uid: "-1",
-              name: "image.png",
-              status: "done",
-              url: editingData.image,
-            },
-          ]
+              {
+                uid: "-1",
+                name: "image.png",
+                status: "done",
+                url: editingData.image,
+              },
+            ]
           : []
       );
     }
@@ -102,11 +107,13 @@ const ProductAttribute = () => {
   };
 
   const save = async () => {
+    setIsPending(true);
     const values = await form.validateFields();
 
     if (!hasChanged) {
-      message.info("No changes were made.");
+      message.info("Không có thay đổi.");
       setEditingKey(null);
+      setIsPending(false);
       return;
     }
 
@@ -130,6 +137,7 @@ const ProductAttribute = () => {
 
     setEditingKey(null);
     setHasChanged(false);
+    setIsPending(false);
   };
 
   const handleFieldChange = () => {
@@ -208,7 +216,10 @@ const ProductAttribute = () => {
       width: "15%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
-          <Form.Item name="stock_quantity">
+          <Form.Item
+            rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+            name="stock_quantity"
+          >
             <Input onChange={handleFieldChange} />
           </Form.Item>
         ) : (
@@ -224,7 +235,12 @@ const ProductAttribute = () => {
         return editable ? (
           <Form.Item>
             <Space size="small">
-              <Button type="default" htmlType="submit" className="bg-[#4CAF50]">
+              <Button
+                loading={isPending}
+                type="default"
+                htmlType="submit"
+                className="bg-[#4CAF50]"
+              >
                 <SaveOutlined />
               </Button>
               <Button type="default" onClick={cancel} className="bg-[#FF5252]">
@@ -255,7 +271,7 @@ const ProductAttribute = () => {
               okText="Yes"
               cancelText="No"
             >
-              <Button loading={updatePending} type="primary" danger>
+              <Button disabled={updatePending} type="primary" danger>
                 <DeleteOutlined />
               </Button>
             </Popconfirm>
@@ -279,7 +295,8 @@ const ProductAttribute = () => {
         <CreateAttribute />
       </div>
       <Form form={form} onFinish={save}>
-        <Table loading={getStatusPending}
+        <Table
+          loading={getStatusPending}
           columns={columns}
           dataSource={dataSource}
           pagination={false}

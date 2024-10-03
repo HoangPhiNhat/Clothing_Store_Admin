@@ -1,26 +1,25 @@
-import React, { useState } from "react";
 import {
-  Button,
-  Form,
-  Modal,
-  Table,
-  Select,
-  Upload,
-  InputNumber,
-  Col,
-  Row,
-  message,
-} from "antd";
-import {
-  UploadOutlined,
   DeleteOutlined,
   PlusOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
-import useAttributeMutation from "../../../hooks/Attribute/useAttributeMutation";
+import {
+  Button,
+  Col,
+  Form,
+  InputNumber,
+  Modal,
+  Row,
+  Select,
+  Table,
+  Upload,
+  message,
+} from "antd";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { createAttribute } from "../../../services/productAttribute";
-import useSizeQuery from "../../../hooks/Size/useSizeQuery";
+import useAttributeMutation from "../../../hooks/Attribute/useAttributeMutation";
 import useColorQuery from "../../../hooks/Color/useColorQuery";
+import useSizeQuery from "../../../hooks/Size/useSizeQuery";
 import {
   deleteFileCloudinary,
   extractPublicId,
@@ -28,6 +27,7 @@ import {
 } from "../../../services/cloudinary";
 
 const CreateAttribute = () => {
+  const [isPending, setIsPending] = useState(false);
   const [form] = Form.useForm();
   const [publicIds, setPublicIds] = useState([]);
   const [open, setOpen] = useState(false);
@@ -60,28 +60,41 @@ const CreateAttribute = () => {
   });
 
   const onFinish = async (values) => {
-    const attributesWithImages = await Promise.all(
-      values.attributes.map(async (attribute) => {
-        if (attribute?.image?.fileList[0]?.thumbUrl) {
-          const imageUrl = await uploadFileCloudinary(
-            attribute.image.fileList[0].thumbUrl
-          );
-          const publicId = extractPublicId(imageUrl);
-          setPublicIds((prev) => [...prev, publicId]);
-
-          return {
-            ...attribute,
-            image: imageUrl,
-          };
-        } else {
-          return attribute;
-        }
-      })
-    );
-
-    const finalData = { productId: id, attributes: attributesWithImages };
-    createAttribute(finalData);
+    try {
+      setIsPending(true); // Bắt đầu quá trình, disable modal và hiển thị loading
+  
+      // Xử lý upload hình ảnh
+      const attributesWithImages = await Promise.all(
+        values.attributes.map(async (attribute) => {
+          if (attribute?.image?.fileList[0]?.thumbUrl) {
+            const imageUrl = await uploadFileCloudinary(
+              attribute.image.fileList[0].thumbUrl
+            );
+            const publicId = extractPublicId(imageUrl);
+            setPublicIds((prev) => [...prev, publicId]);
+  
+            return {
+              ...attribute,
+              image: imageUrl,
+            };
+          } else {
+            return attribute;
+          }
+        })
+      );
+  
+      const finalData = { productId: id, attributes: attributesWithImages };
+  
+      // Gọi mutation để tạo attribute
+      await createAttribute(finalData);
+  
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsPending(false); // Hoàn thành quá trình, kích hoạt lại modal
+    }
   };
+  
 
   const columns = (remove, fields) => [
     {
@@ -163,7 +176,12 @@ const CreateAttribute = () => {
           name={[field.name, "stock_quantity"]}
           rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
         >
-          <InputNumber placeholder="Số lượng" min={0} className="w-full" />
+          <InputNumber
+            type="number"
+            placeholder="Số lượng"
+            min={0}
+            className="w-full"
+          />
         </Form.Item>
       ),
     },
@@ -195,12 +213,14 @@ const CreateAttribute = () => {
         width={1400}
         open={open}
         title="Thêm thuộc tính"
-        okText="Create"
-        cancelText="Cancel"
+        okText="Thêm thuộc tính"
+        cancelText="Huỷ"
         style={{ top: 0 }}
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
+          disabled: isPending,
+          loading: isPending,
         }}
         onCancel={() => setOpen(false)}
         destroyOnClose

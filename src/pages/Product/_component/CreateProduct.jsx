@@ -22,18 +22,18 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
+import useColorQuery from "../../../hooks/Color/useColorQuery";
+import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
+import useSizeQuery from "../../../hooks/Size/useSizeQuery";
 import {
   deleteFileCloudinary,
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
-import { validateFieldNumber } from "../../../validations/Product";
-import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
-import useSizeQuery from "../../../hooks/Size/useSizeQuery";
-import useColorQuery from "../../../hooks/Color/useColorQuery";
 
 const CreateProduct = () => {
+  const [isPending, setIsPending] = useState(false);
   const inputRef = useAutoFocus(open);
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
@@ -43,7 +43,7 @@ const CreateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
-  const { mutate: createProduct, isPending } = useProductMutation({
+  const { mutate: createProduct } = useProductMutation({
     action: "CREATE",
     onSuccess: (data) => {
       setImageUrl(null);
@@ -60,6 +60,7 @@ const CreateProduct = () => {
   });
 
   const onFinish = async (values) => {
+    setIsPending(true);
     const { attributes, ...data } = values;
     const thumbnail = await uploadFileCloudinary(data.thumbnail[0].thumbUrl);
     const productResponse = {
@@ -95,6 +96,7 @@ const CreateProduct = () => {
     };
 
     createProduct(finalData);
+    setIsPending(false);
   };
 
   const columns = (remove, fields) => [
@@ -182,7 +184,12 @@ const CreateProduct = () => {
           name={[field.name, "stock_quantity"]}
           rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
         >
-          <InputNumber placeholder="Số lượng" min={0} className="w-full" />
+          <InputNumber
+            type="number"
+            placeholder="Số lượng"
+            min={0}
+            className="w-full"
+          />
         </Form.Item>
       ),
     },
@@ -290,6 +297,7 @@ const CreateProduct = () => {
                     ]}
                   >
                     <InputNumber
+                    type="number"
                       className="w-full"
                       placeholder="Nhập giá gốc"
                     />

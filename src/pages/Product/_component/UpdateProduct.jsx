@@ -24,7 +24,6 @@ import {
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
-import { validateFieldNumber } from "../../../validations/Product";
 
 const UpdateProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -179,6 +178,7 @@ const UpdateProduct = () => {
                     ]}
                   >
                     <InputNumber
+                    type="number"
                       className="w-full"
                       placeholder="Nhập giá gốc"
                     />
