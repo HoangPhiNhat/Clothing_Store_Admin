@@ -278,6 +278,25 @@ const CreateProduct = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item
+                    label="Giá gốc"
+                    name="regular_price"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập giá gốc" },
+                      {
+                        type: "number",
+                        min: 0,
+                        message: "Giá gốc cần lớn hơn 1 đồng",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      className="w-full"
+                      placeholder="Nhập giá gốc"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
                     label="Giá khuyến mãi"
                     name="reduced_price"
                     dependencies={["regular_price"]}
