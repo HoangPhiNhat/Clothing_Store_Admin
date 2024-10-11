@@ -9,6 +9,7 @@ import {
   Button,
   Form,
   Input,
+  InputNumber,
   message,
   Pagination,
   Popconfirm,
@@ -159,17 +160,33 @@ const ProductAttribute = () => {
       width: "15%",
       render: (_, attribute) => {
         return isEditing(attribute.key) ? (
-          <Form.Item name="image">
+          <Form.Item
+            name="image"
+            rules={[{ required: true, message: "Vui lòng nhập ảnh biến thể" }]}
+          >
             <Upload
               listType="picture-card"
               fileList={fileList}
               maxCount={1}
               showUploadList={{
                 showPreviewIcon: false,
-                showRemoveIcon: true,
+                showRemoveIcon: !isPending,
                 showDownloadIcon: false,
               }}
-              beforeUpload={() => false}
+              accept=".jpg, .jpeg, .png"
+              beforeUpload={(file) => {
+                const isImage =
+                  file.type === "image/jpeg" ||
+                  file.type === "image/png" ||
+                  file.type === "image/jpg";
+                if (!isImage) {
+                  message.error(
+                    "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                  );
+                  return Upload.LIST_IGNORE;
+                }
+                return false;
+              }}
               onChange={({ fileList }) => {
                 setFileList(fileList.slice(0, 1));
                 setHasChanged(true); // Track file changes
@@ -220,7 +237,7 @@ const ProductAttribute = () => {
             rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
             name="stock_quantity"
           >
-            <Input onChange={handleFieldChange} />
+            <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
           <span>{attribute.stock_quantity}</span>
@@ -237,13 +254,19 @@ const ProductAttribute = () => {
             <Space size="small">
               <Button
                 loading={isPending}
+                disabled={isPending}
                 type="default"
                 htmlType="submit"
                 className="bg-[#4CAF50]"
               >
                 <SaveOutlined />
               </Button>
-              <Button type="default" onClick={cancel} className="bg-[#FF5252]">
+              <Button
+                type="default"
+                disabled={isPending}
+                onClick={cancel}
+                className="bg-[#FF5252]"
+              >
                 <CloseOutlined />
               </Button>
             </Space>
@@ -271,7 +294,11 @@ const ProductAttribute = () => {
               okText="Yes"
               cancelText="No"
             >
-              <Button disabled={updatePending} type="primary" danger>
+              <Button
+                disabled={updatePending | isPending}
+                type="primary"
+                danger
+              >
                 <DeleteOutlined />
               </Button>
             </Popconfirm>

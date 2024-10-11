@@ -26,6 +26,7 @@ import {
 } from "../../../services/cloudinary";
 
 const UpdateProduct = () => {
+  const [isPending, setIsPending] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
@@ -37,7 +38,7 @@ const UpdateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY_FOR_PRODUCT");
 
   const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id, null);
-  const { mutate: updateProduct, isPending } = useProductMutation({
+  const { mutate: updateProduct, isPending:updatePending } = useProductMutation({
     action: "UPDATE",
     onSuccess: (data) => {
       if (publicId) {
@@ -75,20 +76,29 @@ const UpdateProduct = () => {
   }, [form, product]);
 
   const onFinish = async (values) => {
-    let image = imageUrl;
-    setPreviewImage(values.thumbnail[0].thumbUrl);
-    if (values.thumbnail[0].uid !== "-1") {
-      image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
-      setImageUrl(image);
-      setPublicId(extractPublicId(product.thumbnail));
-      setNewPublicId(extractPublicId(image));
+    try {
+      setIsPending(true);
+
+      let image = imageUrl;
+      setPreviewImage(values.thumbnail[0].thumbUrl);
+      if (values.thumbnail[0].uid !== "-1") {
+        image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
+        setImageUrl(image);
+        setPublicId(extractPublicId(product.thumbnail));
+        setNewPublicId(extractPublicId(image));
+      }
+      updateProduct({ ...values, id: id, thumbnail: image });
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsPending(false);
     }
-    updateProduct({ ...values, id: id, thumbnail: image });
   };
 
   const onFinishFailed = (values) => {
     console.log(values);
     setPreviewImage(values.thumbnail[0].thumbUrl);
+    setIsPending(false);
   };
 
   const handleImageDelete = () => {
@@ -111,6 +121,7 @@ const UpdateProduct = () => {
 
       <div>
         <Form
+          disabled={isPending | updatePending}
           form={form}
           name="basic"
           layout="vertical"
@@ -170,15 +181,11 @@ const UpdateProduct = () => {
                     name="regular_price"
                     rules={[
                       { required: true, message: "Vui lòng nhập giá gốc" },
-                      {
-                        type: "number",
-                        min: 0,
-                        message: "Giá gốc cần lớn hơn 1 đồng",
-                      },
                     ]}
                   >
                     <InputNumber
-                    type="number"
+                      type="number"
+                      min={0}
                       className="w-full"
                       placeholder="Nhập giá gốc"
                     />
@@ -214,6 +221,7 @@ const UpdateProduct = () => {
                     ]}
                   >
                     <InputNumber
+                      min={0}
                       type="number"
                       placeholder="Nhập giá khuyến mãi"
                       className="w-full"
@@ -260,10 +268,22 @@ const UpdateProduct = () => {
               >
                 {previewImage == null && (
                   <Upload.Dragger
-                    accept=".jpg, .jpeg, .png, .gif"
+                    accept=".jpg, .jpeg, .png"
                     listType="picture"
                     maxCount={1}
-                    beforeUpload={() => false}
+                    beforeUpload={(file) => {
+                      const isImage =
+                        file.type === "image/jpeg" ||
+                        file.type === "image/png" ||
+                        file.type === "image/jpg";
+                      if (!isImage) {
+                        message.error(
+                          "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                        );
+                        return Upload.LIST_IGNORE;
+                      }
+                      return false;
+                    }}
                     // onRemove={() => setImageUrl(null)}
                     previewFile={(file) => {
                       return new Promise((resolve) => {
@@ -307,7 +327,8 @@ const UpdateProduct = () => {
           <div className="flex justify-end">
             <Form.Item>
               <Button
-                loading={isPending}
+                disabled={isPending | updatePending}
+                loading={isPending | updatePending}
                 type="primary"
                 htmlType="submit"
                 className="my-4"

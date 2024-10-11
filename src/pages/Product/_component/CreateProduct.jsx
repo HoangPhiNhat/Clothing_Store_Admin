@@ -40,7 +40,7 @@ const CreateProduct = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [publicIds, setPublicIds] = useState([]);
 
-  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
+  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY_FOR_PRODUCT");
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
   const { mutate: createProduct } = useProductMutation({
@@ -60,43 +60,48 @@ const CreateProduct = () => {
   });
 
   const onFinish = async (values) => {
-    setIsPending(true);
-    const { attributes, ...data } = values;
-    const thumbnail = await uploadFileCloudinary(data.thumbnail[0].thumbUrl);
-    const productResponse = {
-      ...data,
-      thumbnail: thumbnail,
-    };
-    const publicIdProduct = extractPublicId(thumbnail);
-    console.log(publicIdProduct);
+    try {
+      setIsPending(true);
+      const { attributes, ...data } = values;
+      const thumbnail = await uploadFileCloudinary(data.thumbnail[0].thumbUrl);
+      const productResponse = {
+        ...data,
+        thumbnail: thumbnail,
+      };
+      const publicIdProduct = extractPublicId(thumbnail);
+      console.log(publicIdProduct);
 
-    setPublicIds((prev) => [...prev, publicIdProduct]);
-    console.log(attributes);
+      setPublicIds((prev) => [...prev, publicIdProduct]);
+      console.log(attributes);
 
-    const attributesWithImages = await Promise.all(
-      attributes.map(async (attribute) => {
-        if (attribute?.image?.fileList[0]?.thumbUrl) {
-          const imageUrl = await uploadFileCloudinary(
-            attribute?.image?.fileList[0].thumbUrl
-          );
-          const publicIdAttrbutes = extractPublicId(imageUrl);
-          setPublicIds((prev) => [...prev, publicIdAttrbutes]);
-          return {
-            ...attribute,
-            image: imageUrl,
-          };
-        }
+      const attributesWithImages = await Promise.all(
+        attributes.map(async (attribute) => {
+          if (attribute?.image?.fileList[0]?.thumbUrl) {
+            const imageUrl = await uploadFileCloudinary(
+              attribute?.image?.fileList[0].thumbUrl
+            );
+            const publicIdAttrbutes = extractPublicId(imageUrl);
+            setPublicIds((prev) => [...prev, publicIdAttrbutes]);
+            return {
+              ...attribute,
+              image: imageUrl,
+            };
+          }
 
-        return attribute;
-      })
-    );
-    const finalData = {
-      ...productResponse,
-      product_att: attributesWithImages,
-    };
+          return attribute;
+        })
+      );
+      const finalData = {
+        ...productResponse,
+        product_att: attributesWithImages,
+      };
 
-    createProduct(finalData);
-    setIsPending(false);
+      createProduct(finalData);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const columns = (remove, fields) => [
@@ -105,11 +110,32 @@ const CreateProduct = () => {
       dataIndex: "image",
       width: 150,
       render: (_, field) => (
-        <Form.Item name={[field.name, "image"]}>
+        <Form.Item
+          name={[field.name, "image"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng tải lên hình ảnh",
+            },
+          ]}
+        >
           <Upload
             maxCount={1}
+            accept=".jpg, .jpeg, .png"
             listType="picture-card"
-            beforeUpload={() => false}
+            beforeUpload={(file) => {
+              const isImage =
+                file.type === "image/jpeg" ||
+                file.type === "image/png" ||
+                file.type === "image/jpg";
+              if (!isImage) {
+                message.error(
+                  "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                );
+                return Upload.LIST_IGNORE;
+              }
+              return false;
+            }}
             className="avatar-uploader"
           >
             <div>
@@ -230,6 +256,7 @@ const CreateProduct = () => {
 
       <div>
         <Form
+          disabled={isPending}
           form={form}
           name="basic"
           layout="vertical"
@@ -263,7 +290,7 @@ const CreateProduct = () => {
                       showSearch
                       placeholder="Chọn danh mục"
                       optionFilterProp="children"
-                      options={categories?.data?.data?.map((category) => ({
+                      options={categories?.data?.map((category) => ({
                         value: category.id,
                         label: category.name,
                       }))}
@@ -297,7 +324,8 @@ const CreateProduct = () => {
                     ]}
                   >
                     <InputNumber
-                    type="number"
+                      min={0}
+                      type="number"
                       className="w-full"
                       placeholder="Nhập giá gốc"
                     />
@@ -333,6 +361,7 @@ const CreateProduct = () => {
                     ]}
                   >
                     <InputNumber
+                      min={0}
                       type="number"
                       placeholder="Nhập giá khuyến mãi"
                       className="w-full"
@@ -387,10 +416,22 @@ const CreateProduct = () => {
               >
                 {imageUrl == null && (
                   <Upload.Dragger
-                    accept=".jpg, .jpeg, .png, .gif"
+                    accept=".jpg, .jpeg, .png"
                     listType="picture"
                     maxCount={1}
-                    beforeUpload={() => false}
+                    beforeUpload={(file) => {
+                      const isImage =
+                        file.type === "image/jpeg" ||
+                        file.type === "image/png" ||
+                        file.type === "image/jpg";
+                      if (!isImage) {
+                        message.error(
+                          "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                        );
+                        return Upload.LIST_IGNORE;
+                      }
+                      return false;
+                    }}
                     onRemove={() => setImageUrl(null)}
                     previewFile={(file) => {
                       return new Promise((resolve) => {
@@ -429,7 +470,7 @@ const CreateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
-          Form Product Attribute
+          Thêm thuộc tính
           <Row gutter={16} className="mt-8">
             <Col span={24}>
               <Form.List name="attributes" initialValue={[{}]}>
@@ -466,6 +507,7 @@ const CreateProduct = () => {
             <Form.Item>
               <Button
                 loading={isPending}
+                disabled={isPending}
                 type="primary"
                 htmlType="submit"
                 className="my-4"

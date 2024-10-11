@@ -37,33 +37,33 @@ const CreateAttribute = () => {
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
 
-  const { mutate: createAttribute } = useAttributeMutation({
-    action: "CREATE",
-    onSuccess: (data) => {
-      messageApi.success(data.message);
-      form.resetFields();
-    },
-    onError: (error) => {
-      messageApi.error(
-        `Lỗi khi thêm thuộc tính: ${error.response.data.message}`
-      );
-      publicIds.map((publicId) => {
-        deleteFileCloudinary(publicId);
-      });
-      setPublicIds([]);
-    },
-    config: {
-      headers: {
-        "Content-Type": "multipart/form-data",
+  const { mutate: createAttribute, isPending: createPending } =
+    useAttributeMutation({
+      action: "CREATE",
+      onSuccess: (data) => {
+        messageApi.success(data.message);
+        form.resetFields();
       },
-    },
-  });
+      onError: (error) => {
+        messageApi.error(
+          `Lỗi khi thêm thuộc tính: ${error.esponse.data.message}`
+        );
+        publicIds.map((publicId) => {
+          deleteFileCloudinary(publicId);
+        });
+        setPublicIds([]);
+      },
+      config: {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    });
 
   const onFinish = async (values) => {
     try {
-      setIsPending(true); // Bắt đầu quá trình, disable modal và hiển thị loading
-  
-      // Xử lý upload hình ảnh
+      setIsPending(true);
+
       const attributesWithImages = await Promise.all(
         values.attributes.map(async (attribute) => {
           if (attribute?.image?.fileList[0]?.thumbUrl) {
@@ -72,7 +72,7 @@ const CreateAttribute = () => {
             );
             const publicId = extractPublicId(imageUrl);
             setPublicIds((prev) => [...prev, publicId]);
-  
+
             return {
               ...attribute,
               image: imageUrl,
@@ -82,19 +82,17 @@ const CreateAttribute = () => {
           }
         })
       );
-  
+
       const finalData = { productId: id, attributes: attributesWithImages };
-  
+
       // Gọi mutation để tạo attribute
       await createAttribute(finalData);
-  
     } catch (error) {
       console.error("Error:", error);
     } finally {
       setIsPending(false); // Hoàn thành quá trình, kích hoạt lại modal
     }
   };
-  
 
   const columns = (remove, fields) => [
     {
@@ -102,15 +100,39 @@ const CreateAttribute = () => {
       dataIndex: "image",
       width: 150,
       render: (_, field) => (
-        <Form.Item name={[field.name, "image"]}>
+        <Form.Item
+          name={[field.name, "image"]}
+          rules={[{ required: true, message: "Vui lòng nhập ảnh biến thể" }]}
+        >
           <Upload
             maxCount={1}
             listType="picture-card"
-            beforeUpload={() => false}
+            showUploadList={{
+              showPreviewIcon: true,
+              showRemoveIcon: !isPending,
+              showDownloadIcon: true,
+            }}
+            accept=".jpg, .jpeg, .png"
+            beforeUpload={(file) => {
+              const isImage =
+                file.type === "image/jpeg" ||
+                file.type === "image/png" ||
+                file.type === "image/jpg";
+              if (!isImage) {
+                message.error(
+                  "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                );
+                return Upload.LIST_IGNORE;
+              }
+              return false;
+            }}
             className="avatar-uploader"
           >
             <div>
-              <UploadOutlined className="text-2xl" />
+              <UploadOutlined
+                className="text-2xl"
+                disabled={isPending | createPending}
+              />
               <div className="mt-2">Tải lên</div>
             </div>
           </Upload>
@@ -127,6 +149,7 @@ const CreateAttribute = () => {
           rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
         >
           <Select
+            disabled={isPending | createPending}
             showSearch
             placeholder="Chọn màu sắc"
             optionFilterProp="label"
@@ -157,6 +180,7 @@ const CreateAttribute = () => {
           rules={[{ required: true, message: "Vui lòng chọn kích thước" }]}
         >
           <Select
+            disabled={isPending | createPending}
             placeholder="Kích thước"
             options={sizes?.map((size) => ({
               value: size.id,
@@ -177,6 +201,7 @@ const CreateAttribute = () => {
           rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
         >
           <InputNumber
+            disabled={isPending | createPending}
             type="number"
             placeholder="Số lượng"
             min={0}
@@ -219,8 +244,8 @@ const CreateAttribute = () => {
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
-          disabled: isPending,
-          loading: isPending,
+          disabled: isPending | createPending,
+          loading: isPending | createPending,
         }}
         onCancel={() => setOpen(false)}
         destroyOnClose
@@ -263,6 +288,7 @@ const CreateAttribute = () => {
                   block
                   icon={<PlusOutlined />}
                   className="h-12 text-lg"
+                  disabled={isPending | createPending}
                 >
                   Thêm biến thể mới
                 </Button>
