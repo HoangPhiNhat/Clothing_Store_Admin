@@ -3,6 +3,7 @@ import {
   EditOutlined,
   PlusCircleOutlined,
   RedoOutlined,
+  RollbackOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -188,7 +189,7 @@ const TrashProduct = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-medium mb-2">List Product</h1>
+      <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm đã ẩn</h1>
       {contextHolder}
       <div className="flex justify-between">
         <Input
@@ -197,10 +198,10 @@ const TrashProduct = () => {
           // onChange={(e) => setSearchText(e.target.value)}
           style={{ width: 300, marginBottom: 16 }}
         />
-        <Link to="add">
-          <Button type="primary">
-            <PlusCircleOutlined />
-            Add Product
+        <Link to="/admin/products">
+          <Button type="primary" disabled={isPending}>
+            <RollbackOutlined />
+            Quay lại danh sách
           </Button>
         </Link>
       </div>

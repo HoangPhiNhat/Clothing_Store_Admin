@@ -162,7 +162,16 @@ const ProductAttribute = () => {
         return isEditing(attribute.key) ? (
           <Form.Item
             name="image"
-            rules={[{ required: true, message: "Vui lòng nhập ảnh biến thể" }]}
+            rules={[
+              () => ({
+                validator(_, value) {
+                  if (value.fileList.length <= 0) {
+                    return Promise.reject("Vui lòng nhập ảnh biến thể");
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
           >
             <Upload
               listType="picture-card"
@@ -189,7 +198,7 @@ const ProductAttribute = () => {
               }}
               onChange={({ fileList }) => {
                 setFileList(fileList.slice(0, 1));
-                setHasChanged(true); // Track file changes
+                setHasChanged(true);
               }}
               previewFile={(file) => {
                 return new Promise((resolve) => {
@@ -234,7 +243,10 @@ const ProductAttribute = () => {
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
           <Form.Item
-            rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập số lượng" },
+              { min: 0, type: "number", message: "Số lượng lớn hơn 0" },
+            ]}
             name="stock_quantity"
           >
             <InputNumber className="w-full" onChange={handleFieldChange} />

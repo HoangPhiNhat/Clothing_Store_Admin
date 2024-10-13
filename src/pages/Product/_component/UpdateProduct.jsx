@@ -181,11 +181,11 @@ const UpdateProduct = () => {
                     name="regular_price"
                     rules={[
                       { required: true, message: "Vui lòng nhập giá gốc" },
+                      { min: 1, type: "number", message: "Số lượng lớn hơn 1" },
                     ]}
                   >
                     <InputNumber
                       type="number"
-                      min={0}
                       className="w-full"
                       placeholder="Nhập giá gốc"
                     />
@@ -205,12 +205,12 @@ const UpdateProduct = () => {
                               "Vui lòng nhập giá gốc trước"
                             );
                           }
-                          if (value < 0) {
+                          if (Number(value) < 0) {
                             return Promise.reject(
                               "Giá khuyến mãi phải lớn hơn 0"
                             );
                           }
-                          if (value && regularPrice <= value) {
+                          if (Number(value) && regularPrice <= Number(value)) {
                             return Promise.reject(
                               "Giá khuyến mãi phải thấp hơn giá gốc"
                             );
@@ -221,7 +221,6 @@ const UpdateProduct = () => {
                     ]}
                   >
                     <InputNumber
-                      min={0}
                       type="number"
                       placeholder="Nhập giá khuyến mãi"
                       className="w-full"

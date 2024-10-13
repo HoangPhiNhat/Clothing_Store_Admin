@@ -102,7 +102,19 @@ const CreateAttribute = () => {
       render: (_, field) => (
         <Form.Item
           name={[field.name, "image"]}
-          rules={[{ required: true, message: "Vui lòng nhập ảnh biến thể" }]}
+          rules={[
+            () => ({
+              validator(_, value) {
+                console.log(value);
+                if (!value || value.length || value.fileList.length === 0) {
+                  return Promise.reject(
+                    new Error("Vui lòng thêm ảnh biến thể")
+                  );
+                }
+                return Promise.resolve();
+              },
+            }),
+          ]}
         >
           <Upload
             maxCount={1}
@@ -125,6 +137,13 @@ const CreateAttribute = () => {
                 return Upload.LIST_IGNORE;
               }
               return false;
+            }}
+            onChange={({ fileList }) => {
+              if (fileList.length === 0) {
+                form.setFieldValue([field.name, "image"], []);
+              } else {
+                form.setFieldValue([field.name, "image"], fileList);
+              }
             }}
             className="avatar-uploader"
           >
@@ -198,13 +217,15 @@ const CreateAttribute = () => {
       render: (_, field) => (
         <Form.Item
           name={[field.name, "stock_quantity"]}
-          rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập số lượng" },
+            { min: 0, type: "number", message: "Số lượng lớn hơn 0" },
+          ]}
         >
           <InputNumber
             disabled={isPending | createPending}
             type="number"
             placeholder="Số lượng"
-            min={0}
             className="w-full"
           />
         </Form.Item>
