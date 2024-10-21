@@ -1,9 +1,6 @@
 import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusCircleOutlined,
   RedoOutlined,
-  RollbackOutlined,
+  RollbackOutlined
 } from "@ant-design/icons";
 import {
   Button,
@@ -19,8 +16,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { formatMoney } from "../../../systems/utils/formatMoney";
 
-import useProductQuery from "../../../hooks/Product/useProductQuery";
+import Loading from "../../../components/base/Loading/Loading";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
+import useProductQuery from "../../../hooks/Product/useProductQuery";
 
 const TrashProduct = () => {
   const [pageProduct, setPageProduct] = useState(1);
@@ -186,6 +184,7 @@ const TrashProduct = () => {
       <Table columns={expandedColumns} dataSource={data} pagination={false} />
     );
   };
+  if (isLoading) return <Loading />;
 
   return (
     <>
@@ -206,7 +205,6 @@ const TrashProduct = () => {
         </Link>
       </div>
       <Table
-        loading={isLoading}
         columns={columns}
         expandable={{ expandedRowRender }}
         dataSource={dataSource}

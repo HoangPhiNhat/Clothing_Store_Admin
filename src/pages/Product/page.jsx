@@ -17,19 +17,18 @@ import { Link, useNavigate } from "react-router-dom";
 import useProductMutation from "../../hooks/Product/useProductMutation";
 import useProductQuery from "../../hooks/Product/useProductQuery";
 import { formatMoney } from "../../systems/utils/formatMoney";
+import Loading from "../../components/base/Loading/Loading";
 
 const ProductManagePage = () => {
   const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
   const [deletingProductId, setDeletingProductId] = useState(null);
-
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT",
     null,
     pageProduct
   );
   const navigate = useNavigate();
-
   const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -49,7 +48,6 @@ const ProductManagePage = () => {
   const dataSource = products?.data?.map((product) => ({
     ...product,
     key: product.id,
-
   }));
 
   const columns = [
@@ -159,7 +157,6 @@ const ProductManagePage = () => {
         dataIndex: "created_at",
         key: "created_at",
         width: "20%",
-
       },
       {
         title: "Ngày cập nhật",
@@ -183,6 +180,8 @@ const ProductManagePage = () => {
       <Table columns={expandedColumns} dataSource={data} pagination={false} />
     );
   };
+  
+ if(isLoading) return <Loading />;
 
   return (
     <>
@@ -214,7 +213,7 @@ const ProductManagePage = () => {
         onChange={(page) => {
           setPageProduct(page);
         }}
-        total={products?.data.total}
+        total={products?.total}
         showSizeChanger={false}
         align="end"
       />

@@ -44,7 +44,6 @@ const UpdateProduct = () => {
       if (publicId) {
         deleteFileCloudinary(publicId);
       }
-      form.resetFields();
       messageApi.success(data.message);
     },
     onError: (error) => {
@@ -54,6 +53,7 @@ const UpdateProduct = () => {
       }
     },
   });
+console.log(product);
 
   useEffect(() => {
     if (product) {
@@ -113,7 +113,7 @@ const UpdateProduct = () => {
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-medium">Sửa sản phẩm</h1>
         <Link to="/admin/products">
-          <Button className="text-base" type="primary">
+          <Button disabled={isPending} className="text-base" type="primary">
             <RollbackOutlined /> Quay lại danh sách
           </Button>
         </Link>
@@ -181,7 +181,7 @@ const UpdateProduct = () => {
                     name="regular_price"
                     rules={[
                       { required: true, message: "Vui lòng nhập giá gốc" },
-                      { min: 1, type: "number", message: "Số lượng lớn hơn 1" },
+                      { min: 1, type: "number", message: "Giá gốc lớn hơn 1" },
                     ]}
                   >
                     <InputNumber
@@ -312,6 +312,7 @@ const UpdateProduct = () => {
                       className="w-[18rem] h-[22rem] object-cover rounded-lg"
                     />
                     <button
+                      disabled={isPending}
                       onClick={handleImageDelete}
                       className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
                     >

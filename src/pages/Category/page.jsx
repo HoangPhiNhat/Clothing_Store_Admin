@@ -9,6 +9,7 @@ import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
 import CreateCategory from "./_components/CreateCategory";
 import UpdateCategory from "./_components/UpdateCategory";
+import Loading from "../../components/base/Loading/Loading";
 
 const Category = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -108,6 +109,7 @@ const Category = () => {
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
+ if (isLoading) return <Loading />;
 
   return (
     <>
@@ -123,7 +125,6 @@ const Category = () => {
       <Table
         columns={columns}
         dataSource={dataSource}
-        loading={isLoading}
         pagination={false}
       />
 

@@ -8,7 +8,6 @@ import {
 import {
   Button,
   Form,
-  Input,
   InputNumber,
   message,
   Pagination,
@@ -28,6 +27,7 @@ import {
   uploadFileCloudinary,
 } from "../../services/cloudinary.js";
 import { useForm } from "antd/es/form/Form.js";
+import Loading from "../../components/base/Loading/Loading.jsx";
 
 const ProductAttribute = () => {
   const [isPending, setIsPending] = useState(false);
@@ -38,12 +38,16 @@ const ProductAttribute = () => {
   const [publicId, setPublicId] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [hasChanged, setHasChanged] = useState(false);
 
   const { id } = useParams();
-  const { data: attributes, isPending: getStatusPending } =
-    useAttributeQuery(id);
-
+  const { data: attributes, isLoading  } = useAttributeQuery(
+    id,
+    page,
+    pageSize
+  );
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -320,11 +324,12 @@ const ProductAttribute = () => {
     },
   ];
 
-  const dataSource = attributes?.map((attribute, index) => ({
+  const dataSource = attributes?.data.map((attribute, index) => ({
     ...attribute,
     key: index + 1,
     index: index + 1,
   }));
+ if (isLoading) return <Loading />;
 
   return (
     <>
@@ -335,7 +340,6 @@ const ProductAttribute = () => {
       </div>
       <Form form={form} onFinish={save}>
         <Table
-          loading={getStatusPending}
           columns={columns}
           dataSource={dataSource}
           pagination={false}
@@ -343,14 +347,15 @@ const ProductAttribute = () => {
         />
       </Form>
       <Pagination
-        className="mt-4"
-        align="end"
-        total={attributes?.length}
         showSizeChanger
-        showQuickJumper
-        onShowSizeChange={(current, size) => {
-          console.log(`Page Size: ${size}`);
+        current={page}
+        pageSize={pageSize}
+        onChange={(page, pageSize) => {
+          setPage(page);
+          setPageSize(pageSize);
         }}
+        total={attributes?.total}
+        align="end"
       />
     </>
   );

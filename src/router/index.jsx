@@ -17,9 +17,9 @@ import NotFound from "../pages/NotFound/NotFound";
 
 import CreateProduct from "../pages/Product/_component/CreateProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
-import ProductAttribute from "../pages/Attribute/page";
 import ProductManagePage from "../pages/Product/page";
 import TrashProduct from "../pages/Product/_component/TrashProduct";
+import ProductAttribute from "../pages/Attribute/page";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
