@@ -41,13 +41,13 @@ const ProductAttribute = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [hasChanged, setHasChanged] = useState(false);
-
   const { id } = useParams();
   const { data: attributes, isLoading  } = useAttributeQuery(
     id,
     page,
     pageSize
   );
+
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -60,7 +60,6 @@ const ProductAttribute = () => {
     onError: (error) =>
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
-
   const { mutate: updateAttribute, isPending: updatePending } =
     useAttributeMutation({
       action: "UPDATE",
