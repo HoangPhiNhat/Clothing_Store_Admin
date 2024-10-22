@@ -102,13 +102,11 @@ const TrashCategory = () => {
           </Button>
         </Link>
       </div>
-
       <Table
         columns={columns}
         dataSource={dataSource}
         pagination={false}
       />
-
       <Pagination
         disabled={isPending}
         className="mt-5"

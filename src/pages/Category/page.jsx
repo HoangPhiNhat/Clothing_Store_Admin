@@ -121,13 +121,11 @@ const Category = () => {
           Thêm
         </Button>
       </div>
-
       <Table
         columns={columns}
         dataSource={dataSource}
         pagination={false}
       />
-
       <Pagination
         disabled={isPending}
         className="mt-5"
@@ -137,7 +135,6 @@ const Category = () => {
         pageSize={5}
         onChange={(page) => setPageCategory(page)}
       />
-
       <CreateCategory
         open={modalCreateOpen}
         onCancel={() => setModalCreateOpen(false)}

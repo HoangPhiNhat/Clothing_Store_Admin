@@ -189,9 +189,7 @@ const ProductManagePage = () => {
       <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm</h1>
       <div className="flex justify-between">
         <Input
-          placeholder="Search by name or category"
-          // value={searchText}
-          // onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Tìm kiếm theo tên và danh mục"
           style={{ width: 300, marginBottom: 16 }}
         />
         <Link to="add">

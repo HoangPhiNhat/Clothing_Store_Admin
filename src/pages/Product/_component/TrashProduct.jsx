@@ -13,9 +13,7 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import { formatMoney } from "../../../systems/utils/formatMoney";
-
 import Loading from "../../../components/base/Loading/Loading";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
 import useProductQuery from "../../../hooks/Product/useProductQuery";
@@ -24,13 +22,13 @@ const TrashProduct = () => {
   const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
   const [restorProductId, setRestoringProductId] = useState(null);
+  const navigate = useNavigate();
 
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT_TRASH",
     null,
     pageProduct
   );
-  const navigate = useNavigate();
 
   const { mutate: restoreProduct, isPending } = useProductMutation({
     action: "RESTORE",
@@ -192,9 +190,7 @@ const TrashProduct = () => {
       {contextHolder}
       <div className="flex justify-between">
         <Input
-          placeholder="Search by name or category"
-          // value={searchText}
-          // onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Tìm kiếm theo tên hoặc danh mục"
           style={{ width: 300, marginBottom: 16 }}
         />
         <Link to="/admin/products">
