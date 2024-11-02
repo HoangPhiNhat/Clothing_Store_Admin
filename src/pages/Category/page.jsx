@@ -109,7 +109,7 @@ const Category = () => {
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
- if (isLoading) return <Loading />;
+  if (isLoading) return <Loading />;
 
   return (
     <>
@@ -121,11 +121,7 @@ const Category = () => {
           Thêm
         </Button>
       </div>
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        pagination={false}
-      />
+      <Table columns={columns} dataSource={dataSource} pagination={false} />
       <Pagination
         disabled={isPending}
         className="mt-5"
