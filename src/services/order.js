@@ -45,7 +45,7 @@ export const confirmOder = async (id) => {
 export const rejectOder = async (id) => {
   try {
     const response = await Author.put(`/orders/${id}/order-status`, {
-      order_status: "Đã từ chối",
+      order_status: "Đã huỷ",
     });
     return response;
   } catch (error) {
