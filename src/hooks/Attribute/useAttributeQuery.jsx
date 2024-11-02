@@ -1,18 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllAttribute } from "../../services/productAttribute";
 
-const useAttributeQuery = (productId) => {
-  const queryKey = ["ATTRIBUTE_KEY", productId];
+const useAttributeQuery = (productId, page, pageSize) => {
+  const queryKey = ["ATTRIBUTE_KEY", productId, page, pageSize];
+
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
-      return await getAllAttribute(productId);
+     try {
+       return await getAllAttribute(productId, page, pageSize);
+     } catch (error) {
+       console.error("Error in queryFn:", error);
+       throw error;
+     }
     },
     keepPreviousData: true,
-    enabled: !!productId,
     cacheTime: 0,
   });
-
+console.log(data);
   return { data, ...rest };
 };
 

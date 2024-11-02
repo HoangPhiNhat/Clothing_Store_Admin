@@ -2,12 +2,12 @@
 import instance from "../configs/axios";
 import Author from "../services/baseApi/AuthorApi";
 
-let size = 5;
+let size = 10;
 
-export const getProductAll = async (page) => {
+export const getProductAll = async (page, name) => {
   try {
     const response = await instance.get(
-      `/products?page=${page}&size=${size}&sort=DESC`
+      `/products?name=${name}&page=${page}&size=${size}&sort=DESC`
     );
     console.log(response);
     return response.data;
@@ -16,10 +16,10 @@ export const getProductAll = async (page) => {
   }
 };
 
-export const getAllProductTrash = async (page) => {
+export const getAllProductTrash = async (page, name) => {
   try {
     const response = await Author.get(
-      `/products/trash?page=${page}&size=${size}&sort=DESC`
+      `/products/trash?name=${name}&page=${page}&size=${size}&sort=DESC`
     );
     console.log(response);
     return response.data;

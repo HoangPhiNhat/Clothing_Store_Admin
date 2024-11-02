@@ -113,16 +113,23 @@ const CreateProduct = () => {
         <Form.Item
           name={[field.name, "image"]}
           rules={[
-            {
-              required: true,
-              message: "Vui lòng tải lên hình ảnh",
-            },
+            () => ({
+              validator(_, value) {
+                console.log(value);
+                if (!value || value.length || value.fileList.length === 0) {
+                  return Promise.reject(
+                    new Error("Vui lòng thêm ảnh biến thể")
+                  );
+                }
+                return Promise.resolve();
+              },
+            }),
           ]}
         >
           <Upload
             maxCount={1}
-            accept=".jpg, .jpeg, .png"
             listType="picture-card"
+            accept=".jpg, .jpeg, .png"
             beforeUpload={(file) => {
               const isImage =
                 file.type === "image/jpeg" ||
@@ -135,6 +142,13 @@ const CreateProduct = () => {
                 return Upload.LIST_IGNORE;
               }
               return false;
+            }}
+            onChange={({ fileList }) => {
+              if (fileList.length === 0) {
+                form.setFieldValue([field.name, "image"], []);
+              } else {
+                form.setFieldValue([field.name, "image"], fileList);
+              }
             }}
             className="avatar-uploader"
           >
@@ -208,12 +222,14 @@ const CreateProduct = () => {
       render: (_, field) => (
         <Form.Item
           name={[field.name, "stock_quantity"]}
-          rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập số lượng" },
+            { min: 0, type: "number", message: "Số lượng lớn hơn 0" },
+          ]}
         >
           <InputNumber
             type="number"
             placeholder="Số lượng"
-            min={0}
             className="w-full"
           />
         </Form.Item>
@@ -248,7 +264,7 @@ const CreateProduct = () => {
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-medium">Tạo sản phẩm mới</h1>
         <Link to="/admin/products">
-          <Button className="text-base" type="primary">
+          <Button disabled={isPending} className="text-base" type="primary">
             <RollbackOutlined /> Quay lại danh sách
           </Button>
         </Link>
@@ -318,13 +334,12 @@ const CreateProduct = () => {
                       { required: true, message: "Vui lòng nhập giá gốc" },
                       {
                         type: "number",
-                        min: 0,
+                        min: 1,
                         message: "Giá gốc cần lớn hơn 1 đồng",
                       },
                     ]}
                   >
                     <InputNumber
-                      min={0}
                       type="number"
                       className="w-full"
                       placeholder="Nhập giá gốc"
@@ -345,12 +360,12 @@ const CreateProduct = () => {
                               "Vui lòng nhập giá gốc trước"
                             );
                           }
-                          if (value < 0) {
+                          if (Number(value) < 0) {
                             return Promise.reject(
                               "Giá khuyến mãi phải lớn hơn 0"
                             );
                           }
-                          if (value && regularPrice <= value) {
+                          if (Number(value) && regularPrice <= Number(value)) {
                             return Promise.reject(
                               "Giá khuyến mãi phải thấp hơn giá gốc"
                             );
@@ -361,7 +376,6 @@ const CreateProduct = () => {
                     ]}
                   >
                     <InputNumber
-                      min={0}
                       type="number"
                       placeholder="Nhập giá khuyến mãi"
                       className="w-full"

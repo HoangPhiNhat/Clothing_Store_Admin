@@ -17,19 +17,23 @@ import { Link, useNavigate } from "react-router-dom";
 import useProductMutation from "../../hooks/Product/useProductMutation";
 import useProductQuery from "../../hooks/Product/useProductQuery";
 import { formatMoney } from "../../systems/utils/formatMoney";
+import Loading from "../../components/base/Loading/Loading";
+import useDebounce from "../../hooks/customHook/useDebounce";
 
 const ProductManagePage = () => {
   const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
   const [deletingProductId, setDeletingProductId] = useState(null);
-
+  const [searchKey, setSearhKey] = useState("");
+  const debouncedSearchKey = useDebounce(searchKey, 1000);
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT",
     null,
-    pageProduct
+    pageProduct,
+    debouncedSearchKey
   );
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -49,7 +53,6 @@ const ProductManagePage = () => {
   const dataSource = products?.data?.map((product) => ({
     ...product,
     key: product.id,
-
   }));
 
   const columns = [
@@ -159,7 +162,6 @@ const ProductManagePage = () => {
         dataIndex: "created_at",
         key: "created_at",
         width: "20%",
-
       },
       {
         title: "Ngày cập nhật",
@@ -184,16 +186,21 @@ const ProductManagePage = () => {
     );
   };
 
+  if (isLoading) return <Loading />;
+
   return (
     <>
       {contextHolder}
       <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm</h1>
       <div className="flex justify-between">
         <Input
-          placeholder="Search by name or category"
-          // value={searchText}
-          // onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Tìm kiếm theo tên và danh mục"
           style={{ width: 300, marginBottom: 16 }}
+          value={searchKey}
+          onChange={(e) => {
+            setSearhKey(e.target.value);
+            setPageProduct(1)
+          }}
         />
         <Link to="add">
           <Button type="primary">
@@ -210,11 +217,12 @@ const ProductManagePage = () => {
         pagination={false}
       />
       <Pagination
+        defaultCurrent={1}
         current={pageProduct}
         onChange={(page) => {
           setPageProduct(page);
         }}
-        total={products?.data.total}
+        total={products?.total}
         showSizeChanger={false}
         align="end"
       />

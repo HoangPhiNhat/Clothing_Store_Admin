@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
+import Loading from "../../../components/base/Loading/Loading";
 
 const TrashCategory = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -87,6 +88,7 @@ const TrashCategory = () => {
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
+ if (isLoading) return <Loading />;
 
   return (
     <>
@@ -100,14 +102,11 @@ const TrashCategory = () => {
           </Button>
         </Link>
       </div>
-
       <Table
         columns={columns}
         dataSource={dataSource}
-        loading={isLoading}
         pagination={false}
       />
-
       <Pagination
         disabled={isPending}
         className="mt-5"

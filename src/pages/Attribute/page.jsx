@@ -27,6 +27,7 @@ import {
   uploadFileCloudinary,
 } from "../../services/cloudinary.js";
 import { useForm } from "antd/es/form/Form.js";
+import Loading from "../../components/base/Loading/Loading.jsx";
 
 const ProductAttribute = () => {
   const [isPending, setIsPending] = useState(false);
@@ -37,11 +38,15 @@ const ProductAttribute = () => {
   const [publicId, setPublicId] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [hasChanged, setHasChanged] = useState(false);
-
   const { id } = useParams();
-  const { data: attributes, isPending: getStatusPending } =
-    useAttributeQuery(id);
+  const { data: attributes, isLoading  } = useAttributeQuery(
+    id,
+    page,
+    pageSize
+  );
 
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
@@ -55,7 +60,6 @@ const ProductAttribute = () => {
     onError: (error) =>
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
-
   const { mutate: updateAttribute, isPending: updatePending } =
     useAttributeMutation({
       action: "UPDATE",
@@ -161,7 +165,16 @@ const ProductAttribute = () => {
         return isEditing(attribute.key) ? (
           <Form.Item
             name="image"
-            rules={[{ required: true, message: "Vui lòng nhập ảnh biến thể" }]}
+            rules={[
+              () => ({
+                validator(_, value) {
+                  if (value.fileList.length <= 0) {
+                    return Promise.reject("Vui lòng nhập ảnh biến thể");
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
           >
             <Upload
               listType="picture-card"
@@ -188,7 +201,7 @@ const ProductAttribute = () => {
               }}
               onChange={({ fileList }) => {
                 setFileList(fileList.slice(0, 1));
-                setHasChanged(true); // Track file changes
+                setHasChanged(true);
               }}
               previewFile={(file) => {
                 return new Promise((resolve) => {
@@ -233,7 +246,10 @@ const ProductAttribute = () => {
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
           <Form.Item
-            rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập số lượng" },
+              { min: 0, type: "number", message: "Số lượng lớn hơn 0" },
+            ]}
             name="stock_quantity"
           >
             <InputNumber className="w-full" onChange={handleFieldChange} />
@@ -307,11 +323,12 @@ const ProductAttribute = () => {
     },
   ];
 
-  const dataSource = attributes?.map((attribute, index) => ({
+  const dataSource = attributes?.data.map((attribute, index) => ({
     ...attribute,
     key: index + 1,
     index: index + 1,
   }));
+ if (isLoading) return <Loading />;
 
   return (
     <>
@@ -322,7 +339,6 @@ const ProductAttribute = () => {
       </div>
       <Form form={form} onFinish={save}>
         <Table
-          loading={getStatusPending}
           columns={columns}
           dataSource={dataSource}
           pagination={false}
@@ -330,14 +346,15 @@ const ProductAttribute = () => {
         />
       </Form>
       <Pagination
-        className="mt-4"
-        align="end"
-        total={attributes?.length}
         showSizeChanger
-        showQuickJumper
-        onShowSizeChange={(current, size) => {
-          console.log(`Page Size: ${size}`);
+        current={page}
+        pageSize={pageSize}
+        onChange={(page, pageSize) => {
+          setPage(page);
+          setPageSize(pageSize);
         }}
+        total={attributes?.total}
+        align="end"
       />
     </>
   );

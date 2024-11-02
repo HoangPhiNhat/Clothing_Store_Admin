@@ -1,8 +1,6 @@
 import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusCircleOutlined,
   RedoOutlined,
+  RollbackOutlined
 } from "@ant-design/icons";
 import {
   Button,
@@ -15,23 +13,25 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import { formatMoney } from "../../../systems/utils/formatMoney";
-
-import useProductQuery from "../../../hooks/Product/useProductQuery";
+import Loading from "../../../components/base/Loading/Loading";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
+import useProductQuery from "../../../hooks/Product/useProductQuery";
+import useDebounce from "../../../hooks/customHook/useDebounce";
 
 const TrashProduct = () => {
   const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
   const [restorProductId, setRestoringProductId] = useState(null);
-
+  const navigate = useNavigate();
+   const [searchKey, setSearhKey] = useState("");
+   const debouncedSearchKey = useDebounce(searchKey, 1000);
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT_TRASH",
     null,
-    pageProduct
+    pageProduct,
+    debouncedSearchKey
   );
-  const navigate = useNavigate();
 
   const { mutate: restoreProduct, isPending } = useProductMutation({
     action: "RESTORE",
@@ -57,10 +57,6 @@ const TrashProduct = () => {
     key: product.id,
     index: index + 1,
   }));
-
-  const handlePageChange = (page) => {
-    setPageProduct(page);
-  };
 
   const columns = [
     {
@@ -185,36 +181,42 @@ const TrashProduct = () => {
       <Table columns={expandedColumns} dataSource={data} pagination={false} />
     );
   };
+  if (isLoading) return <Loading />;
 
   return (
     <>
-      <h1 className="text-2xl font-medium mb-2">List Product</h1>
+      <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm đã ẩn</h1>
       {contextHolder}
       <div className="flex justify-between">
         <Input
-          placeholder="Search by name or category"
-          // value={searchText}
-          // onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Tìm kiếm theo tên và danh mục"
           style={{ width: 300, marginBottom: 16 }}
+          value={searchKey}
+          onChange={(e) => {
+            setSearhKey(e.target.value);
+            setPageProduct(1);
+          }}
         />
-        <Link to="add">
-          <Button type="primary">
-            <PlusCircleOutlined />
-            Add Product
+        <Link to="/admin/products">
+          <Button type="primary" disabled={isPending}>
+            <RollbackOutlined />
+            Quay lại danh sách
           </Button>
         </Link>
       </div>
       <Table
-        loading={isLoading}
         columns={columns}
         expandable={{ expandedRowRender }}
         dataSource={dataSource}
         pagination={false}
       />
       <Pagination
+        defaultCurrent={1}
         current={pageProduct}
-        onChange={handlePageChange}
-        total={11}
+        onChange={(page) => {
+          setPageProduct(page);
+        }}
+        total={products?.total}
         showSizeChanger={false}
         align="end"
       />

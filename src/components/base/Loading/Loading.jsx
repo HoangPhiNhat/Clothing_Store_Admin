@@ -1,24 +1,17 @@
+import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
-
-const Loading = () => {
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-      }}
-    >
-      <Spin size="large" />
-    </div>
-  );
-};
-
+const Loading = () => (
+  <div className="flex justify-center items-center h-full">
+    <Spin
+      indicator={
+        <LoadingOutlined
+          style={{
+            fontSize: 90,
+          }}
+          spin
+        />
+      }
+    />
+  </div>
+);
 export default Loading;
