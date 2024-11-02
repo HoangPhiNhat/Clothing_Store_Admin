@@ -181,6 +181,7 @@ const TrashProduct = () => {
       <Table columns={expandedColumns} dataSource={data} pagination={false} />
     );
   };
+  
   if (isLoading) return <Loading />;
 
   return (

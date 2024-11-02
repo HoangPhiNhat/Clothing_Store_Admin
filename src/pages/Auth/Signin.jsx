@@ -56,7 +56,7 @@ const SignIn = () => {
           initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
-          className="p-8 bg-white rounded-lg shadow-lg w-full max-w-md"
+          className="p-8 bg-white rounded-lg shadow-lg w-full max-w-[400px]"
         >
           <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 

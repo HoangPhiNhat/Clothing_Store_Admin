@@ -2,7 +2,7 @@
 import instance from "../configs/axios";
 import Author from "../services/baseApi/AuthorApi";
 
-let size = 10;
+let size = 5;
 
 export const getProductAll = async (page, name) => {
   try {

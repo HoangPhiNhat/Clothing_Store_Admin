@@ -24,6 +24,7 @@ import {
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
+import Loading from "../../../components/base/Loading/Loading";
 
 const UpdateProduct = () => {
   const [isPending, setIsPending] = useState(false);
@@ -35,25 +36,35 @@ const UpdateProduct = () => {
   const [newpublicId, setNewPublicId] = useState(null);
 
   const { id } = useParams();
-  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY_FOR_PRODUCT");
+  
+  const { data: categories, isLoading: isLoadingCategory } = useCategoryQuery(
+    "GET_ALL_CATEGORY_FOR_PRODUCT"
+  );
 
-  const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id, null);
-  const { mutate: updateProduct, isPending:updatePending } = useProductMutation({
-    action: "UPDATE",
-    onSuccess: (data) => {
-      if (publicId) {
-        deleteFileCloudinary(publicId);
-      }
-      messageApi.success(data.message);
-    },
-    onError: (error) => {
-      messageApi.error(`Lỗi khi sửa sản phẩm: ${error.response.data.message}`);
-      if (newpublicId) {
-        deleteFileCloudinary(newpublicId);
-      }
-    },
-  });
-console.log(product);
+  const { data: product, isLoading: isLoadingProduct } = useProductQuery(
+    "GET_PRODUCT_BY_ID",
+    id,
+    null
+  );
+
+  const { mutate: updateProduct, isPending: updatePending } =
+    useProductMutation({
+      action: "UPDATE",
+      onSuccess: (data) => {
+        if (publicId) {
+          deleteFileCloudinary(publicId);
+        }
+        messageApi.success(data.message);
+      },
+      onError: (error) => {
+        messageApi.error(
+          `Lỗi khi sửa sản phẩm: ${error.response.data.message}`
+        );
+        if (newpublicId) {
+          deleteFileCloudinary(newpublicId);
+        }
+      },
+    });
 
   useEffect(() => {
     if (product) {
@@ -106,6 +117,8 @@ console.log(product);
     setImageUrl(null);
     form.setFieldsValue({ thumbnail: null });
   };
+
+  if (isLoadingCategory || isLoadingProduct) return <Loading />;
 
   return (
     <div className="container mx-auto">
