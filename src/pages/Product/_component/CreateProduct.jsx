@@ -22,28 +22,28 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
+import useColorQuery from "../../../hooks/Color/useColorQuery";
+import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
+import useSizeQuery from "../../../hooks/Size/useSizeQuery";
 import {
   deleteFileCloudinary,
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
-import { validateFieldNumber } from "../../../validations/Product";
-import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
-import useSizeQuery from "../../../hooks/Size/useSizeQuery";
-import useColorQuery from "../../../hooks/Color/useColorQuery";
 
 const CreateProduct = () => {
+  const [isPending, setIsPending] = useState(false);
   const inputRef = useAutoFocus(open);
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
   const [publicIds, setPublicIds] = useState([]);
 
-  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY");
+  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY_FOR_PRODUCT");
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
-  const { mutate: createProduct, isPending } = useProductMutation({
+  const { mutate: createProduct } = useProductMutation({
     action: "CREATE",
     onSuccess: (data) => {
       setImageUrl(null);
@@ -60,41 +60,48 @@ const CreateProduct = () => {
   });
 
   const onFinish = async (values) => {
-    const { attributes, ...data } = values;
-    const thumbnail = await uploadFileCloudinary(data.thumbnail[0].thumbUrl);
-    const productResponse = {
-      ...data,
-      thumbnail: thumbnail,
-    };
-    const publicIdProduct = extractPublicId(thumbnail);
-    console.log(publicIdProduct);
+    try {
+      setIsPending(true);
+      const { attributes, ...data } = values;
+      const thumbnail = await uploadFileCloudinary(data.thumbnail[0].thumbUrl);
+      const productResponse = {
+        ...data,
+        thumbnail: thumbnail,
+      };
+      const publicIdProduct = extractPublicId(thumbnail);
+      console.log(publicIdProduct);
 
-    setPublicIds((prev) => [...prev, publicIdProduct]);
-    console.log(attributes);
+      setPublicIds((prev) => [...prev, publicIdProduct]);
+      console.log(attributes);
 
-    const attributesWithImages = await Promise.all(
-      attributes.map(async (attribute) => {
-        if (attribute?.image?.fileList[0]?.thumbUrl) {
-          const imageUrl = await uploadFileCloudinary(
-            attribute?.image?.fileList[0].thumbUrl
-          );
-          const publicIdAttrbutes = extractPublicId(imageUrl);
-          setPublicIds((prev) => [...prev, publicIdAttrbutes]);
-          return {
-            ...attribute,
-            image: imageUrl,
-          };
-        }
+      const attributesWithImages = await Promise.all(
+        attributes.map(async (attribute) => {
+          if (attribute?.image?.fileList[0]?.thumbUrl) {
+            const imageUrl = await uploadFileCloudinary(
+              attribute?.image?.fileList[0].thumbUrl
+            );
+            const publicIdAttrbutes = extractPublicId(imageUrl);
+            setPublicIds((prev) => [...prev, publicIdAttrbutes]);
+            return {
+              ...attribute,
+              image: imageUrl,
+            };
+          }
 
-        return attribute;
-      })
-    );
-    const finalData = {
-      ...productResponse,
-      product_att: attributesWithImages,
-    };
+          return attribute;
+        })
+      );
+      const finalData = {
+        ...productResponse,
+        product_att: attributesWithImages,
+      };
 
-    createProduct(finalData);
+      createProduct(finalData);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const columns = (remove, fields) => [
@@ -103,11 +110,32 @@ const CreateProduct = () => {
       dataIndex: "image",
       width: 150,
       render: (_, field) => (
-        <Form.Item name={[field.name, "image"]}>
+        <Form.Item
+          name={[field.name, "image"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng tải lên hình ảnh",
+            },
+          ]}
+        >
           <Upload
             maxCount={1}
+            accept=".jpg, .jpeg, .png"
             listType="picture-card"
-            beforeUpload={() => false}
+            beforeUpload={(file) => {
+              const isImage =
+                file.type === "image/jpeg" ||
+                file.type === "image/png" ||
+                file.type === "image/jpg";
+              if (!isImage) {
+                message.error(
+                  "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                );
+                return Upload.LIST_IGNORE;
+              }
+              return false;
+            }}
             className="avatar-uploader"
           >
             <div>
@@ -182,7 +210,12 @@ const CreateProduct = () => {
           name={[field.name, "stock_quantity"]}
           rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
         >
-          <InputNumber placeholder="Số lượng" min={0} className="w-full" />
+          <InputNumber
+            type="number"
+            placeholder="Số lượng"
+            min={0}
+            className="w-full"
+          />
         </Form.Item>
       ),
     },
@@ -223,6 +256,7 @@ const CreateProduct = () => {
 
       <div>
         <Form
+          disabled={isPending}
           form={form}
           name="basic"
           layout="vertical"
@@ -256,7 +290,7 @@ const CreateProduct = () => {
                       showSearch
                       placeholder="Chọn danh mục"
                       optionFilterProp="children"
-                      options={categories?.data?.data?.map((category) => ({
+                      options={categories?.data?.map((category) => ({
                         value: category.id,
                         label: category.name,
                       }))}
@@ -281,13 +315,17 @@ const CreateProduct = () => {
                     label="Giá gốc"
                     name="regular_price"
                     rules={[
+                      { required: true, message: "Vui lòng nhập giá gốc" },
                       {
-                        validator: (_, value) =>
-                          validateFieldNumber("giá gốc", value),
+                        type: "number",
+                        min: 0,
+                        message: "Giá gốc cần lớn hơn 1 đồng",
                       },
                     ]}
                   >
                     <InputNumber
+                      min={0}
+                      type="number"
                       className="w-full"
                       placeholder="Nhập giá gốc"
                     />
@@ -297,16 +335,36 @@ const CreateProduct = () => {
                   <Form.Item
                     label="Giá khuyến mãi"
                     name="reduced_price"
+                    dependencies={["regular_price"]}
                     rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập giá khuyến mãi",
-                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          const regularPrice = getFieldValue("regular_price");
+                          if (!regularPrice) {
+                            return Promise.reject(
+                              "Vui lòng nhập giá gốc trước"
+                            );
+                          }
+                          if (value < 0) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải lớn hơn 0"
+                            );
+                          }
+                          if (value && regularPrice <= value) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải thấp hơn giá gốc"
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
                     ]}
                   >
                     <InputNumber
-                      className="w-full"
+                      min={0}
+                      type="number"
                       placeholder="Nhập giá khuyến mãi"
+                      className="w-full"
                     />
                   </Form.Item>
                 </Col>
@@ -358,10 +416,22 @@ const CreateProduct = () => {
               >
                 {imageUrl == null && (
                   <Upload.Dragger
-                    accept=".jpg, .jpeg, .png, .gif"
+                    accept=".jpg, .jpeg, .png"
                     listType="picture"
                     maxCount={1}
-                    beforeUpload={() => false}
+                    beforeUpload={(file) => {
+                      const isImage =
+                        file.type === "image/jpeg" ||
+                        file.type === "image/png" ||
+                        file.type === "image/jpg";
+                      if (!isImage) {
+                        message.error(
+                          "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                        );
+                        return Upload.LIST_IGNORE;
+                      }
+                      return false;
+                    }}
                     onRemove={() => setImageUrl(null)}
                     previewFile={(file) => {
                       return new Promise((resolve) => {
@@ -400,7 +470,7 @@ const CreateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
-          Form Product Attribute
+          Thêm thuộc tính
           <Row gutter={16} className="mt-8">
             <Col span={24}>
               <Form.List name="attributes" initialValue={[{}]}>
@@ -435,7 +505,13 @@ const CreateProduct = () => {
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
-              <Button loading={isPending} type="primary" htmlType="submit" className="my-4">
+              <Button
+                loading={isPending}
+                disabled={isPending}
+                type="primary"
+                htmlType="submit"
+                className="my-4"
+              >
                 Thêm sản phẩm
               </Button>
             </Form.Item>

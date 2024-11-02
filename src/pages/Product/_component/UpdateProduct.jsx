@@ -1,7 +1,7 @@
 import {
   DeleteOutlined,
   RollbackOutlined,
-  UploadOutlined
+  UploadOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -24,9 +24,9 @@ import {
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
-import { validateFieldNumber } from "../../../validations/Product";
 
 const UpdateProduct = () => {
+  const [isPending, setIsPending] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
@@ -38,7 +38,7 @@ const UpdateProduct = () => {
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY_FOR_PRODUCT");
 
   const { data: product } = useProductQuery("GET_PRODUCT_BY_ID", id, null);
-  const { mutate: updateProduct, isPending } = useProductMutation({
+  const { mutate: updateProduct, isPending:updatePending } = useProductMutation({
     action: "UPDATE",
     onSuccess: (data) => {
       if (publicId) {
@@ -61,13 +61,13 @@ const UpdateProduct = () => {
         ...product,
         thumbnail: product.thumbnail
           ? [
-            {
-              uid: "-1",
-              name: "thumbnail.png",
-              status: "done",
-              thumbUrl: product.thumbnail,
-            },
-          ]
+              {
+                uid: "-1",
+                name: "thumbnail.png",
+                status: "done",
+                thumbUrl: product.thumbnail,
+              },
+            ]
           : [],
       });
       setImageUrl(product.thumbnail);
@@ -76,20 +76,29 @@ const UpdateProduct = () => {
   }, [form, product]);
 
   const onFinish = async (values) => {
-    let image = imageUrl
-    setPreviewImage(values.thumbnail[0].thumbUrl);
-    if (values.thumbnail[0].uid !== "-1") {
-      image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
-      setImageUrl(image);
-      setPublicId(extractPublicId(product.thumbnail));
-      setNewPublicId(extractPublicId(image));
+    try {
+      setIsPending(true);
+
+      let image = imageUrl;
+      setPreviewImage(values.thumbnail[0].thumbUrl);
+      if (values.thumbnail[0].uid !== "-1") {
+        image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
+        setImageUrl(image);
+        setPublicId(extractPublicId(product.thumbnail));
+        setNewPublicId(extractPublicId(image));
+      }
+      updateProduct({ ...values, id: id, thumbnail: image });
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsPending(false);
     }
-    updateProduct({ ...values, id: id, thumbnail: image });
   };
 
   const onFinishFailed = (values) => {
     console.log(values);
     setPreviewImage(values.thumbnail[0].thumbUrl);
+    setIsPending(false);
   };
 
   const handleImageDelete = () => {
@@ -112,6 +121,7 @@ const UpdateProduct = () => {
 
       <div>
         <Form
+          disabled={isPending | updatePending}
           form={form}
           name="basic"
           layout="vertical"
@@ -162,7 +172,7 @@ const UpdateProduct = () => {
                       { required: true, message: "Vui lòng nhập chất liệu" },
                     ]}
                   >
-                    <Input />
+                    <Input placeholder="Nhập chất liệu" />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -170,27 +180,52 @@ const UpdateProduct = () => {
                     label="Giá gốc"
                     name="regular_price"
                     rules={[
-                      {
-                        validator: (_, value) =>
-                          validateFieldNumber("giá gốc", value),
-                      },
+                      { required: true, message: "Vui lòng nhập giá gốc" },
                     ]}
                   >
-                    <InputNumber type="number" min={0} className="w-full" />
+                    <InputNumber
+                      type="number"
+                      min={0}
+                      className="w-full"
+                      placeholder="Nhập giá gốc"
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
                   <Form.Item
                     label="Giá khuyến mãi"
                     name="reduced_price"
+                    dependencies={["regular_price"]}
                     rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập giá khuyến mãi",
-                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          const regularPrice = getFieldValue("regular_price");
+                          if (!regularPrice) {
+                            return Promise.reject(
+                              "Vui lòng nhập giá gốc trước"
+                            );
+                          }
+                          if (value < 0) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải lớn hơn 0"
+                            );
+                          }
+                          if (value && regularPrice <= value) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải thấp hơn giá gốc"
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
                     ]}
                   >
-                    <InputNumber min={0} className="w-full" />
+                    <InputNumber
+                      min={0}
+                      type="number"
+                      placeholder="Nhập giá khuyến mãi"
+                      className="w-full"
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -233,10 +268,22 @@ const UpdateProduct = () => {
               >
                 {previewImage == null && (
                   <Upload.Dragger
-                    accept=".jpg, .jpeg, .png, .gif"
+                    accept=".jpg, .jpeg, .png"
                     listType="picture"
                     maxCount={1}
-                    beforeUpload={() => false}
+                    beforeUpload={(file) => {
+                      const isImage =
+                        file.type === "image/jpeg" ||
+                        file.type === "image/png" ||
+                        file.type === "image/jpg";
+                      if (!isImage) {
+                        message.error(
+                          "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                        );
+                        return Upload.LIST_IGNORE;
+                      }
+                      return false;
+                    }}
                     // onRemove={() => setImageUrl(null)}
                     previewFile={(file) => {
                       return new Promise((resolve) => {
@@ -279,7 +326,13 @@ const UpdateProduct = () => {
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
-              <Button loading={isPending} type="primary" htmlType="submit" className="my-4">
+              <Button
+                disabled={isPending | updatePending}
+                loading={isPending | updatePending}
+                type="primary"
+                htmlType="submit"
+                className="my-4"
+              >
                 Cập nhật sản phẩm
               </Button>
             </Form.Item>

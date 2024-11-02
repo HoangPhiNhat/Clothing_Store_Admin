@@ -68,3 +68,14 @@ export const updateProduct = async (product) => {
     throw error;
   }
 };
+
+export const restoreProduct = async (id) => {
+  try {
+    console.log(id);
+
+    const response = await Author.put(`/products/${id}/restore`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

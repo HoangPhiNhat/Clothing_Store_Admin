@@ -8,7 +8,7 @@ import {
 import {
   Button,
   Form,
-  Input,
+  InputNumber,
   message,
   Pagination,
   Popconfirm,
@@ -29,6 +29,7 @@ import {
 import { useForm } from "antd/es/form/Form.js";
 
 const ProductAttribute = () => {
+  const [isPending, setIsPending] = useState(false);
   const [form] = useForm();
   const [editingKey, setEditingKey] = useState(null);
   const [editingData, setEditingData] = useState({});
@@ -39,9 +40,10 @@ const ProductAttribute = () => {
   const [hasChanged, setHasChanged] = useState(false);
 
   const { id } = useParams();
-  const { data: attributes, isPending: getStatusPending } = useAttributeQuery(id);
+  const { data: attributes, isPending: getStatusPending } =
+    useAttributeQuery(id);
 
-  const { mutate: deleteAttribute, isPending } = useAttributeMutation({
+  const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
       messageApi.success(data.message);
@@ -54,14 +56,17 @@ const ProductAttribute = () => {
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
 
-  const { mutate: updateAttribute, isPending: updatePending } = useAttributeMutation({
-    action: "UPDATE",
-    onSuccess: (data) => {
-      messageApi.success(data.message);
-    },
-    onError: (error) =>
-      message.error("Sửa thuộc tính thất bại: " + error.response.data.message),
-  });
+  const { mutate: updateAttribute, isPending: updatePending } =
+    useAttributeMutation({
+      action: "UPDATE",
+      onSuccess: (data) => {
+        messageApi.success(data.message);
+      },
+      onError: (error) =>
+        message.error(
+          "Sửa thuộc tính thất bại: " + error.response.data.message
+        ),
+    });
 
   useEffect(() => {
     if (editingKey !== null) {
@@ -72,13 +77,13 @@ const ProductAttribute = () => {
       setFileList(
         editingData.image
           ? [
-            {
-              uid: "-1",
-              name: "image.png",
-              status: "done",
-              url: editingData.image,
-            },
-          ]
+              {
+                uid: "-1",
+                name: "image.png",
+                status: "done",
+                url: editingData.image,
+              },
+            ]
           : []
       );
     }
@@ -102,11 +107,13 @@ const ProductAttribute = () => {
   };
 
   const save = async () => {
+    setIsPending(true);
     const values = await form.validateFields();
 
     if (!hasChanged) {
-      message.info("No changes were made.");
+      message.info("Không có thay đổi.");
       setEditingKey(null);
+      setIsPending(false);
       return;
     }
 
@@ -130,6 +137,7 @@ const ProductAttribute = () => {
 
     setEditingKey(null);
     setHasChanged(false);
+    setIsPending(false);
   };
 
   const handleFieldChange = () => {
@@ -151,17 +159,33 @@ const ProductAttribute = () => {
       width: "15%",
       render: (_, attribute) => {
         return isEditing(attribute.key) ? (
-          <Form.Item name="image">
+          <Form.Item
+            name="image"
+            rules={[{ required: true, message: "Vui lòng nhập ảnh biến thể" }]}
+          >
             <Upload
               listType="picture-card"
               fileList={fileList}
               maxCount={1}
               showUploadList={{
                 showPreviewIcon: false,
-                showRemoveIcon: true,
+                showRemoveIcon: !isPending,
                 showDownloadIcon: false,
               }}
-              beforeUpload={() => false}
+              accept=".jpg, .jpeg, .png"
+              beforeUpload={(file) => {
+                const isImage =
+                  file.type === "image/jpeg" ||
+                  file.type === "image/png" ||
+                  file.type === "image/jpg";
+                if (!isImage) {
+                  message.error(
+                    "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                  );
+                  return Upload.LIST_IGNORE;
+                }
+                return false;
+              }}
               onChange={({ fileList }) => {
                 setFileList(fileList.slice(0, 1));
                 setHasChanged(true); // Track file changes
@@ -208,8 +232,11 @@ const ProductAttribute = () => {
       width: "15%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
-          <Form.Item name="stock_quantity">
-            <Input onChange={handleFieldChange} />
+          <Form.Item
+            rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+            name="stock_quantity"
+          >
+            <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
           <span>{attribute.stock_quantity}</span>
@@ -224,10 +251,21 @@ const ProductAttribute = () => {
         return editable ? (
           <Form.Item>
             <Space size="small">
-              <Button type="default" htmlType="submit" className="bg-[#4CAF50]">
+              <Button
+                loading={isPending}
+                disabled={isPending}
+                type="default"
+                htmlType="submit"
+                className="bg-[#4CAF50]"
+              >
                 <SaveOutlined />
               </Button>
-              <Button type="default" onClick={cancel} className="bg-[#FF5252]">
+              <Button
+                type="default"
+                disabled={isPending}
+                onClick={cancel}
+                className="bg-[#FF5252]"
+              >
                 <CloseOutlined />
               </Button>
             </Space>
@@ -255,7 +293,11 @@ const ProductAttribute = () => {
               okText="Yes"
               cancelText="No"
             >
-              <Button loading={updatePending} type="primary" danger>
+              <Button
+                disabled={updatePending | isPending}
+                type="primary"
+                danger
+              >
                 <DeleteOutlined />
               </Button>
             </Popconfirm>
@@ -279,7 +321,8 @@ const ProductAttribute = () => {
         <CreateAttribute />
       </div>
       <Form form={form} onFinish={save}>
-        <Table loading={getStatusPending}
+        <Table
+          loading={getStatusPending}
           columns={columns}
           dataSource={dataSource}
           pagination={false}

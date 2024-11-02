@@ -2,8 +2,17 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusCircleOutlined,
+  RedoOutlined,
 } from "@ant-design/icons";
-import { Button, Input, message, Pagination, Popconfirm, Space, Table } from "antd";
+import {
+  Button,
+  Input,
+  message,
+  Pagination,
+  Popconfirm,
+  Space,
+  Table,
+} from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -12,29 +21,30 @@ import { formatMoney } from "../../../systems/utils/formatMoney";
 import useProductQuery from "../../../hooks/Product/useProductQuery";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
 
-import { deleteFileCloudinary } from "../../../services/cloudinary";
-
 const TrashProduct = () => {
-  const [publicId, setPublicId] = useState(null);
   const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
-  const {
-    data: products,
-    isLoading,
-    // error: productsError,
-  } = useProductQuery("GET_ALL_PRODUCT_TRASH", pageProduct);
+  const [restorProductId, setRestoringProductId] = useState(null);
+
+  const { data: products, isLoading } = useProductQuery(
+    "GET_ALL_PRODUCT_TRASH",
+    null,
+    pageProduct
+  );
   const navigate = useNavigate();
 
-  const { mutate: deleteProduct } = useProductMutation({
-    action: "DELETE",
+  const { mutate: restoreProduct, isPending } = useProductMutation({
+    action: "RESTORE",
     onSuccess: (data) => {
-      messageApi.success("Xóa sản phẩm thành công.");
-      deleteFileCloudinary(publicId);
-      setPublicId(null);
-      console.log("Deleted attribute:", data);
+      console.log(data.id);
+
+      messageApi.success(data.message);
+      console.log("Restore attribute:", data);
     },
     onError: (error) =>
-      message.error("Xóa sản phẩm thất bại: " + error.response.data.message),
+      message.error(
+        "Khôi phục sản phẩm thất bại: " + error.response.data.message
+      ),
   });
 
   useEffect(() => {
@@ -54,24 +64,20 @@ const TrashProduct = () => {
 
   const columns = [
     {
-      title: "No.",
-      dataIndex: "index",
-      key: "index",
+      title: "Mã sản phẩm",
+      dataIndex: "sku",
+      key: "sku",
       width: "10%",
     },
     {
-      title: "Image",
+      title: "Ảnh sản phẩm",
       dataIndex: "thumbnail",
       key: "thumbnail",
-      width: "20%",
-      render: (thumbnail) => (
-        <>
-          <img className="w-20" src={thumbnail} alt="" />
-        </>
-      ),
+      width: "15%",
+      render: (thumbnail) => <img className="w-20" src={thumbnail} alt="" />,
     },
     {
-      title: "Name",
+      title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
       width: "30%",
@@ -85,46 +91,50 @@ const TrashProduct = () => {
       ),
     },
     {
-      title: "Sku",
-      dataIndex: "sku",
-      key: "sku",
-      width: "10%",
+      title: "Danh mục",
+      key: "Category",
+      render: ({ category }) => <span>{category.name}</span>,
+      width: "15%",
     },
     {
-      title: "Regular price",
+      title: "Giá gốc",
       dataIndex: "regular_price",
       key: "regular_price",
       width: "10%",
       render: (regular_price) => <div>{formatMoney(regular_price)}đ</div>,
     },
     {
-      title: "Reduced price",
+      title: "Giá khuyến mãi",
       dataIndex: "reduced_price",
       key: "reduced_price",
       width: "10%",
       render: (reduced_price) => <div>{formatMoney(reduced_price)}đ</div>,
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "operation",
       width: "10%",
       render: (_, product) => (
-        <div className=" ">
+        <div className="">
           <Space size="small">
-            <Link to={`${product.id}/edit`}>
-              <Button type="default" className="bg-[#fadd04] ">
-                <EditOutlined />
-              </Button>
-            </Link>
             <Popconfirm
-              title="Xóa sản phẩm"
-              description="Bạn có muốn xóa sản phẩm này không?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() => deleteProduct(product.id)}
+              title="Khôi phục sản phẩm"
+              description="Bạn có muốn khôi phục sản phẩm này không?"
+              okText={
+                isPending & (restorProductId === product.id) ? `Đang xóa` : `Có`
+              }
+              cancelText="Không"
+              onConfirm={() => {
+                restoreProduct(product.id);
+                setRestoringProductId(product.id);
+              }}
             >
-              <Button type="primary" danger>
-                <DeleteOutlined />
+              <Button
+                loading={restorProductId === product.id}
+                type="primary"
+                danger
+              >
+                <RedoOutlined />
               </Button>
             </Popconfirm>
           </Space>
@@ -136,34 +146,28 @@ const TrashProduct = () => {
   const expandedRowRender = (record) => {
     const expandedColumns = [
       {
-        title: "Material",
+        title: "Chất liệu",
         dataIndex: "material",
         key: "material",
         width: "20%",
       },
       {
-        title: "Description",
+        title: "Mô tả",
         dataIndex: "long_description",
         key: "long_description",
-        width: "60%",
+        width: "40%",
       },
       {
-        title: "Create Date",
+        title: "Ngày tạo",
         dataIndex: "created_at",
         key: "created_at",
-        width: "15%",
-        render: (created_at) => (
-          <span>{created_at}</span>
-        ),
+        width: "20%",
       },
       {
-        title: "Update Date",
+        title: "Ngày cập nhật",
         dataIndex: "updated_at",
         key: "updated_at",
         width: "20%",
-        render: (updated_at) => (
-          <span>{updated_at}</span>
-        ),
       },
     ];
 

@@ -2,6 +2,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
+  ShoppingCartOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
@@ -53,6 +54,11 @@ const LayoutAdmin = () => {
           label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
         },
       ],
+    },
+    {
+      key: "/admin/orders",
+      icon: <ShoppingCartOutlined />,
+      label: <Link to="/admin/orders">Đơn hàng</Link>,
     },
     {
       key: "/admin/users",

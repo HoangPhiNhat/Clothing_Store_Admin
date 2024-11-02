@@ -54,27 +54,20 @@ const ProductManagePage = () => {
 
   const columns = [
     {
-      title: "Sku",
+      title: "Mã sản phẩm",
       dataIndex: "sku",
       key: "sku",
       width: "10%",
     },
     {
-      title: "Category",
-      key: "Category",
-      render: ({ category }) => <span>{category.name}</span>
-      ,
-      width: "10%",
-    },
-    {
-      title: "Image",
+      title: "Ảnh sản phẩm",
       dataIndex: "thumbnail",
       key: "thumbnail",
-      width: "20%",
+      width: "15%",
       render: (thumbnail) => <img className="w-20" src={thumbnail} alt="" />,
     },
     {
-      title: "Name",
+      title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
       width: "30%",
@@ -88,21 +81,27 @@ const ProductManagePage = () => {
       ),
     },
     {
-      title: "Regular price",
+      title: "Danh mục",
+      key: "Category",
+      render: ({ category }) => <span>{category.name}</span>,
+      width: "15%",
+    },
+    {
+      title: "Giá gốc",
       dataIndex: "regular_price",
       key: "regular_price",
       width: "10%",
       render: (regular_price) => <div>{formatMoney(regular_price)}đ</div>,
     },
     {
-      title: "Reduced price",
+      title: "Giá khuyến mãi",
       dataIndex: "reduced_price",
       key: "reduced_price",
       width: "10%",
       render: (reduced_price) => <div>{formatMoney(reduced_price)}đ</div>,
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "operation",
       width: "10%",
       render: (_, product) => (
@@ -144,26 +143,26 @@ const ProductManagePage = () => {
   const expandedRowRender = (record) => {
     const expandedColumns = [
       {
-        title: "Material",
+        title: "Chất liệu",
         dataIndex: "material",
         key: "material",
         width: "20%",
       },
       {
-        title: "Description",
+        title: "Mô tả",
         dataIndex: "long_description",
         key: "long_description",
         width: "40%",
       },
       {
-        title: "Create Date",
+        title: "Ngày tạo",
         dataIndex: "created_at",
         key: "created_at",
         width: "20%",
 
       },
       {
-        title: "Update Date",
+        title: "Ngày cập nhật",
         dataIndex: "updated_at",
         key: "updated_at",
         width: "20%",
@@ -188,7 +187,7 @@ const ProductManagePage = () => {
   return (
     <>
       {contextHolder}
-      <h1 className="text-2xl font-medium mb-2">List Product</h1>
+      <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm</h1>
       <div className="flex justify-between">
         <Input
           placeholder="Search by name or category"
@@ -199,7 +198,7 @@ const ProductManagePage = () => {
         <Link to="add">
           <Button type="primary">
             <PlusCircleOutlined />
-            Add Product
+            Thêm sản phẩm
           </Button>
         </Link>
       </div>
