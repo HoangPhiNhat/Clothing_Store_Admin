@@ -2,14 +2,15 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
-  UploadOutlined,
+  TagsOutlined,
+  UnorderedListOutlined,
   UserOutlined,
-  VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-
+import UserProfile from "./_components/UserProfile";
+import logo from "../resources/images/logo.png"
 const { Header, Sider, Content } = Layout;
 
 const LayoutAdmin = () => {
@@ -27,7 +28,12 @@ const LayoutAdmin = () => {
       label: <Link to="/admin/dashboard">Thống kê</Link>,
     },
     {
-      icon: <VideoCameraOutlined />,
+      key: "/admin/users",
+      icon: <UserOutlined />,
+      label: <Link to="/admin/users">Users</Link>,
+    },
+    {
+      icon: <TagsOutlined />,
       label: "Danh mục",
       children: [
         {
@@ -41,7 +47,7 @@ const LayoutAdmin = () => {
       ],
     },
     {
-      icon: <UserOutlined />,
+      icon: <UnorderedListOutlined />,
       label: "Sản phẩm",
       children: [
         {
@@ -53,11 +59,6 @@ const LayoutAdmin = () => {
           label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
         },
       ],
-    },
-    {
-      key: "/admin/users",
-      icon: <UploadOutlined />,
-      label: <Link to="/admin/users">Users</Link>,
     },
   ];
 
@@ -96,11 +97,13 @@ const LayoutAdmin = () => {
         breakpoint="lg"
         collapsedWidth={isMobile ? 0 : 80}
         onBreakpoint={handleBreakpoint}
-        theme="dark"
+        theme="light"
       >
-        <div className="demo-logo-vertical" />
+        <div className="px-5 py-3">
+          <img src={logo} alt="" />
+        </div>
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           selectedKeys={[location.pathname]}
           defaultOpenKeys={findOpenKeys(items)}
@@ -108,7 +111,10 @@ const LayoutAdmin = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header
+          style={{ background: colorBgContainer }}
+          className="flex justify-between pl-0 "
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -119,6 +125,7 @@ const LayoutAdmin = () => {
               height: 64,
             }}
           />
+          <UserProfile />
         </Header>
         <Content
           style={{

@@ -41,6 +41,8 @@ const CreateProduct = () => {
   const [publicIds, setPublicIds] = useState([]);
 
   const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY_FOR_PRODUCT");
+  console.log(categories);
+  
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
   const { mutate: createProduct } = useProductMutation({
