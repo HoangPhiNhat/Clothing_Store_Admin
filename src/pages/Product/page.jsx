@@ -222,6 +222,7 @@ const ProductManagePage = () => {
         onChange={(page) => {
           setPageProduct(page);
         }}
+        pageSize={5}
         total={products?.total}
         showSizeChanger={false}
         align="end"
