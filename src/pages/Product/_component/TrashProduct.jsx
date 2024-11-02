@@ -17,17 +17,20 @@ import { formatMoney } from "../../../systems/utils/formatMoney";
 import Loading from "../../../components/base/Loading/Loading";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
 import useProductQuery from "../../../hooks/Product/useProductQuery";
+import useDebounce from "../../../hooks/customHook/useDebounce";
 
 const TrashProduct = () => {
   const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
   const [restorProductId, setRestoringProductId] = useState(null);
   const navigate = useNavigate();
-
+   const [searchKey, setSearhKey] = useState("");
+   const debouncedSearchKey = useDebounce(searchKey, 1000);
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT_TRASH",
     null,
-    pageProduct
+    pageProduct,
+    debouncedSearchKey
   );
 
   const { mutate: restoreProduct, isPending } = useProductMutation({
@@ -54,10 +57,6 @@ const TrashProduct = () => {
     key: product.id,
     index: index + 1,
   }));
-
-  const handlePageChange = (page) => {
-    setPageProduct(page);
-  };
 
   const columns = [
     {
@@ -190,8 +189,13 @@ const TrashProduct = () => {
       {contextHolder}
       <div className="flex justify-between">
         <Input
-          placeholder="Tìm kiếm theo tên hoặc danh mục"
+          placeholder="Tìm kiếm theo tên và danh mục"
           style={{ width: 300, marginBottom: 16 }}
+          value={searchKey}
+          onChange={(e) => {
+            setSearhKey(e.target.value);
+            setPageProduct(1);
+          }}
         />
         <Link to="/admin/products">
           <Button type="primary" disabled={isPending}>
@@ -207,9 +211,12 @@ const TrashProduct = () => {
         pagination={false}
       />
       <Pagination
+        defaultCurrent={1}
         current={pageProduct}
-        onChange={handlePageChange}
-        total={11}
+        onChange={(page) => {
+          setPageProduct(page);
+        }}
+        total={products?.total}
         showSizeChanger={false}
         align="end"
       />
