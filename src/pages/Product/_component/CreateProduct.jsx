@@ -31,6 +31,7 @@ import {
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
+import Loading from "../../../components/base/Loading/Loading";
 
 const CreateProduct = () => {
   const [isPending, setIsPending] = useState(false);
@@ -40,9 +41,10 @@ const CreateProduct = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [publicIds, setPublicIds] = useState([]);
 
-  const { data: categories } = useCategoryQuery("GET_ALL_CATEGORY_FOR_PRODUCT");
-  console.log(categories);
-  
+  const { data: categories, isLoading } = useCategoryQuery(
+    "GET_ALL_CATEGORY_FOR_PRODUCT"
+  );
+
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
   const { mutate: createProduct } = useProductMutation({
@@ -259,6 +261,8 @@ const CreateProduct = () => {
     setImageUrl(null);
     form.setFieldsValue({ thumbnail: null });
   };
+
+  if (isLoading) return <Loading />;
 
   return (
     <div className="container mx-auto">

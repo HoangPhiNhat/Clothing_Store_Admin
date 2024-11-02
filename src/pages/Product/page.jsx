@@ -122,8 +122,8 @@ const ProductManagePage = () => {
             <Popconfirm
               title="Xóa sản phẩm"
               description="Bạn có muốn xóa sản phẩm này không?"
-              okText="Yes"
-              cancelText="No"
+              okText="Có"
+              cancelText="Không"
               onConfirm={() => {
                 deleteProduct(product.id);
                 setDeletingProductId(product.id);
