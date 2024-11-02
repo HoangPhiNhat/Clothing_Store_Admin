@@ -1,8 +1,4 @@
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  EyeTwoTone,
-} from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -14,16 +10,28 @@ import { formatMoney } from "../../systems/utils/formatMoney";
 const Order = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
+  const [rejectOrderPending, setRejectOrderPending] = useState(null);
+  const [confirmOrderPending, setConfirmOrderPending] = useState(null);
 
   const { mutate: confirmOrder, isPending: isPendingConfirm } =
     useOrderMutation({
       action: "CONFIRM",
-      onSuccess: () => messageApi.success("Xác nhận đơn hàng thành công."),
-      onError: (error) =>
+      onSuccess: () => {
+        messageApi.success("Xác nhận đơn hàng thành công.");
+        setDefaultStatePending();
+      },
+      onError: (error) => {
         message.error(
           "Xác nhận đơn hàng thất bại. " + error.response.data.message
-        ),
+        );
+        setDefaultStatePending();
+      },
     });
+
+  const setDefaultStatePending = () => {
+    setConfirmOrderPending(null);
+    setRejectOrderPending(null);
+  };
 
   const { mutate: rejectOrder, isPending: isPendingReject } = useOrderMutation({
     action: "REJECT",
@@ -44,6 +52,9 @@ const Order = () => {
     {
       title: "Mã đơn hàng",
       dataIndex: "order_code",
+      render: (_, orders) => (
+        <Link to={`${orders.id}`}>{orders.order_code}</Link>
+      ),
       with: "5%",
     },
     {
@@ -86,13 +97,6 @@ const Order = () => {
       key: "action",
       render: (_, order) => (
         <Space size="middle">
-          <Link
-            to={`${order.id}`}
-            className="inline-flex items-center border-2 border-red-500 bg-white rounded-md p-2 hover:bg-gray-200 transition"
-          >
-            <EyeTwoTone />
-          </Link>
-
           <Popconfirm
             title="Xác nhận đơn hàng"
             description="Bạn có muốn từ chối đơn hàng này không?"
@@ -100,10 +104,16 @@ const Order = () => {
             cancelText="Không"
             onConfirm={() => {
               // APi reject
+              setRejectOrderPending(order.id);
               rejectOrder(order);
             }}
           >
-            <Button type="primary" danger>
+            <Button
+              type="primary"
+              danger
+              loading={rejectOrderPending === order.id}
+              disabled={confirmOrderPending === order.id}
+            >
               <CloseCircleOutlined />
             </Button>
           </Popconfirm>
@@ -115,11 +125,15 @@ const Order = () => {
             cancelText="Không"
             onConfirm={() => {
               // API Confirm
-              
+              setConfirmOrderPending(order.id);
               confirmOrder(order);
             }}
           >
-            <Button type="primary">
+            <Button
+              type="primary"
+              disabled={rejectOrderPending === order.id}
+              loading={confirmOrderPending === order.id}
+            >
               <CheckCircleOutlined />
             </Button>
           </Popconfirm>
@@ -150,6 +164,7 @@ const Order = () => {
       <Table columns={columns} dataSource={dataSource} pagination={false} />
 
       <Pagination
+        disabled={isPendingConfirm || isPendingReject}
         className="mt-5"
         align="end"
         defaultCurrent={1}
