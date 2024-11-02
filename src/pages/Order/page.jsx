@@ -3,14 +3,7 @@ import {
   CloseCircleOutlined,
   EyeTwoTone,
 } from "@ant-design/icons";
-import {
-  Button,
-  message,
-  Pagination,
-  Popconfirm,
-  Space,
-  Table
-} from "antd";
+import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Loading from "../../components/base/Loading/Loading";
@@ -122,6 +115,7 @@ const Order = () => {
             cancelText="Không"
             onConfirm={() => {
               // API Confirm
+              
               confirmOrder(order);
             }}
           >
@@ -143,24 +137,17 @@ const Order = () => {
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
+  if (isLoading) return <Loading />;
 
   return (
     <>
-      {/* Page loading */}
-      {isLoading || isPendingConfirm || (isPendingReject && <Loading />)}
-
       {/* Main content */}
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý danh sách đặt hàng</h1>
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        loading={isLoading}
-        pagination={false}
-      />
+      <Table columns={columns} dataSource={dataSource} pagination={false} />
 
       <Pagination
         className="mt-5"

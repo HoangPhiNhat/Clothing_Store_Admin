@@ -2,17 +2,16 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
+  ShoppingCartOutlined,
   TagsOutlined,
   UnorderedListOutlined,
-  ShoppingCartOutlined,
-  UploadOutlined,
-  UserOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import logo from "../resources/images/logo.png";
 import UserProfile from "./_components/UserProfile";
-import logo from "../resources/images/logo.png"
 const { Header, Sider, Content } = Layout;
 
 const LayoutAdmin = () => {
@@ -63,9 +62,9 @@ const LayoutAdmin = () => {
       ],
     },
     {
-      key: "/admin/users",
-      icon: <UploadOutlined />,
-      label: <Link to="/admin/users">Users</Link>,
+      key: "/admin/orders",
+      icon: <ShoppingCartOutlined />,
+      label: <Link to="/admin/orders">Đơn hàng</Link>,
     },
   ];
 
