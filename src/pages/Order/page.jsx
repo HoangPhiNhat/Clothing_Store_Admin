@@ -9,11 +9,11 @@ import {
   Pagination,
   Popconfirm,
   Space,
-  Spin,
-  Table,
+  Table
 } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Loading from "../../components/base/Loading/Loading";
 import useOrderMutation from "../../hooks/Order/useOrderMutation";
 import useOrderQuery from "../../hooks/Order/useOrderQuery";
 import { formatMoney } from "../../systems/utils/formatMoney";
@@ -22,16 +22,17 @@ const Order = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
 
-  const { mutate: confirmOrder, isPendingConfirm } = useOrderMutation({
-    action: "CONFIRM",
-    onSuccess: () => messageApi.success("Xác nhận đơn hàng thành công."),
-    onError: (error) =>
-      message.error(
-        "Xác nhận đơn hàng thất bại. " + error.response.data.message
-      ),
-  });
+  const { mutate: confirmOrder, isPending: isPendingConfirm } =
+    useOrderMutation({
+      action: "CONFIRM",
+      onSuccess: () => messageApi.success("Xác nhận đơn hàng thành công."),
+      onError: (error) =>
+        message.error(
+          "Xác nhận đơn hàng thất bại. " + error.response.data.message
+        ),
+    });
 
-  const { mutate: rejectOrder, isPendingReject } = useOrderMutation({
+  const { mutate: rejectOrder, isPending: isPendingReject } = useOrderMutation({
     action: "REJECT",
     onSuccess: () => messageApi.success("Từ chối đơn hàng thành công."),
     onError: (error) =>
@@ -146,32 +147,14 @@ const Order = () => {
   return (
     <>
       {/* Page loading */}
-      {isLoading ||
-        isPendingConfirm ||
-        (isPendingReject && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1000,
-            }}
-          >
-            <Spin size="large" />
-          </div>
-        ))}
+      {isLoading || isPendingConfirm || (isPendingReject && <Loading />)}
 
       {/* Main content */}
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý danh sách đặt hàng</h1>
       </div>
+
       <Table
         columns={columns}
         dataSource={dataSource}
@@ -180,7 +163,6 @@ const Order = () => {
       />
 
       <Pagination
-        // disabled={isPending}
         className="mt-5"
         align="end"
         defaultCurrent={1}

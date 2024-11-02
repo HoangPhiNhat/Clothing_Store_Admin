@@ -22,9 +22,9 @@ export const getOrderById = async (id) => {
   }
 };
 
-export const getProductsForOrderId = async (id) => {
+export const getProductsForOrderId = async (id, page) => {
   try {
-    const response = await Author.get(`orders/${id}/products`);
+    const response = await Author.get(`orders/${id}/products?page=${page}&size=5`);
     return response;
   } catch (error) {
     throw error;

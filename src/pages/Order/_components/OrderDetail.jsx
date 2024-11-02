@@ -1,10 +1,13 @@
-import { Table } from "antd";
+import { Pagination, Table } from "antd";
 import { useParams } from "react-router-dom";
 import useOrderQuery from "../../../hooks/Order/useOrderQuery";
 import { formatMoney } from "../../../systems/utils/formatMoney";
+import { useState } from "react";
 
 const OrderDetail = () => {
   const { id } = useParams();
+  const [pageProduct, setPageProduct] = useState(0);
+
   const { data: order, isError: isErrorOrder } = useOrderQuery(
     "GET_ORDER_BY_ID",
     id,
@@ -16,20 +19,14 @@ const OrderDetail = () => {
     data: products,
     isLoading,
     isError: isErrorProducts,
-  } = useOrderQuery("GET_PRODUCTS_FOR_ORDER_ID", id, null, true);
+  } = useOrderQuery("GET_PRODUCTS_FOR_ORDER_ID", id, pageProduct, true);
 
-  const dataSource = products?.data?.map((product) => ({
+  const dataSource = products?.data.data?.map((product) => ({
     ...product,
     key: product.id,
   }));
 
   const columns = [
-    // {
-    //   title: "Mã sản phẩm",
-    //   dataIndex: "sku",
-    //   key: "sku",
-    //   width: "10%",
-    // },
     {
       title: "Ảnh sản phẩm",
       dataIndex: "thumbnail",
@@ -82,35 +79,50 @@ const OrderDetail = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl font-bold">Chi tiết đơn hàng</h1>
-      </div>
       <div>
-        <h3>Mã đơn hàng: {order?.data.order_code}</h3>
-        <h3>Tên khách hàng: {order?.data.user.name} </h3>
-        {order?.data.user.phone ? (
-          <h3>Số điện thoại: {order?.data.user.phone}</h3>
-        ) : (
-          <h3>Email: {order?.data.user.email}</h3>
-        )}
-        <h3>Địa chỉ: {order?.data.order_address}</h3>
-        <h3>
-          <span>Tổng số tiền : {formatMoney(order?.data.total_amount)} đ</span>{" "}
-          - <span>Phương thức thanh toán: {order?.data.payment_method} </span>
-        </h3>
-        <h3>Trạng thái đơn hàng: {order?.data.order_status}</h3>
-        <h3>Trạng thái thanh toán: {order?.data.payment_status}</h3>
-      </div>
-      <div className="flex items-center justify-between mb-5 mt-5">
-        <h1 className="text-base font-medium">Danh sách sản phẩm</h1>
+        <div className="flex items-center justify-between mb-5">
+          <h1 className="text-xl font-bold">Chi tiết đơn hàng</h1>
+        </div>
+        <div>
+          <h3>Mã đơn hàng: {order?.data.order_code}</h3>
+          <h3>Tên khách hàng: {order?.data.user.name} </h3>
+          {order?.data.user.phone ? (
+            <h3>Số điện thoại: {order?.data.user.phone}</h3>
+          ) : (
+            <h3>Email: {order?.data.user.email}</h3>
+          )}
+          <h3>Địa chỉ: {order?.data.order_address}</h3>
+          <h3>
+            <span>
+              Tổng số tiền : {formatMoney(order?.data.total_amount)} đ
+            </span>{" "}
+            - <span>Phương thức thanh toán: {order?.data.payment_method} </span>
+          </h3>
+          <h3>Trạng thái đơn hàng: {order?.data.order_status}</h3>
+          <h3>Trạng thái thanh toán: {order?.data.payment_status}</h3>
+        </div>
+        <div className="flex items-center justify-between mb-5 mt-5">
+          <h1 className="text-base font-medium">Danh sách sản phẩm</h1>
+        </div>
       </div>
 
       <Table
         loading={isLoading}
         columns={columns}
-        // expandable={{ expandedRowRender }}
         dataSource={dataSource}
         pagination={false}
+      />
+
+      {/* pagging */}
+
+      <Pagination
+        // disabled={isPending}
+        className="mt-5"
+        align="end"
+        defaultCurrent={1}
+        total={products?.data.total}
+        pageSize={5}
+        onChange={(page) => setPageProduct(page)}
       />
     </>
   );
