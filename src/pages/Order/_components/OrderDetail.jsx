@@ -57,8 +57,8 @@ const OrderDetail = () => {
     },
     {
       title: "Giá sản phẩm",
-      dataIndex: "regular_price",
-      key: "regular_price",
+      dataIndex: "unit_price",
+      key: "unit_price",
       width: "10%",
       render: (unit_price) => <div>{formatMoney(unit_price)}đ</div>,
     },
@@ -87,12 +87,16 @@ const OrderDetail = () => {
       </div>
       <div>
         <h3>Mã đơn hàng: {order?.data.order_code}</h3>
-        <h3>Tên khách hàng: </h3>
-        <h3>Số điện thoại: </h3>
+        <h3>Tên khách hàng: {order?.data.user.name} </h3>
+        {order?.data.user.phone ? (
+          <h3>Số điện thoại: {order?.data.user.phone}</h3>
+        ) : (
+          <h3>Email: {order?.data.user.email}</h3>
+        )}
         <h3>Địa chỉ: {order?.data.order_address}</h3>
         <h3>
-          <span>Tổng số tiền : {formatMoney(order?.data.total_amount)} đ</span> -{" "}
-          <span>Phương thức thanh toán: {order?.data.payment_method} </span>
+          <span>Tổng số tiền : {formatMoney(order?.data.total_amount)} đ</span>{" "}
+          - <span>Phương thức thanh toán: {order?.data.payment_method} </span>
         </h3>
         <h3>Trạng thái đơn hàng: {order?.data.order_status}</h3>
         <h3>Trạng thái thanh toán: {order?.data.payment_status}</h3>
