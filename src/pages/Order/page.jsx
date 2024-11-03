@@ -35,11 +35,16 @@ const Order = () => {
 
   const { mutate: rejectOrder, isPending: isPendingReject } = useOrderMutation({
     action: "REJECT",
-    onSuccess: () => messageApi.success("Từ chối đơn hàng thành công."),
-    onError: (error) =>
+    onSuccess: () => {
+      messageApi.success("Từ chối đơn hàng thành công.");
+      setDefaultStatePending();
+    },
+    onError: (error) => {
+      setDefaultStatePending();
       message.error(
         "Từ chối đơn hàng thất bại. " + error.response.data.message
-      ),
+      );
+    },
   });
 
   const {

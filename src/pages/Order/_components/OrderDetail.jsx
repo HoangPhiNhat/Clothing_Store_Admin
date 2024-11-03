@@ -3,21 +3,21 @@ import { useParams } from "react-router-dom";
 import useOrderQuery from "../../../hooks/Order/useOrderQuery";
 import { formatMoney } from "../../../systems/utils/formatMoney";
 import { useState } from "react";
+import Loading from "../../../components/base/Loading/Loading";
 
 const OrderDetail = () => {
   const { id } = useParams();
   const [pageProduct, setPageProduct] = useState(0);
 
-  const { data: order, isError: isErrorOrder } = useOrderQuery(
-    "GET_ORDER_BY_ID",
-    id,
-    null,
-    false
-  );
+  const {
+    data: order,
+    isLoading: isLoadingOrder,
+    isError: isErrorOrder,
+  } = useOrderQuery("GET_ORDER_BY_ID", id, null, false);
 
   const {
     data: products,
-    isLoading,
+    isLoading: isLoadingProduct,
     isError: isErrorProducts,
   } = useOrderQuery("GET_PRODUCTS_FOR_ORDER_ID", id, pageProduct, true);
 
@@ -76,7 +76,8 @@ const OrderDetail = () => {
 
   if (isErrorOrder) return <h1>Error order</h1>;
   if (isErrorProducts) return <h1>Error products</h1>;
-
+  if (isLoadingOrder) return <Loading />;
+  
   return (
     <>
       <div>
@@ -107,7 +108,7 @@ const OrderDetail = () => {
       </div>
 
       <Table
-        loading={isLoading}
+        loading={isLoadingProduct}
         columns={columns}
         dataSource={dataSource}
         pagination={false}
