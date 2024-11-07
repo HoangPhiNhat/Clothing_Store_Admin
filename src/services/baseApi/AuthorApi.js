@@ -25,15 +25,16 @@ axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { response, config } = error;
-
     // Nếu token đã hết hạn
     if (response && response.status === 401) {
-      console.log("Loi me roi");
-    
       try {
+        console.log("Refresh token");
         await refreshToken(); // Gọi hàm refreshToken từ AuthApi
         return axiosClient(config); // Thực hiện lại yêu cầu gốc
       } catch (refreshError) {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        localStorage.removeItem("user");
         // Nếu refreshToken cũng thất bại, chuyển hướng đến trang đăng nhập
         window.location.href = "/signin";
         return Promise.reject(refreshError);
