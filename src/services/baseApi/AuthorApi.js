@@ -32,7 +32,9 @@ axiosClient.interceptors.response.use(
         await refreshToken(); // Gọi hàm refreshToken từ AuthApi
         return axiosClient(config); // Thực hiện lại yêu cầu gốc
       } catch (refreshError) {
-        console.log("Refresh token het han");
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        localStorage.removeItem("user");
         // Nếu refreshToken cũng thất bại, chuyển hướng đến trang đăng nhập
         window.location.href = "/signin";
         return Promise.reject(refreshError);
