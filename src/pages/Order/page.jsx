@@ -35,11 +35,16 @@ const Order = () => {
 
   const { mutate: rejectOrder, isPending: isPendingReject } = useOrderMutation({
     action: "REJECT",
-    onSuccess: () => messageApi.success("Từ chối đơn hàng thành công."),
-    onError: (error) =>
+    onSuccess: () => {
+      messageApi.success("Từ chối đơn hàng thành công.");
+      setDefaultStatePending();
+    },
+    onError: (error) => {
+      setDefaultStatePending();
       message.error(
         "Từ chối đơn hàng thất bại. " + error.response.data.message
-      ),
+      );
+    },
   });
 
   const {
@@ -65,6 +70,19 @@ const Order = () => {
     {
       title: "Trạng thái đặt hàng",
       dataIndex: "order_status",
+      render: (_, orders) => (
+        <span
+          className={
+            orders.order_status === "Đã huỷ"
+              ? "text-white bg-red-500 px-2 py-1 rounded-md"
+              : orders.order_status === "Chờ xác nhận"
+              ? "text-white bg-yellow-400 px-2 py-1 rounded-md"
+              : "text-white bg-green-500 px-2 py-1 rounded-md"
+          }
+        >
+          {orders.order_status}
+        </span>
+      ),
       width: "10%",
     },
     {
