@@ -6,7 +6,11 @@ const Page403 = () => {
       status="403"
       title="403"
       subTitle="Xin lỗi, bạn không được phép truy cập trang này."
-      extra={<Button type="primary">Trở về</Button>}
+      extra={
+        <Link to={"/admin"}>
+          <Button type="primary">Quay lại</Button>
+        </Link>
+      }
     />
   );
 };

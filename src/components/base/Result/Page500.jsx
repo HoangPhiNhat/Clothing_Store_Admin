@@ -6,7 +6,11 @@ const Page500 = () => {
       status="500"
       title="500"
       subTitle="Rất tiếc, đã xảy ra lỗi."
-      extra={<Button type="primary">Trở về</Button>}
+      extra={
+        <Link to={"/admin"}>
+          <Button type="primary">Quay về</Button>
+        </Link>
+      }
     />
   );
 };

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const Page401 = () => {
   return (
     <Result
-      icon={<span style={{ fontSize: 72 }}>🔒</span>} // Icon khóa biểu thị truy cập bị từ chối
+      icon={<span style={{ fontSize: 72 }}>🔒</span>}
       title="401"
       subTitle="Sorry, you are not authorized to view this page."
       extra={
