@@ -23,14 +23,14 @@ import OrderDetail from "../pages/Order/_components/OrderDetail";
 import ProductAttribute from "../pages/Attribute/page";
 import Page404 from "../components/base/Result/Page404";
 
+import Page401 from "../components/base/Result/Page401";
+import Page403 from "../components/base/Result/Page403";
+import Page404 from "../components/base/Result/Page404";
+import Page500 from "../components/base/Result/Page500";
+
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
   return isAuthenticated ? children : <Navigate to="/signin" />;
-};
-
-const ProtectedNotFound = () => {
-  const isAuthenticated = localStorage.getItem("access") !== null;
-  return isAuthenticated ? <Page404 /> : <Navigate to="/signin" />;
 };
 
 const RouterComponent = () => {
@@ -38,7 +38,8 @@ const RouterComponent = () => {
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<ProtectedNotFound />} />
+          <Route path="/" element={<Page401 />} />
+          <Route path="/page500" element={<Page500/>}/>
           {/* Admin */}
           <Route
             path="/admin"
@@ -70,12 +71,16 @@ const RouterComponent = () => {
             {/* Order */}
             <Route path="orders" element={<Order />} />
             <Route path="orders/:id" element={<OrderDetail />} />
+
+            <Route path="*" element={<Page404 />} />
+            <Route path="page403" element={<Page403/>}/>
+            <Route path="page500" element={<Page500/>}/>
           </Route>
 
           {/* Auth */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="*" element={<ProtectedNotFound />} />
+          <Route path="*" element={<Page404 />} />
         </Routes>
       </Router>
     </div>

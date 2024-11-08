@@ -39,15 +39,11 @@ axiosClient.interceptors.response.use(
         window.location.href = "/signin";
         return Promise.reject(refreshError);
       }
+    } else if (response && response.status === 403) {
+      window.location.href = "/admin/page403";
+    } else {
+      window.location.href = "/page500";
     }
-
-    // Nếu có lỗi server nội bộ
-    if (response && response.status === 500) {
-      // window.location.href = "/auth/500";
-    }
-
-    // Xử lý các lỗi khác
-    return Promise.reject(error);
   }
 );
 
