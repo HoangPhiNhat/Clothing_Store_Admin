@@ -18,9 +18,10 @@ import CreateProduct from "../pages/Product/_component/CreateProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
 import ProductManagePage from "../pages/Product/page";
 import TrashProduct from "../pages/Product/_component/TrashProduct";
-import Order from "../pages/Order/Page";
+import Order from "../pages/Order/page";
 import OrderDetail from "../pages/Order/_components/OrderDetail";
 import ProductAttribute from "../pages/Attribute/page";
+import Page404 from "../components/base/Result/Page404";
 
 import Page401 from "../components/base/Result/Page401";
 import Page403 from "../components/base/Result/Page403";
