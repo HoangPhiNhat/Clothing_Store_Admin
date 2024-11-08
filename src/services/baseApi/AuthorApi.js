@@ -39,6 +39,8 @@ axiosClient.interceptors.response.use(
         window.location.href = "/signin";
         return Promise.reject(refreshError);
       }
+    } else if (response && response.status === 403) {
+      window.location.href = "/admin/page403";
     } else {
       window.location.href = "/page500";
     }

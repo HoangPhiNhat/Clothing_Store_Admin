@@ -23,6 +23,7 @@ import OrderDetail from "../pages/Order/_components/OrderDetail";
 import ProductAttribute from "../pages/Attribute/page";
 
 import Page401 from "../components/base/Result/Page401";
+import Page403 from "../components/base/Result/Page403";
 import Page404 from "../components/base/Result/Page404";
 import Page500 from "../components/base/Result/Page500";
 
@@ -71,6 +72,7 @@ const RouterComponent = () => {
             <Route path="orders/:id" element={<OrderDetail />} />
 
             <Route path="*" element={<Page404 />} />
+            <Route path="page403" element={<Page403/>}/>
           </Route>
 
           {/* Auth */}
