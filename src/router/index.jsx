@@ -73,6 +73,7 @@ const RouterComponent = () => {
 
             <Route path="*" element={<Page404 />} />
             <Route path="page403" element={<Page403/>}/>
+            <Route path="page500" element={<Page500/>}/>
           </Route>
 
           {/* Auth */}
