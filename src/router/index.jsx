@@ -22,8 +22,9 @@ import Order from "../pages/Order/Page";
 import OrderDetail from "../pages/Order/_components/OrderDetail";
 import ProductAttribute from "../pages/Attribute/page";
 
-import Page404 from "../components/base/Result/Page404";
 import Page401 from "../components/base/Result/Page401";
+import Page404 from "../components/base/Result/Page404";
+import Page500 from "../components/base/Result/Page500";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -36,6 +37,7 @@ const RouterComponent = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Page401 />} />
+          <Route path="/page500" element={<Page500/>}/>
           {/* Admin */}
           <Route
             path="/admin"

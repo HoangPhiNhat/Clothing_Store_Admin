@@ -1,6 +1,5 @@
 import axios from "axios";
 import { refreshToken } from "../auth";
-import Page500 from "../../components/base/Result/Page500";
 
 const axiosClient = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1",
@@ -40,8 +39,9 @@ axiosClient.interceptors.response.use(
         window.location.href = "/signin";
         return Promise.reject(refreshError);
       }
+    } else {
+      window.location.href = "/page500";
     }
-    return <Page500 />;
   }
 );
 
