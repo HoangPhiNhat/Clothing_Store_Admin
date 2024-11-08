@@ -14,19 +14,23 @@ import SignIn from "../pages/Auth/Signin";
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 
-import NotFound from "../pages/NotFound/NotFound";
-
 import CreateProduct from "../pages/Product/_component/CreateProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
 import ProductManagePage from "../pages/Product/page";
 import TrashProduct from "../pages/Product/_component/TrashProduct";
-import Order from "../pages/Order/Page";
+import Order from "../pages/Order/page";
 import OrderDetail from "../pages/Order/_components/OrderDetail";
 import ProductAttribute from "../pages/Attribute/page";
+import Page404 from "../components/base/Result/Page404";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
   return isAuthenticated ? children : <Navigate to="/signin" />;
+};
+
+const ProtectedNotFound = () => {
+  const isAuthenticated = localStorage.getItem("access") !== null;
+  return isAuthenticated ? <Page404 /> : <Navigate to="/signin" />;
 };
 
 const RouterComponent = () => {
@@ -34,7 +38,7 @@ const RouterComponent = () => {
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<NotFound />} />
+          <Route path="/" element={<ProtectedNotFound />} />
           {/* Admin */}
           <Route
             path="/admin"
@@ -66,14 +70,12 @@ const RouterComponent = () => {
             {/* Order */}
             <Route path="orders" element={<Order />} />
             <Route path="orders/:id" element={<OrderDetail />} />
-
-            <Route path="*" element={<NotFound />} />
           </Route>
 
           {/* Auth */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<ProtectedNotFound />} />
         </Routes>
       </Router>
     </div>
