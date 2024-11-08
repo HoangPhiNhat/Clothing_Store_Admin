@@ -14,8 +14,6 @@ import SignIn from "../pages/Auth/Signin";
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 
-import NotFound from "../pages/NotFound/NotFound";
-
 import CreateProduct from "../pages/Product/_component/CreateProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
 import ProductManagePage from "../pages/Product/page";
@@ -23,6 +21,9 @@ import TrashProduct from "../pages/Product/_component/TrashProduct";
 import Order from "../pages/Order/Page";
 import OrderDetail from "../pages/Order/_components/OrderDetail";
 import ProductAttribute from "../pages/Attribute/page";
+
+import Page404 from "../components/base/Result/Page404";
+import Page401 from "../components/base/Result/Page401";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -34,7 +35,7 @@ const RouterComponent = () => {
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<NotFound />} />
+          <Route path="/" element={<Page401 />} />
           {/* Admin */}
           <Route
             path="/admin"
@@ -67,13 +68,13 @@ const RouterComponent = () => {
             <Route path="orders" element={<Order />} />
             <Route path="orders/:id" element={<OrderDetail />} />
 
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Page404 />} />
           </Route>
 
           {/* Auth */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<Page404 />} />
         </Routes>
       </Router>
     </div>
