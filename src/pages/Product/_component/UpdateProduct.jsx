@@ -36,7 +36,7 @@ const UpdateProduct = () => {
   const [newpublicId, setNewPublicId] = useState(null);
 
   const { id } = useParams();
-  
+
   const { data: categories, isLoading: isLoadingCategory } = useCategoryQuery(
     "GET_ALL_CATEGORY_FOR_PRODUCT"
   );
@@ -118,7 +118,8 @@ const UpdateProduct = () => {
     form.setFieldsValue({ thumbnail: null });
   };
 
-  if (isLoadingCategory || isLoadingProduct) return <Loading />;
+  if (isLoadingCategory || isLoadingProduct || updatePending || isPending)
+    return <Loading />;
 
   return (
     <div className="container mx-auto">
@@ -318,16 +319,16 @@ const UpdateProduct = () => {
                   </Upload.Dragger>
                 )}
                 {previewImage && (
-                  <div className="relative w-60 h-80">
+                  <div className="relative w-fit">
                     <img
                       src={previewImage}
                       alt="Xem trước hình ảnh đại diện"
-                      className="w-[18rem] h-[22rem] object-cover rounded-lg"
+                      className="min-w-[352px] h-[352px] object-cover rounded-lg"
                     />
                     <button
                       disabled={isPending}
                       onClick={handleImageDelete}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                      className="absolute top-0 right-0 bg-red-500 text-white m-3 p-2 rounded-full hover:bg-red-600 transition-colors"
                     >
                       <DeleteOutlined />
                     </button>

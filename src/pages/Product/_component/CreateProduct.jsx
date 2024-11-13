@@ -1,13 +1,16 @@
 /* eslint-disable no-unused-vars */
 import {
   DeleteOutlined,
+  DownOutlined,
   PlusOutlined,
   RollbackOutlined,
   UploadOutlined,
+  UpOutlined,
 } from "@ant-design/icons";
 
 import {
   Button,
+  Card,
   Col,
   Form,
   Input,
@@ -15,6 +18,7 @@ import {
   message,
   Row,
   Select,
+  Switch,
   Table,
   Upload,
 } from "antd";
@@ -39,29 +43,34 @@ const CreateProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
+  const [variant, setVariant] = useState(false);
   const [publicIds, setPublicIds] = useState([]);
 
   const { data: categories, isLoading } = useCategoryQuery(
     "GET_ALL_CATEGORY_FOR_PRODUCT"
   );
+  const [expandedKeys, setExpandedKeys] = useState({}); // to track visibility of each variant
 
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
-  const { mutate: createProduct } = useProductMutation({
-    action: "CREATE",
-    onSuccess: (data) => {
-      setImageUrl(null);
-      form.resetFields();
-      messageApi.success(data.message);
-    },
-    onError: (error) => {
-      messageApi.error(`Lỗi khi thêm sản phẩm: ${error.response.data.message}`);
-      publicIds.map((publicId) => {
-        deleteFileCloudinary(publicId);
-      });
-      setPublicIds([]);
-    },
-  });
+  const { mutate: createProduct, isPending: createPending } =
+    useProductMutation({
+      action: "CREATE",
+      onSuccess: (data) => {
+        setImageUrl(null);
+        form.resetFields();
+        messageApi.success(data.message);
+      },
+      onError: (error) => {
+        messageApi.error(
+          `Lỗi khi thêm sản phẩm: ${error.response.data.message}`
+        );
+        publicIds.map((publicId) => {
+          deleteFileCloudinary(publicId);
+        });
+        setPublicIds([]);
+      },
+    });
 
   const onFinish = async (values) => {
     try {
@@ -100,7 +109,8 @@ const CreateProduct = () => {
         product_att: attributesWithImages,
       };
 
-      createProduct(finalData);
+      // createProduct(finalData);
+      console.log(finalData);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -262,13 +272,17 @@ const CreateProduct = () => {
     form.setFieldsValue({ thumbnail: null });
   };
 
+  const toggleVisibility = (key) => {
+    setExpandedKeys((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   if (isLoading) return <Loading />;
 
   return (
     <div className="container mx-auto">
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-medium">Tạo sản phẩm mới</h1>
+        <h2 className="text-2xl font-medium">Thông tin sản phẩm</h2>
         <Link to="/admin/products">
           <Button disabled={isPending} className="text-base" type="primary">
             <RollbackOutlined /> Quay lại danh sách
@@ -289,7 +303,7 @@ const CreateProduct = () => {
           <Row gutter={30}>
             <Col span={18}>
               <Row gutter={16}>
-                <Col span={16}>
+                <Col span={8}>
                   <Form.Item
                     label="Tên sản phẩm"
                     name="name"
@@ -298,6 +312,17 @@ const CreateProduct = () => {
                     ]}
                   >
                     <Input ref={inputRef} placeholder="Nhập tên" />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    name="material"
+                    label="Chất liệu"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập chất liệu" },
+                    ]}
+                  >
+                    <Input placeholder="Nhập chất liệu" />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -321,18 +346,7 @@ const CreateProduct = () => {
                 </Col>
               </Row>
               <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item
-                    name="material"
-                    label="Chất liệu"
-                    rules={[
-                      { required: true, message: "Vui lòng nhập chất liệu" },
-                    ]}
-                  >
-                    <Input placeholder="Nhập chất liệu" />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
+                {/* <Col span={8}>
                   <Form.Item
                     label="Giá gốc"
                     name="regular_price"
@@ -387,7 +401,7 @@ const CreateProduct = () => {
                       className="w-full"
                     />
                   </Form.Item>
-                </Col>
+                </Col> */}
               </Row>
               <Form.Item
                 name="short_description"
@@ -473,15 +487,15 @@ const CreateProduct = () => {
                   </Upload.Dragger>
                 )}
                 {imageUrl && (
-                  <div className="relative w-60 h-80">
+                  <div className="relative w-fit">
                     <img
                       src={imageUrl}
                       alt="Xem trước hình ảnh đại diện"
-                      className="w-[18rem] h-[22rem] object-cover rounded-lg"
+                      className="min-w-[352px] h-[352px] object-cover rounded-lg"
                     />
                     <button
                       onClick={handleImageDelete}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                      className="absolute top-0 right-0 bg-red-500 text-white m-3 p-2 rounded-full hover:bg-red-600 transition-colors"
                     >
                       <DeleteOutlined />
                     </button>
@@ -490,9 +504,21 @@ const CreateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
-          Thêm thuộc tính
+          <Row className="flex gap-5 items-center">
+            <Switch
+              onChange={(value) => {
+                form.resetFields();
+                setVariant(value);
+              }}
+            />
+            {variant ? (
+              <span className="text-base ">Đơn thể</span>
+            ) : (
+              <span className="text-base ">Đa thể</span>
+            )}
+          </Row>
           <Row gutter={16} className="mt-8">
-            <Col span={24}>
+            {/* <Col span={24}>
               <Form.List name="attributes" initialValue={[{}]}>
                 {(fields, { add, remove }) => (
                   <>
@@ -520,6 +546,479 @@ const CreateProduct = () => {
                   </>
                 )}
               </Form.List>
+            </Col> */}
+
+            {/* const columns = (remove, fields) => [
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      width: 150,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "image"]}
+          rules={[
+            () => ({
+              validator(_, value) {
+                console.log(value);
+                if (!value || value.length || value.fileList.length === 0) {
+                  return Promise.reject(
+                    new Error("Vui lòng thêm ảnh biến thể")
+                  );
+                }
+                return Promise.resolve();
+              },
+            }),
+          ]}
+        >
+          <Upload
+            maxCount={1}
+            listType="picture-card"
+            accept=".jpg, .jpeg, .png"
+            beforeUpload={(file) => {
+              const isImage =
+                file.type === "image/jpeg" ||
+                file.type === "image/png" ||
+                file.type === "image/jpg";
+              if (!isImage) {
+                message.error(
+                  "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                );
+                return Upload.LIST_IGNORE;
+              }
+              return false;
+            }}
+            onChange={({ fileList }) => {
+              if (fileList.length === 0) {
+                form.setFieldValue([field.name, "image"], []);
+              } else {
+                form.setFieldValue([field.name, "image"], fileList);
+              }
+            }}
+            className="avatar-uploader"
+          >
+            <div>
+              <UploadOutlined className="text-2xl" />
+              <div className="mt-2">Tải lên</div>
+            </div>
+          </Upload>
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Màu sắc",
+      dataIndex: "color",
+      width: 200,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "color_id"]}
+          rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
+        >
+          <Select
+            showSearch
+            placeholder="Chọn màu sắc"
+            optionFilterProp="label"
+            className="w-full"
+            filterSort={(optionA, optionB) =>
+              (optionA?.label?.toString() ?? "")
+                .toLowerCase()
+                .localeCompare((optionB?.label?.toString() ?? "").toLowerCase())
+            }
+            options={colors?.map((color) => ({
+              value: color.id,
+              label: (
+                <div className="flex items-center">
+                  <div
+                    className="w-4 h-4 rounded-full mr-2"
+                    style={{ backgroundColor: color.hex }}
+                  ></div>
+                  {color.name}
+                </div>
+              ),
+            }))}
+          />
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Kích thước",
+      dataIndex: "size",
+      width: 200,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "size_id"]}
+          rules={[{ required: true, message: "Vui lòng chọn kích thước" }]}
+        >
+          <Select
+            placeholder="Kích thước"
+            options={sizes?.map((size) => ({
+              value: size.id,
+              label: size.name,
+            }))}
+            className="w-full"
+          />
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "stock_quantity",
+      width: 150,
+      render: (_, field) => (
+        <Form.Item
+          name={[field.name, "stock_quantity"]}
+          rules={[
+            { required: true, message: "Vui lòng nhập số lượng" },
+            { min: 0, type: "number", message: "Số lượng lớn hơn 0" },
+          ]}
+        >
+          <InputNumber
+            type="number"
+            placeholder="Số lượng"
+            className="w-full"
+          />
+        </Form.Item>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: 100,
+      render: (_, field) =>
+        fields.length > 1 ? (
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => remove(field.name)}
+            className="flex items-center justify-center  mb-6"
+          >
+            Xóa
+          </Button>
+        ) : null,
+    },
+  ]; */}
+            <Col span={24}>
+              <Card title="Thông tin chi tiết" className="mb-4" type="inner">
+                <Form.List name="attributes" initialValue={[{}]}>
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map(({ key, name }) => (
+                        <div key={key} className="border p-4 mb-2 rounded">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold flex items-center gap-3">
+                              <Button
+                                type="text"
+                                icon={
+                                  expandedKeys[key] ? (
+                                    <UpOutlined />
+                                  ) : (
+                                    <DownOutlined />
+                                  )
+                                }
+                                onClick={() => toggleVisibility(key)}
+                              />
+                              Màu sắc {name + 1}
+                            </span>
+                            <div className="space-x-2">
+                              {fields.length > 1 ? (
+                                <Button
+                                  type="text"
+                                  icon={<DeleteOutlined />}
+                                  onClick={() => remove(name)}
+                                  className="text-red-500"
+                                />
+                              ) : null}
+                            </div>
+                          </div>
+
+                          {/* Collapsible Content */}
+                          {expandedKeys[key] && (
+                            <div>
+                              <div className="flex space-x-4 mt-2">
+                                <Form.Item
+                                  label="Màu sắc"
+                                  className="flex-1"
+                                  name={[name, "color_id"]}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Vui lòng chọn màu sắc",
+                                    },
+                                  ]}
+                                >
+                                  <Select
+                                    showSearch
+                                    placeholder="Chọn màu sắc"
+                                    optionFilterProp="label"
+                                    className="w-full"
+                                    filterSort={(optionA, optionB) =>
+                                      (optionA?.label?.toString() ?? "")
+                                        .toLowerCase()
+                                        .localeCompare(
+                                          (
+                                            optionB?.label?.toString() ?? ""
+                                          ).toLowerCase()
+                                        )
+                                    }
+                                    options={colors?.map((color) => ({
+                                      value: color.id,
+                                      label: (
+                                        <div className="flex items-center">
+                                          <div
+                                            className="w-4 h-4 rounded-full mr-2"
+                                            style={{
+                                              backgroundColor: color.hex,
+                                            }}
+                                          ></div>
+                                          {color.name}
+                                        </div>
+                                      ),
+                                    }))}
+                                  />
+                                </Form.Item>
+                                <Form.Item
+                                  name={[name, "original_price"]}
+                                  label="Giá gốc"
+                                  className="flex-1"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Vui lòng nhập giá gốc",
+                                    },
+                                    {
+                                      type: "number",
+                                      min: 1,
+                                      message: "Giá gốc cần lớn hơn 0 đồng",
+                                    },
+                                  ]}
+                                >
+                                  <InputNumber
+                                    className="w-full"
+                                    placeholder="Giá gốc"
+                                  />
+                                </Form.Item>
+                                <Form.Item
+                                  name={[name, "sale_price"]}
+                                  label="Giá bán"
+                                  className="flex-1"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Vui lòng nhập giá bán",
+                                    },
+                                    {
+                                      type: "number",
+                                      min: 1,
+                                      message: "Giá bán cần lớn hơn 1 đồng",
+                                    },
+                                  ]}
+                                >
+                                  <InputNumber
+                                    className="w-full"
+                                    placeholder="Giá bán"
+                                  />
+                                </Form.Item>
+                                <Form.Item
+                                  name={[name, "discount_price"]}
+                                  label="Giá khuyến mại"
+                                  dependencies={["attributes"]}
+                                  className="flex-1"
+                                  rules={[
+                                    ({ getFieldValue }) => ({
+                                      validator(_, value) {
+                                        // Access the original_price using the full path inside `attributes` array
+                                        const originalPrice = getFieldValue([
+                                          "attributes",
+                                          name,
+                                          "original_price",
+                                        ]);
+                                        console.log(originalPrice);
+                                        console.log(value);
+
+                                        if (originalPrice === undefined) {
+                                          return Promise.reject(
+                                            "Vui lòng nhập giá gốc trước"
+                                          );
+                                        }
+                                        if (value < 0) {
+                                          return Promise.reject(
+                                            "Giá khuyến mãi phải lớn hơn 0"
+                                          );
+                                        }
+                                        if (value && originalPrice <= value) {
+                                          return Promise.reject(
+                                            "Giá khuyến mãi phải thấp hơn giá gốc"
+                                          );
+                                        }
+                                        return Promise.resolve();
+                                      },
+                                    }),
+                                  ]}
+                                >
+                                  <InputNumber
+                                    className="w-full"
+                                    placeholder="Giá khuyến mại"
+                                  />
+                                </Form.Item>
+                              </div>
+
+                              {/* Image Upload Section */}
+                              <Form.Item
+                                name={[name, "image"]}
+                                rules={[
+                                  () => ({
+                                    validator(_, value) {
+                                      console.log(value);
+                                      if (
+                                        !value ||
+                                        value.length ||
+                                        value.fileList.length === 0
+                                      ) {
+                                        return Promise.reject(
+                                          new Error(
+                                            "Vui lòng thêm ảnh biến thể"
+                                          )
+                                        );
+                                      }
+                                      return Promise.resolve();
+                                    },
+                                  }),
+                                ]}
+                              >
+                                <Upload
+                                  maxCount={1}
+                                  listType="picture-card"
+                                  accept=".jpg, .jpeg, .png"
+                                  beforeUpload={(file) => {
+                                    const isImage =
+                                      file.type === "image/jpeg" ||
+                                      file.type === "image/png" ||
+                                      file.type === "image/jpg";
+                                    if (!isImage) {
+                                      message.error(
+                                        "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
+                                      );
+                                      return Upload.LIST_IGNORE;
+                                    }
+                                    return false;
+                                  }}
+                                  onChange={({ fileList }) => {
+                                    if (fileList.length === 0) {
+                                      form.setFieldValue([name, "image"], []);
+                                    } else {
+                                      form.setFieldValue(
+                                        [name, "image"],
+                                        fileList
+                                      );
+                                    }
+                                  }}
+                                  className="avatar-uploader"
+                                >
+                                  <div>
+                                    <UploadOutlined className="text-2xl" />
+                                    <div className="mt-2">Tải lên</div>
+                                  </div>
+                                </Upload>
+                              </Form.Item>
+                              {/* Size Section */}
+                              {variant === false ? (
+                                <Form.List
+                                  name={[name, "sizes"]}
+                                  initialValue={[{}]}
+                                >
+                                  {(
+                                    sizeFields,
+                                    { add: addSize, remove: removeSize }
+                                  ) => (
+                                    <>
+                                      {sizeFields.map(
+                                        ({
+                                          key: sizeKey,
+                                          name: sizeName,
+                                          fieldKey: sizeFieldKey,
+                                        }) => (
+                                          <div
+                                            key={sizeKey}
+                                            className="flex space-x-4 mb-2"
+                                          >
+                                            <Form.Item
+                                              label="Kích thước"
+                                              className="flex-1"
+                                              name={[sizeName, "size_id"]}
+                                              rules={[
+                                                {
+                                                  required: true,
+                                                  message:
+                                                    "Vui lòng chọn kích thước",
+                                                },
+                                              ]}
+                                            >
+                                              <Select
+                                                placeholder="Kích thước"
+                                                options={sizes?.map((size) => ({
+                                                  value: size.id,
+                                                  label: size.name,
+                                                }))}
+                                                className="w-full"
+                                              />
+                                            </Form.Item>
+                                            <Form.Item
+                                              name={[sizeName, "sku"]}
+                                              label="SKU"
+                                              fieldKey={[sizeFieldKey, "sku"]}
+                                              className="flex-1"
+                                            >
+                                              <Input placeholder="SKU" />
+                                            </Form.Item>
+                                            <Form.Item
+                                              name={[sizeName, "quantity"]}
+                                              label="Số lượng"
+                                              fieldKey={[
+                                                sizeFieldKey,
+                                                "quantity",
+                                              ]}
+                                              className="flex-1"
+                                            >
+                                              <InputNumber
+                                                className="w-full"
+                                                placeholder="Số lượng"
+                                              />
+                                            </Form.Item>
+                                            {sizeFields.length > 1 ? (
+                                              <Button
+                                                type="text"
+                                                icon={<DeleteOutlined />}
+                                                onClick={() =>
+                                                  removeSize(sizeName)
+                                                }
+                                                className="self-center text-red-500"
+                                              />
+                                            ) : null}
+                                          </div>
+                                        )
+                                      )}
+                                      <Button
+                                        type="dashed"
+                                        onClick={() => addSize()}
+                                        block
+                                        className="mb-2"
+                                      >
+                                        + Thêm kích cỡ
+                                      </Button>
+                                    </>
+                                  )}
+                                </Form.List>
+                              ) : null}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      <Button type="dashed" onClick={() => add()} block>
+                        + Thêm màu sắc mới
+                      </Button>
+                    </>
+                  )}
+                </Form.List>
+              </Card>
             </Col>
           </Row>
           {/* Button add product */}
