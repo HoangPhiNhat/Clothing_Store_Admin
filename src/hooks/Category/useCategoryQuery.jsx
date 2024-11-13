@@ -3,11 +3,18 @@ import {
   getAllCategory,
   getAllCategoryForProduct,
   getAllCategoryTrash,
+  getAllClassification,
   getCategoryById,
 } from "../../services/category";
 
 const useCategoryQuery = (action, id, page) => {
-  const queryKey = id ? ["CATEGORY_KEY", id] : ["CATEGORY_KEY", page];
+  let queryKey;
+  if (action === "GET_CLASSIFICATION_BY_ID") {
+    queryKey = ["GET_CLASSIFICATION_BY_ID", page];
+  } else {
+    queryKey = id ? ["CATEGORY_KEY", id] : ["CATEGORY_KEY", page];
+  }
+
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
@@ -20,6 +27,8 @@ const useCategoryQuery = (action, id, page) => {
           return await getAllCategoryTrash(page);
         case "GET_ALL_CATEGORY_FOR_PRODUCT":
           return await getAllCategoryForProduct();
+        case "GET_CLASSIFICATION_BY_ID":
+          return await getAllClassification(id, page);
         default:
           return null;
       }

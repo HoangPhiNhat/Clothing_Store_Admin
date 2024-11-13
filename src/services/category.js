@@ -5,7 +5,7 @@ let size = 5;
 
 export const getAllCategoryForProduct = async () => {
   try {
-    let queryCategory = `/categories`;
+    let queryCategory = `/categories/parent`;
     return await instance.get(queryCategory);
   } catch (error) {
     console.log(error);
@@ -52,6 +52,7 @@ export const getCategoryById = async (category) => {
     throw error;
   }
 };
+
 export const createCategory = async (category) => {
   try {
     const response = await Author.post(`/categories`, category);
@@ -73,6 +74,17 @@ export const updateCategory = async (category) => {
 export const restoreCategory = async (category) => {
   try {
     const response = await Author.put(`/categories/${category.id}/restore`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllClassification = async (id, page) => {
+  try {
+    let query = `/categories/${id}/children?size=${size}`;
+    if (page) query += `&page=${page}`;
+    const response = await instance.get(query);
     return response.data;
   } catch (error) {
     throw error;

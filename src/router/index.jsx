@@ -26,6 +26,7 @@ import Page401 from "../components/base/Result/Page401";
 import Page403 from "../components/base/Result/Page403";
 import Page404 from "../components/base/Result/Page404";
 import Page500 from "../components/base/Result/Page500";
+import Classification from "../pages/Category/_components/Classification";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -38,7 +39,7 @@ const RouterComponent = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Page401 />} />
-          <Route path="/page500" element={<Page500/>}/>
+          <Route path="/page500" element={<Page500 />} />
           {/* Admin */}
           <Route
             path="/admin"
@@ -54,6 +55,7 @@ const RouterComponent = () => {
             {/* Category */}
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
+            <Route path="categories/:id" element={<Classification />} />
 
             {/* Product */}
             <Route path="products" element={<ProductManagePage />} />
@@ -72,8 +74,8 @@ const RouterComponent = () => {
             <Route path="orders/:id" element={<OrderDetail />} />
 
             <Route path="*" element={<Page404 />} />
-            <Route path="page403" element={<Page403/>}/>
-            <Route path="page500" element={<Page500/>}/>
+            <Route path="page403" element={<Page403 />} />
+            <Route path="page500" element={<Page500 />} />
           </Route>
 
           {/* Auth */}

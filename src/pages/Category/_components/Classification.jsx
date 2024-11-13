@@ -1,17 +1,19 @@
+import { useParams } from "react-router-dom";
+import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
+import Loading from "../../../components/base/Loading/Loading";
+import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
+import CreateCategory from "./CreateCategory";
+import UpdateCategory from "./UpdateCategory";
 import { useState } from "react";
-import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
-import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
-import CreateCategory from "./_components/CreateCategory";
-import UpdateCategory from "./_components/UpdateCategory";
-import Loading from "../../components/base/Loading/Loading";
+import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 
-const Category = () => {
+const Classification = () => {
+  const { id } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
   const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
@@ -19,17 +21,22 @@ const Category = () => {
   const [pageCategory, setPageCategory] = useState(1);
   const [deletingCategoryId, setDeletingCategoryId] = useState(null);
 
-  const {
-    data: categories,
-    isLoading,
-    isError,
-  } = useCategoryQuery("GET_ALL_CATEGORY", null, pageCategory);
+  const { data: classification, isLoading } = useCategoryQuery(
+    "GET_CLASSIFICATION_BY_ID",
+    id,
+    pageCategory
+  );
 
   const { mutate: deleteCategory, isPending } = useCategoryMutation({
     action: "DELETE",
     onSuccess: () => messageApi.success("Xóa danh mục thành công."),
     onError: (error) => message.error("Xóa danh mục thất bại. " + error),
   });
+
+  const handleModalUpdate = (category) => {
+    setSelectedCategory(category);
+    setModalUpdateOpen(true);
+  };
 
   const columns = [
     {
@@ -80,6 +87,7 @@ const Category = () => {
             onConfirm={() => {
               setDeletingCategoryId(category.id);
               deleteCategory(category);
+              console.log();
             }}
           >
             <Button
@@ -95,27 +103,19 @@ const Category = () => {
     },
   ];
 
-  const dataSource = (categories?.data.data || []).map((category, index) => ({
+  const dataSource = (classification?.data || []).map((category, index) => ({
     key: category.id,
     index: index + 1,
     ...category,
   }));
 
-  const handleModalUpdate = (category) => {
-    setSelectedCategory(category);
-    setModalUpdateOpen(true);
-  };
-
-  if (isError) {
-    return <div>Error: {isError.message}</div>;
-  }
   if (isLoading) return <Loading />;
 
   return (
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl">Quản lý danh mục</h1>
+        <h1 className="text-xl">Quản lý danh mục phân loại</h1>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
           <PlusCircleOutlined disabled={isPending} />
           Thêm
@@ -123,11 +123,11 @@ const Category = () => {
       </div>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
       <Pagination
-      current={pageCategory}
         disabled={isPending}
+        current={pageCategory}
         className="mt-5"
         align="end"
-        total={categories?.data.total}
+        total={classification.total}
         pageSize={5}
         onChange={(page) => setPageCategory(page)}
       />
@@ -144,4 +144,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Classification;
