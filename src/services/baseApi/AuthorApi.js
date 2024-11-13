@@ -44,6 +44,7 @@ axiosClient.interceptors.response.use(
     } else {
       window.location.href = "/page500";
     }
+    // return Promise.reject(error);
   }
 );
 

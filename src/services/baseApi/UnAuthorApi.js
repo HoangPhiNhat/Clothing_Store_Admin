@@ -13,10 +13,12 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     const { response } = error;
-    console.log(error);
+    
     if (response && response.status == 500) {
       window.location.href = "/page500";
     }
+
+    return Promise.reject(error);
   }
 );
 
