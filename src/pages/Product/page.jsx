@@ -199,7 +199,7 @@ const ProductManagePage = () => {
           value={searchKey}
           onChange={(e) => {
             setSearhKey(e.target.value);
-            setPageProduct(1)
+            setPageProduct(1);
           }}
         />
         <Link to="add">
@@ -217,7 +217,6 @@ const ProductManagePage = () => {
         pagination={false}
       />
       <Pagination
-        defaultCurrent={1}
         current={pageProduct}
         onChange={(page) => {
           setPageProduct(page);

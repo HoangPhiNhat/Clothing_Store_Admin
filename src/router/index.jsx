@@ -14,13 +14,16 @@ import SignIn from "../pages/Auth/Signin";
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 
+import Classification from "../pages/Classification/page";
+
 import CreateProduct from "../pages/Product/_component/CreateProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
 import ProductManagePage from "../pages/Product/page";
 import TrashProduct from "../pages/Product/_component/TrashProduct";
+import ProductAttribute from "../pages/Attribute/page";
+
 import Order from "../pages/Order/page";
 import OrderDetail from "../pages/Order/_components/OrderDetail";
-import ProductAttribute from "../pages/Attribute/page";
 
 import Page401 from "../components/base/Result/Page401";
 import Page403 from "../components/base/Result/Page403";
@@ -38,7 +41,7 @@ const RouterComponent = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Page401 />} />
-          <Route path="/page500" element={<Page500/>}/>
+          <Route path="/page500" element={<Page500 />} />
           {/* Admin */}
           <Route
             path="/admin"
@@ -54,6 +57,9 @@ const RouterComponent = () => {
             {/* Category */}
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
+
+            {/* Classification */}
+            <Route path="categories/:id" element={<Classification />} />
 
             {/* Product */}
             <Route path="products" element={<ProductManagePage />} />
@@ -71,14 +77,17 @@ const RouterComponent = () => {
             <Route path="orders" element={<Order />} />
             <Route path="orders/:id" element={<OrderDetail />} />
 
+            {/* Page error */}
             <Route path="*" element={<Page404 />} />
-            <Route path="page403" element={<Page403/>}/>
-            <Route path="page500" element={<Page500/>}/>
+            <Route path="page403" element={<Page403 />} />
+            <Route path="page500" element={<Page500 />} />
           </Route>
 
           {/* Auth */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
+
+          {/* Page error */}
           <Route path="*" element={<Page404 />} />
         </Routes>
       </Router>
