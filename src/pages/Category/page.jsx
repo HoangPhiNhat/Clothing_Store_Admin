@@ -28,8 +28,14 @@ const Category = () => {
 
   const { mutate: deleteCategory, isPending } = useCategoryMutation({
     action: "DELETE",
-    onSuccess: () => messageApi.success("Xóa danh mục thành công."),
-    onError: (error) => message.error("Xóa danh mục thất bại. " + error),
+    onSuccess: () => {
+      setDeletingCategoryId(null);
+      messageApi.success("Xóa danh mục thành công.");
+    },
+    onError: (error) => {
+      setDeletingCategoryId(null);
+      message.error("Xóa danh mục thất bại. " + error.response.data.message);
+    },
   });
 
   const columns = [
@@ -40,7 +46,11 @@ const Category = () => {
     {
       title: "Tên danh mục",
       dataIndex: "name",
-      render: (_, categories) => <Link className="text-black" to={`${categories.id}`}>{categories.name}</Link>,
+      render: (_, categories) => (
+        <Link className="text-black" to={`${categories.id}`}>
+          {categories.name}
+        </Link>
+      ),
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ["ascend", "descend"],
