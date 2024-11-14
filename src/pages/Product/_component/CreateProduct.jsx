@@ -73,10 +73,8 @@ const CreateProduct = () => {
         thumbnail: thumbnail,
       };
       const publicIdProduct = extractPublicId(thumbnail);
-      console.log(publicIdProduct);
 
       setPublicIds((prev) => [...prev, publicIdProduct]);
-      console.log(attributes);
 
       const attributesWithImages = await Promise.all(
         attributes.map(async (attribute) => {

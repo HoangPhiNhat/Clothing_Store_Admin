@@ -1,22 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from "react";
 import { Button, Modal, Form, Input, message } from "antd";
-import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
+import useClassificationMutation from "../../../hooks/Classification/useClassificationMutation";
 
-const UpdateClassification= ({ open, onCancel, category, actionType }) => {
+const UpdateClassification= ({ open, onCancel, category }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const inputRef = useAutoFocus(open);
-  const messageUpdateSuccess =
-    actionType === "UPDATE"
-      ? "Cập nhật danh mục thành công"
-      : "Cập nhật danh mục phân loại thành công";
 
-  const { mutate: updateCategory, isPending } = useCategoryMutation({
-    action: actionType,
+  const { mutate: updateCategory, isPending } = useClassificationMutation({
+    action: "UPDATE",
     onSuccess: () => {
-      messageApi.success(messageUpdateSuccess);
+      messageApi.success("Cập nhật danh mục phân loại thành công");
       onCancel();
     },
     onError: (error) => {
