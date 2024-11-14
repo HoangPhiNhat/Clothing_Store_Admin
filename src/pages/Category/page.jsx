@@ -10,6 +10,7 @@ import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
 import CreateCategory from "./_components/CreateCategory";
 import UpdateCategory from "./_components/UpdateCategory";
 import Loading from "../../components/base/Loading/Loading";
+import { Link } from "react-router-dom";
 
 const Category = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -39,6 +40,7 @@ const Category = () => {
     {
       title: "Tên danh mục",
       dataIndex: "name",
+      render: (_, categories) => <Link className="text-black" to={`${categories.id}`}>{categories.name}</Link>,
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ["ascend", "descend"],
@@ -123,7 +125,7 @@ const Category = () => {
       </div>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
       <Pagination
-      current={pageCategory}
+        current={pageCategory}
         disabled={isPending}
         className="mt-5"
         align="end"

@@ -1,16 +1,18 @@
-import { useParams } from "react-router-dom";
-import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
-import Loading from "../../../components/base/Loading/Loading";
-import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import CreateCategory from "./CreateCategory";
-import UpdateCategory from "./UpdateCategory";
+
+import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
 import { useState } from "react";
-import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
+import { useParams } from "react-router-dom";
+
+import useClassificationMutation from "../../hooks/Classification/useClassificationMutation";
+import useClassificationQuery from "../../hooks/Classification/useClassificationQuery";
+import CreateClassification from "./_components/CreateClassification";
+import UpdateClassification from "./_components/UpdateClassification";
+import Loading from "../../components/base/Loading/Loading";
 
 const Classification = () => {
   const { id } = useParams();
@@ -21,16 +23,22 @@ const Classification = () => {
   const [pageCategory, setPageCategory] = useState(1);
   const [deletingCategoryId, setDeletingCategoryId] = useState(null);
 
-  const { data: classification, isLoading } = useCategoryQuery(
+  const { data: classification, isLoading } = useClassificationQuery(
     "GET_CLASSIFICATION_BY_ID",
     id,
     pageCategory
   );
 
-  const { mutate: deleteCategory, isPending } = useCategoryMutation({
-    action: "DELETE",
-    onSuccess: () => messageApi.success("Xóa danh mục thành công."),
-    onError: (error) => message.error("Xóa danh mục thất bại. " + error),
+  const { mutate: deleteCategory, isPending } = useClassificationMutation({
+    action: "DELETE_CLASSIFICATION",
+    onSuccess: () => {
+      setDeletingCategoryId(null);
+      messageApi.success("Xóa danh mục thành công.");
+    },
+    onError: (error) => {
+      selectedCategory(null);
+      message.error("Xóa danh mục thất bại. " + error);
+    },
   });
 
   const handleModalUpdate = (category) => {
@@ -131,14 +139,15 @@ const Classification = () => {
         pageSize={5}
         onChange={(page) => setPageCategory(page)}
       />
-      <CreateCategory
+      <CreateClassification
         open={modalCreateOpen}
         onCancel={() => setModalCreateOpen(false)}
       />
-      <UpdateCategory
+      <UpdateClassification
         open={modalUpdateOpen}
         onCancel={() => setModalUpdateOpen(false)}
         category={selectedCategory}
+        actionType="UPDATE_CLASSIFICATION"
       />
     </>
   );
