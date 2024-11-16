@@ -32,7 +32,7 @@ const UpdateCategory = ({ open, onCancel, category }) => {
     if (category && category.id) {
       updateCategory({ ...values, id: category.id });
     } else {
-      messageApi.error("Không tìm thấy ID của danh mục");
+      messageApi.error("Không tìm thấy ID của danh mục phân loại");
     }
   };
 

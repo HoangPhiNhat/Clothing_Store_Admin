@@ -71,9 +71,9 @@ export const updateCategory = async (category) => {
   }
 };
 
-export const restoreCategory = async (category) => {
+export const toggleStatusCategory = async (category) => {
   try {
-    const response = await Author.put(`/categories/${category.id}/restore`);
+    const response = await Author.put(`/categories/${category.id}/toggle-status`);
     return response.data;
   } catch (error) {
     throw error;

@@ -8,12 +8,7 @@ import {
 } from "../../services/category";
 
 const useCategoryQuery = (action, id, page) => {
-  let queryKey;
-  if (action === "GET_CLASSIFICATION_BY_ID") {
-    queryKey = ["GET_CLASSIFICATION_BY_ID", page];
-  } else {
-    queryKey = id ? ["CATEGORY_KEY", id] : ["CATEGORY_KEY", page];
-  }
+  let queryKey = id ? ["CATEGORY_KEY", id] : ["CATEGORY_KEY", page];
 
   const { data, ...rest } = useQuery({
     queryKey,

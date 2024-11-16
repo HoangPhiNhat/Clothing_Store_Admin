@@ -1,22 +1,26 @@
 /* eslint-disable react/prop-types */
+import { Button, Form, Input, message, Modal } from "antd";
 import { useEffect } from "react";
-import { Button, Modal, Form, Input, message } from "antd";
-import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
+import useClassificationMutation from "../../../hooks/Classification/useClassificationMutation";
 import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
+// import useClassificationQuery from "../../../hooks/Classification/useClassificationQuery";
+// import Loading from "../../../components/base/Loading/Loading";
 
-const UpdateClassification= ({ open, onCancel, category, actionType }) => {
+// const { Option } = Select;
+
+const UpdateClassification = ({ open, onCancel, category }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const inputRef = useAutoFocus(open);
-  const messageUpdateSuccess =
-    actionType === "UPDATE"
-      ? "Cập nhật danh mục thành công"
-      : "Cập nhật danh mục phân loại thành công";
 
-  const { mutate: updateCategory, isPending } = useCategoryMutation({
-    action: actionType,
+  // const { data: categories, isLoading } = useClassificationQuery(
+  //   "GET_ALL_CATEGORY_FOR_PRODUCT"
+  // );
+
+  const { mutate: updateCategory, isPending } = useClassificationMutation({
+    action: "UPDATE",
     onSuccess: () => {
-      messageApi.success(messageUpdateSuccess);
+      messageApi.success("Cập nhật danh mục phân loại thành công");
       onCancel();
     },
     onError: (error) => {
@@ -39,6 +43,8 @@ const UpdateClassification= ({ open, onCancel, category, actionType }) => {
       messageApi.error("Không tìm thấy ID của danh mục");
     }
   };
+
+  // if (isLoading) return <Loading />;
 
   return (
     <>
@@ -69,20 +75,44 @@ const UpdateClassification= ({ open, onCancel, category, actionType }) => {
           autoComplete="off"
         >
           <Form.Item
+            className="w-full"
             name="name"
+            label="Tên danh mục"
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập tên danh mục!",
+                message: "Vui lòng nhập danh mục!",
+              },
+              {
+                min: 6,
+                message: "Tên danh mục phải dài hơn 6 kí tự.",
               },
             ]}
           >
-            <Input
-              ref={inputRef}
-              placeholder="Tên danh mục"
-              disabled={isPending}
-            />
+            <Input ref={inputRef} />
           </Form.Item>
+
+          {/* <Form.Item
+            name="parent_id"
+            label="Phân loại"
+            rules={[
+              {
+                type: "array",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Chọn danh mục"
+              dropdownStyle={{ maxHeight: 250, overflow: "auto" }}
+            >
+              {categories?.data.map((category) => (
+                <Option key={category.id} value={category.id}>
+                  {category.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item> */}
         </Form>
       </Modal>
     </>

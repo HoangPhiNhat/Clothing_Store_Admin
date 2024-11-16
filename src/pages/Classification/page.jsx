@@ -30,14 +30,14 @@ const Classification = () => {
   );
 
   const { mutate: deleteCategory, isPending } = useClassificationMutation({
-    action: "DELETE_CLASSIFICATION",
+    action: "DELETE",
     onSuccess: () => {
       setDeletingCategoryId(null);
-      messageApi.success("Xóa danh mục thành công.");
+      messageApi.success("Xóa danh mục phân loại thành công.");
     },
     onError: (error) => {
       selectedCategory(null);
-      message.error("Xóa danh mục thất bại. " + error);
+      message.error("Xóa danh mục phân loại thất bại. " + error);
     },
   });
 
@@ -140,6 +140,7 @@ const Classification = () => {
         onChange={(page) => setPageCategory(page)}
       />
       <CreateClassification
+        id={id}
         open={modalCreateOpen}
         onCancel={() => setModalCreateOpen(false)}
       />
@@ -147,7 +148,6 @@ const Classification = () => {
         open={modalUpdateOpen}
         onCancel={() => setModalUpdateOpen(false)}
         category={selectedCategory}
-        actionType="UPDATE_CLASSIFICATION"
       />
     </>
   );

@@ -88,6 +88,7 @@ const TrashCategory = () => {
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
+  
  if (isLoading) return <Loading />;
 
   return (

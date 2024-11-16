@@ -1,16 +1,18 @@
 import {
   DeleteOutlined,
   EditOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import Loading from "../../components/base/Loading/Loading";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
 import CreateCategory from "./_components/CreateCategory";
 import UpdateCategory from "./_components/UpdateCategory";
-import Loading from "../../components/base/Loading/Loading";
-import { Link } from "react-router-dom";
 
 const Category = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -38,10 +40,27 @@ const Category = () => {
     },
   });
 
+  const { mutate: toggleStatusCategory, isPending: isPendingToggle } =
+    useCategoryMutation({
+      action: "TOGGLE_STATUS",
+      onSuccess: () => {
+        setDeletingCategoryId(null);
+        messageApi.success("Cập nhật trạng thái danh mục thành công.");
+      },
+      onError: (error) => {
+        setDeletingCategoryId(null);
+        message.error(
+          "Cập nhật trạng thái danh mục thất bại. " +
+            error.response.data.message
+        );
+      },
+    });
+
   const columns = [
     {
       title: "Mã danh mục",
       dataIndex: "category_code",
+      with: "10%",
     },
     {
       title: "Tên danh mục",
@@ -54,7 +73,23 @@ const Category = () => {
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ["ascend", "descend"],
-      width: "40%",
+      width: "20%",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "is_active",
+      render: (_, categories) => (
+        <span
+          className={
+            categories.is_active
+              ? "text-white bg-green-500 px-2 py-1 rounded-md"
+              : "text-white bg-red-500 px-2 py-1 rounded-md"
+          }
+        >
+          {categories.is_active ? "Kích hoạt" : "Đã ẩn"}
+        </span>
+      ),
+      width: "10%",
     },
     {
       title: "Ngày tạo",
@@ -77,6 +112,25 @@ const Category = () => {
       key: "action",
       render: (_, category) => (
         <Space size="small">
+          <Popconfirm
+            title="Thay đổi trạng thái"
+            description={
+              category.is_active
+                ? "Bạn có muốn ẩn danh mục này không?"
+                : "Bạn có muốn hiển thị danh mục này không?"
+            }
+            okText={deletingCategoryId === category.id ? `Đang xóa` : `Có`}
+            cancelText="Không"
+            onConfirm={() => {
+              setDeletingCategoryId(category.id);
+              toggleStatusCategory(category);
+            }}
+          >
+            <Button type="primary" loading={deletingCategoryId === category.id}>
+              {category.is_active ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+            </Button>
+          </Popconfirm>
+
           <Button
             disabled={deletingCategoryId === category.id}
             onClick={() => handleModalUpdate(category)}
@@ -129,14 +183,14 @@ const Category = () => {
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý danh mục</h1>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
-          <PlusCircleOutlined disabled={isPending} />
+          <PlusCircleOutlined disabled={isPending || isPendingToggle} />
           Thêm
         </Button>
       </div>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
       <Pagination
         current={pageCategory}
-        disabled={isPending}
+        disabled={isPending || isPendingToggle}
         className="mt-5"
         align="end"
         total={categories?.data.total}
