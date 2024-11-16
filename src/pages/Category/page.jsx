@@ -7,12 +7,12 @@ import {
 } from "@ant-design/icons";
 import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import Loading from "../../components/base/Loading/Loading";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
 import CreateCategory from "./_components/CreateCategory";
 import UpdateCategory from "./_components/UpdateCategory";
-import Loading from "../../components/base/Loading/Loading";
-import { Link } from "react-router-dom";
 
 const Category = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -60,6 +60,7 @@ const Category = () => {
     {
       title: "Mã danh mục",
       dataIndex: "category_code",
+      with: "10%",
     },
     {
       title: "Tên danh mục",
@@ -72,7 +73,7 @@ const Category = () => {
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ["ascend", "descend"],
-      width: "30%",
+      width: "20%",
     },
     {
       title: "Trạng thái",
