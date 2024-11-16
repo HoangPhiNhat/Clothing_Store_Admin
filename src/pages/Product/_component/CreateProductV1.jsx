@@ -10,10 +10,11 @@ import {
   Col,
   Form,
   Input,
-  InputNumber,
   message,
   Row,
   Select,
+  Switch,
+  Tabs,
   Upload,
 } from "antd";
 
@@ -29,6 +30,8 @@ import {
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
 
+import Color from "./Attribute/Color";
+import Size from "./Attribute/Size";
 import SizeColor from "./Attribute/SizeColor";
 
 const CreateProduct = () => {
@@ -37,7 +40,27 @@ const CreateProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
+  const [variant, setVariant] = useState(false);
   const [publicIds, setPublicIds] = useState([]);
+
+  //Tabs
+  const items = [
+    {
+      key: "1",
+      label: "Color",
+      children: <Color form={form} variant={variant} message={message} />,
+    },
+    {
+      key: "2",
+      label: "Size",
+      children: <Size form={form} variant={variant} message={message} />,
+    },
+    {
+      key: "3",
+      label: "Size & color",
+      children: <SizeColor form={form} variant={variant} message={message} />,
+    },
+  ];
 
   const { data: categories, isLoading } = useCategoryQuery(
     "GET_ALL_CATEGORY_FOR_PRODUCT"
@@ -99,7 +122,7 @@ const CreateProduct = () => {
         product_att: attributesWithImages,
       };
 
-      createProduct(finalData);
+      // createProduct(finalData);
       console.log(finalData);
     } catch (error) {
       console.error("Error:", error);
@@ -180,27 +203,66 @@ const CreateProduct = () => {
                       }))}
                     />
                   </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                {/* <Col span={8}>
                   <Form.Item
+                    label="Giá gốc"
                     name="regular_price"
-                    label="Giá bán"
-                    className="flex-1"
                     rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập giá gốc",
-                      },
+                      { required: true, message: "Vui lòng nhập giá gốc" },
                       {
                         type: "number",
                         min: 1,
-                        message: "Giá gốc cần lớn hơn 0 đồng",
+                        message: "Giá gốc cần lớn hơn 1 đồng",
                       },
                     ]}
                   >
-                    <InputNumber className="w-full" placeholder="Giá gốc" />
+                    <InputNumber
+                      type="number"
+                      className="w-full"
+                      placeholder="Nhập giá gốc"
+                    />
                   </Form.Item>
                 </Col>
+                <Col span={8}>
+                  <Form.Item
+                    label="Giá khuyến mãi"
+                    name="reduced_price"
+                    dependencies={["regular_price"]}
+                    rules={[
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          const regularPrice = getFieldValue("regular_price");
+                          if (!regularPrice) {
+                            return Promise.reject(
+                              "Vui lòng nhập giá gốc trước"
+                            );
+                          }
+                          if (Number(value) < 0) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải lớn hơn 0"
+                            );
+                          }
+                          if (Number(value) && regularPrice <= Number(value)) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải thấp hơn giá gốc"
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
+                    ]}
+                  >
+                    <InputNumber
+                      type="number"
+                      placeholder="Nhập giá khuyến mãi"
+                      className="w-full"
+                    />
+                  </Form.Item>
+                </Col> */}
               </Row>
-
               <Form.Item
                 name="short_description"
                 label="Mô tả ngắn"
@@ -303,8 +365,23 @@ const CreateProduct = () => {
             </Col>
           </Row>
 
+          {/* Choose att */}
+          <Row className="flex gap-5 items-center">
+            {variant ? (
+              <span className="text-base ">Biến thể</span>
+            ) : (
+              <span className="text-base ">Đơn thể</span>
+            )}
+            <Switch
+              onChange={(value) => {
+                form.resetFields();
+                setVariant(value);
+              }}
+            />
+          </Row>
+
           {/* Attribute */}
-          <SizeColor form={form} message={message} />
+          {variant && <Tabs defaultActiveKey="1" items={items} />}
 
           {/* Button add product */}
           <div className="flex justify-end">
