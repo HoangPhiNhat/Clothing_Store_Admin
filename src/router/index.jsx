@@ -29,6 +29,7 @@ import Page401 from "../components/base/Result/Page401";
 import Page403 from "../components/base/Result/Page403";
 import Page404 from "../components/base/Result/Page404";
 import Page500 from "../components/base/Result/Page500";
+import Courier from "../pages/Courier/page";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -81,6 +82,9 @@ const RouterComponent = () => {
             <Route path="*" element={<Page404 />} />
             <Route path="page403" element={<Page403 />} />
             <Route path="page500" element={<Page500 />} />
+
+            {/* Courier */}
+            <Route path="couriers" element={<Courier />} />
           </Route>
 
           {/* Auth */}

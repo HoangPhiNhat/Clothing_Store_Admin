@@ -67,7 +67,13 @@ const ProductManagePage = () => {
       dataIndex: "thumbnail",
       key: "thumbnail",
       width: "15%",
-      render: (thumbnail) => <img className="w-20" src={thumbnail} alt="" />,
+      render: (thumbnail, product) => (
+        <img
+          className="w-24 h-24 object-cover"
+          src={thumbnail}
+          alt={product.name}
+        />
+      ),
     },
     {
       title: "Tên sản phẩm",

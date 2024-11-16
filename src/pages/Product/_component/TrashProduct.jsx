@@ -1,7 +1,4 @@
-import {
-  RedoOutlined,
-  RollbackOutlined
-} from "@ant-design/icons";
+import { RedoOutlined, RollbackOutlined } from "@ant-design/icons";
 import {
   Button,
   Input,
@@ -24,8 +21,8 @@ const TrashProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [restorProductId, setRestoringProductId] = useState(null);
   const navigate = useNavigate();
-   const [searchKey, setSearhKey] = useState("");
-   const debouncedSearchKey = useDebounce(searchKey, 1000);
+  const [searchKey, setSearhKey] = useState("");
+  const debouncedSearchKey = useDebounce(searchKey, 1000);
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT_TRASH",
     null,
@@ -70,7 +67,13 @@ const TrashProduct = () => {
       dataIndex: "thumbnail",
       key: "thumbnail",
       width: "15%",
-      render: (thumbnail) => <img className="w-20" src={thumbnail} alt="" />,
+      render: (thumbnail, product) => (
+        <img
+          className="w-24 h-24 object-cover"
+          src={thumbnail}
+          alt={product.name}
+        />
+      ),
     },
     {
       title: "Tên sản phẩm",
@@ -181,7 +184,7 @@ const TrashProduct = () => {
       <Table columns={expandedColumns} dataSource={data} pagination={false} />
     );
   };
-  
+
   if (isLoading) return <Loading />;
 
   return (
