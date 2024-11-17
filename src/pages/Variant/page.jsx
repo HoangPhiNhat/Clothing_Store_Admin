@@ -111,7 +111,11 @@ const Variant = () => {
               setDeletingColorId(color.id);
             }}
           >
-            <Button type="primary" danger>
+            <Button
+              type="primary"
+              danger
+              loading={deletingColorId === color.id}
+            >
               <DeleteOutlined />
             </Button>
           </Popconfirm>
@@ -154,7 +158,11 @@ const Variant = () => {
               setDeletingSizeId(size.id);
             }}
           >
-            <Button type="primary" danger>
+            <Button
+              type="primary"
+              danger
+              loading={deletingSizeId === size.id}
+            >
               <DeleteOutlined />
             </Button>
           </Popconfirm>
