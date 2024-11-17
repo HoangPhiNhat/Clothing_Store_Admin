@@ -1,104 +1,129 @@
+/* eslint-disable no-unused-vars */
 import {
   DeleteOutlined,
   RollbackOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+
 import {
   Button,
   Col,
   Form,
   Input,
-  InputNumber,
   message,
   Row,
   Select,
+  Switch,
+  Tabs,
   Upload,
 } from "antd";
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import Loading from "../../../components/base/Loading/Loading";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
+import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 import useProductMutation from "../../../hooks/Product/useProductMutation";
-import useProductQuery from "../../../hooks/Product/useProductQuery";
 import {
   deleteFileCloudinary,
   extractPublicId,
   uploadFileCloudinary,
 } from "../../../services/cloudinary";
-import Loading from "../../../components/base/Loading/Loading";
 
-const UpdateProduct = () => {
+import Color from "./Attribute/Color";
+import Size from "./Attribute/Size";
+import SizeColor from "./Attribute/SizeColor";
+
+const CreateProduct = () => {
   const [isPending, setIsPending] = useState(false);
+  const inputRef = useAutoFocus(open);
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [publicId, setPublicId] = useState(null);
-  const [newpublicId, setNewPublicId] = useState(null);
+  const [variant, setVariant] = useState(false);
+  const [publicIds, setPublicIds] = useState([]);
 
-  const { id } = useParams();
+  //Tabs
+  const items = [
+    {
+      key: "1",
+      label: "Color",
+      children: <Color form={form} variant={variant} message={message} />,
+    },
+    {
+      key: "2",
+      label: "Size",
+      children: <Size form={form} variant={variant} message={message} />,
+    },
+    {
+      key: "3",
+      label: "Size & color",
+      children: <SizeColor form={form} variant={variant} message={message} />,
+    },
+  ];
 
-  const { data: categories, isLoading: isLoadingCategory } = useCategoryQuery(
+  const { data: categories, isLoading } = useCategoryQuery(
     "GET_ALL_CATEGORY_FOR_PRODUCT"
   );
 
-  const { data: product, isLoading: isLoadingProduct } = useProductQuery(
-    "GET_PRODUCT_BY_ID",
-    id,
-    null
-  );
-
-  const { mutate: updateProduct, isPending: updatePending } =
+  const { mutate: createProduct, isPending: createPending } =
     useProductMutation({
-      action: "UPDATE",
+      action: "CREATE",
       onSuccess: (data) => {
-        if (publicId) {
-          deleteFileCloudinary(publicId);
-        }
+        setImageUrl(null);
+        form.resetFields();
         messageApi.success(data.message);
       },
       onError: (error) => {
         messageApi.error(
-          `Lỗi khi sửa sản phẩm: ${error.response.data.message}`
+          `Lỗi khi thêm sản phẩm: ${error.response.data.message}`
         );
-        if (newpublicId) {
-          deleteFileCloudinary(newpublicId);
-        }
+        publicIds.map((publicId) => {
+          deleteFileCloudinary(publicId);
+        });
+        setPublicIds([]);
       },
     });
-
-  useEffect(() => {
-    if (product) {
-      form.setFieldsValue({
-        ...product,
-        thumbnail: product.thumbnail
-          ? [
-              {
-                uid: "-1",
-                name: "thumbnail.png",
-                status: "done",
-                thumbUrl: product.thumbnail,
-              },
-            ]
-          : [],
-      });
-      setImageUrl(product.thumbnail);
-      setPreviewImage(product.thumbnail);
-    }
-  }, [form, product]);
 
   const onFinish = async (values) => {
     try {
       setIsPending(true);
+      const { attributes, ...data } = values;
+      const thumbnail = await uploadFileCloudinary(data.thumbnail[0].thumbUrl);
+      const productResponse = {
+        ...data,
+        thumbnail: thumbnail,
+      };
+      const publicIdProduct = extractPublicId(thumbnail);
+      console.log(publicIdProduct);
 
-      let image = imageUrl;
-      setPreviewImage(values.thumbnail[0].thumbUrl);
-      if (values.thumbnail[0].uid !== "-1") {
-        image = await uploadFileCloudinary(values.thumbnail[0].thumbUrl);
-        setImageUrl(image);
-        setPublicId(extractPublicId(product.thumbnail));
-        setNewPublicId(extractPublicId(image));
-      }
-      updateProduct({ ...values, id: id, thumbnail: image });
+      setPublicIds((prev) => [...prev, publicIdProduct]);
+      console.log(attributes);
+
+      const attributesWithImages = await Promise.all(
+        attributes.map(async (attribute) => {
+          if (attribute?.image?.fileList[0]?.thumbUrl) {
+            const imageUrl = await uploadFileCloudinary(
+              attribute?.image?.fileList[0].thumbUrl
+            );
+            const publicIdAttrbutes = extractPublicId(imageUrl);
+            setPublicIds((prev) => [...prev, publicIdAttrbutes]);
+            return {
+              ...attribute,
+              image: imageUrl,
+            };
+          }
+
+          return attribute;
+        })
+      );
+      const finalData = {
+        ...productResponse,
+        product_att: attributesWithImages,
+      };
+
+      // createProduct(finalData);
+      console.log(finalData);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -106,26 +131,18 @@ const UpdateProduct = () => {
     }
   };
 
-  const onFinishFailed = (values) => {
-    console.log(values);
-    setPreviewImage(values.thumbnail[0].thumbUrl);
-    setIsPending(false);
-  };
-
   const handleImageDelete = () => {
-    setPreviewImage(null);
     setImageUrl(null);
     form.setFieldsValue({ thumbnail: null });
   };
 
-  if (isLoadingCategory || isLoadingProduct || updatePending || isPending)
-    return <Loading />;
+  if (isLoading) return <Loading />;
 
   return (
     <div className="container mx-auto">
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-medium">Sửa sản phẩm</h1>
+        <h2 className="text-2xl font-medium">Thông tin sản phẩm</h2>
         <Link to="/admin/products">
           <Button disabled={isPending} className="text-base" type="primary">
             <RollbackOutlined /> Quay lại danh sách
@@ -135,18 +152,18 @@ const UpdateProduct = () => {
 
       <div>
         <Form
-          disabled={isPending | updatePending}
+          disabled={isPending}
           form={form}
           name="basic"
           layout="vertical"
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           initialValues={{ attributes: [{}] }}
         >
+          {/* Form product */}
           <Row gutter={30}>
             <Col span={18}>
               <Row gutter={16}>
-                <Col span={16}>
+                <Col span={8}>
                   <Form.Item
                     label="Tên sản phẩm"
                     name="name"
@@ -154,7 +171,18 @@ const UpdateProduct = () => {
                       { required: true, message: "Vui lòng nhập tên sản phẩm" },
                     ]}
                   >
-                    <Input />
+                    <Input ref={inputRef} placeholder="Nhập tên" />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    name="material"
+                    label="Chất liệu"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập chất liệu" },
+                    ]}
+                  >
+                    <Input placeholder="Nhập chất liệu" />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -169,7 +197,7 @@ const UpdateProduct = () => {
                       showSearch
                       placeholder="Chọn danh mục"
                       optionFilterProp="children"
-                      options={categories?.data.map((category) => ({
+                      options={categories?.data?.map((category) => ({
                         value: category.id,
                         label: category.name,
                       }))}
@@ -178,24 +206,17 @@ const UpdateProduct = () => {
                 </Col>
               </Row>
               <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item
-                    name="material"
-                    label="Chất liệu"
-                    rules={[
-                      { required: true, message: "Vui lòng nhập chất liệu" },
-                    ]}
-                  >
-                    <Input placeholder="Nhập chất liệu" />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
+                {/* <Col span={8}>
                   <Form.Item
                     label="Giá gốc"
                     name="regular_price"
                     rules={[
                       { required: true, message: "Vui lòng nhập giá gốc" },
-                      { min: 1, type: "number", message: "Giá gốc lớn hơn 1" },
+                      {
+                        type: "number",
+                        min: 1,
+                        message: "Giá gốc cần lớn hơn 1 đồng",
+                      },
                     ]}
                   >
                     <InputNumber
@@ -240,7 +261,7 @@ const UpdateProduct = () => {
                       className="w-full"
                     />
                   </Form.Item>
-                </Col>
+                </Col> */}
               </Row>
               <Form.Item
                 name="short_description"
@@ -249,7 +270,11 @@ const UpdateProduct = () => {
                   { required: true, message: "Vui lòng nhập mô tả ngắn" },
                 ]}
               >
-                <Input.TextArea showCount maxLength={200} />
+                <Input.TextArea
+                  showCount
+                  maxLength={200}
+                  placeholder="Nhập giá mô tả ngắn"
+                />
               </Form.Item>
               <Form.Item
                 name="long_description"
@@ -258,7 +283,11 @@ const UpdateProduct = () => {
                   { required: true, message: "Vui lòng nhập mô tả chi tiết" },
                 ]}
               >
-                <Input.TextArea showCount maxLength={200} />
+                <Input.TextArea
+                  showCount
+                  maxLength={200}
+                  placeholder="Nhập giá mô tả chi tiết"
+                />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -279,7 +308,7 @@ const UpdateProduct = () => {
                   },
                 ]}
               >
-                {previewImage == null && (
+                {imageUrl == null && (
                   <Upload.Dragger
                     accept=".jpg, .jpeg, .png"
                     listType="picture"
@@ -297,7 +326,7 @@ const UpdateProduct = () => {
                       }
                       return false;
                     }}
-                    // onRemove={() => setImageUrl(null)}
+                    onRemove={() => setImageUrl(null)}
                     previewFile={(file) => {
                       return new Promise((resolve) => {
                         const reader = new FileReader();
@@ -305,7 +334,6 @@ const UpdateProduct = () => {
                         reader.onload = () => {
                           resolve(reader.result);
                           setImageUrl(reader.result);
-                          setPreviewImage(reader.result);
                         };
                       });
                     }}
@@ -318,15 +346,14 @@ const UpdateProduct = () => {
                     </p>
                   </Upload.Dragger>
                 )}
-                {previewImage && (
+                {imageUrl && (
                   <div className="relative w-fit">
                     <img
-                      src={previewImage}
+                      src={imageUrl}
                       alt="Xem trước hình ảnh đại diện"
                       className="min-w-[352px] h-[352px] object-cover rounded-lg"
                     />
                     <button
-                      disabled={isPending}
                       onClick={handleImageDelete}
                       className="absolute top-0 right-0 bg-red-500 text-white m-3 p-2 rounded-full hover:bg-red-600 transition-colors"
                     >
@@ -337,17 +364,36 @@ const UpdateProduct = () => {
               </Form.Item>
             </Col>
           </Row>
+
+          {/* Choose att */}
+          <Row className="flex gap-5 items-center">
+            {variant ? (
+              <span className="text-base ">Biến thể</span>
+            ) : (
+              <span className="text-base ">Đơn thể</span>
+            )}
+            <Switch
+              onChange={(value) => {
+                form.resetFields();
+                setVariant(value);
+              }}
+            />
+          </Row>
+
+          {/* Attribute */}
+          {variant && <Tabs defaultActiveKey="1" items={items} />}
+
           {/* Button add product */}
           <div className="flex justify-end">
             <Form.Item>
               <Button
-                disabled={isPending | updatePending}
-                loading={isPending | updatePending}
+                loading={isPending}
+                disabled={isPending}
                 type="primary"
                 htmlType="submit"
                 className="my-4"
               >
-                Cập nhật sản phẩm
+                Thêm sản phẩm
               </Button>
             </Form.Item>
           </div>
@@ -357,4 +403,4 @@ const UpdateProduct = () => {
   );
 };
 
-export default UpdateProduct;
+export default CreateProduct;
