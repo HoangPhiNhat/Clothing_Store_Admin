@@ -37,9 +37,9 @@ export const removeSize = async (sizeId) => {
   }
 };
 
-export const updateSize = async (sizeId, size) => {
+export const updateSize = async (size) => {
   try {
-    const response = await Author.put(`/sizes/${sizeId}`, size);
+    const response = await Author.put(`/sizes/${size.id}`, size);
     return response.data;
   } catch (error) {
     throw error;

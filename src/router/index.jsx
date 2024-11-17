@@ -22,6 +22,8 @@ import ProductManagePage from "../pages/Product/page";
 import TrashProduct from "../pages/Product/_component/TrashProduct";
 import ProductAttribute from "../pages/Attribute/page";
 
+import Variant from "../pages/Variant/page";
+
 import Order from "../pages/Order/page";
 import OrderDetail from "../pages/Order/_components/OrderDetail";
 
@@ -73,6 +75,9 @@ const RouterComponent = () => {
               path="products/:id/attributes"
               element={<ProductAttribute />}
             />
+
+            {/* Product variant */}
+            <Route path="products/variant" element={<Variant />} />
 
             {/* Order */}
             <Route path="orders" element={<Order />} />
