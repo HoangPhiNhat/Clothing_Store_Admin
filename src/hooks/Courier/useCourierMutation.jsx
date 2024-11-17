@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCourier } from "../../services/courier";
+import { createCourier, updateCourier } from "../../services/courier";
 
 const useCourierMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
@@ -10,7 +10,7 @@ const useCourierMutation = ({ action, onSuccess, onError }) => {
         case "CREATE":
           return await createCourier(courier);
         case "UPDATE":
-          return null;
+          return await updateCourier(courier);
         case "DELETE":
           return null;
         default:
