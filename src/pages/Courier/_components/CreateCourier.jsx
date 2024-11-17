@@ -66,9 +66,7 @@ const CreateCourier = ({ open, onCancel }) => {
           <Form.Item
             label="Địa chỉ"
             name="address"
-            rules={[
-              { required: true, message: "Vui lòng nhập địa chỉ" },
-            ]}
+            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
           >
             <Input.TextArea placeholder="Vui lòng nhập địa chỉ" />
           </Form.Item>
@@ -113,7 +111,9 @@ const CreateCourier = ({ open, onCancel }) => {
           <Form.Item
             label="Tên phương tiện"
             name="vehicleName"
-            rules={[{ required: true, message: "Vui lòng nhập tên phương tiện" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập tên phương tiện" },
+            ]}
           >
             <Input placeholder="Vui lòng nhập tên phương tiện" />
           </Form.Item>
@@ -125,10 +125,7 @@ const CreateCourier = ({ open, onCancel }) => {
             <Input placeholder="Vui lòng nhập biển số xe" />
           </Form.Item>
           <div className="mt-6 flex justify-between items-center">
-            <Button
-              key="cancel"
-              onClick={onCancel}
-            >
+            <Button key="cancel" onClick={onCancel}>
               Hủy
             </Button>
 
@@ -140,10 +137,7 @@ const CreateCourier = ({ open, onCancel }) => {
               >
                 Trở lại
               </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-              >
+              <Button type="primary" htmlType="submit">
                 Tạo tài xế
               </Button>
             </div>
@@ -153,19 +147,24 @@ const CreateCourier = ({ open, onCancel }) => {
     },
   ];
 
-  const handleNext = (step, values, isLastStep = false) => {
-    setFormData((prevData) => ({
-      ...prevData,
+  const handleNext = async (step, values, isLastStep = false) => {
+    const updatedData = {
+      ...formData,
       [step]: values,
-    }));
+    };
+    await setFormData(updatedData);
 
     if (isLastStep) {
       message.success("Form submitted successfully!");
-      console.log("Final Data:", { ...formData, [step]: values });
+      console.log("Final Data:", formData);
+      //Reset form
+      form.resetFields();
+      setFileList([]);
+      setCurrent(0);
+      onCancel();
       //Call api create
     } else {
       setCurrent(current + 1);
-      form.resetFields();
     }
   };
 
