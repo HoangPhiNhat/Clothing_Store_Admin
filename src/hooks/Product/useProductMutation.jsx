@@ -23,7 +23,7 @@ const useProductMutation = ({ action, onSuccess, onError }) => {
           return null;
       }
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       onSuccess && onSuccess(data);
       queryClient.invalidateQueries({
         queryKey: ["PRODUCT_KEY"],

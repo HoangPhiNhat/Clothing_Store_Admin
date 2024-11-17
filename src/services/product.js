@@ -6,9 +6,9 @@ let size = 5;
 
 export const getProductAll = async (page, name) => {
   try {
-    const response = await instance.get(
-      `/products?name=${name}&page=${page}&size=${size}&sort=DESC`
-    );
+    let api = `/products?page=${page}&size=${size}&sort=DESC`;
+    if (name) api += `&name=${name}`;
+    const response = await instance.get(api);
     console.log(response);
     return response.data;
   } catch (error) {
@@ -18,9 +18,9 @@ export const getProductAll = async (page, name) => {
 
 export const getAllProductTrash = async (page, name) => {
   try {
-    const response = await Author.get(
-      `/products/trash?name=${name}&page=${page}&size=${size}&sort=DESC`
-    );
+    let api = `/products/trash?page=${page}&size=${size}&sort=DESC`;
+    if (name) api += `&name=${name}`;
+    const response = await Author.get(api);
     console.log(response);
     return response.data;
   } catch (error) {
@@ -30,7 +30,6 @@ export const getAllProductTrash = async (page, name) => {
 
 export const removeProduct = async (id) => {
   try {
-    console.log(id);
     const response = await Author.delete(`/products/${id}`);
     return response.data;
   } catch (error) {
@@ -40,7 +39,6 @@ export const removeProduct = async (id) => {
 
 export const getProductById = async (id) => {
   try {
-    console.log(id);
     const response = await Author.get(`/products/${id}/show`);
     return response.data;
   } catch (error) {
@@ -51,8 +49,6 @@ export const getProductById = async (id) => {
 export const createProduct = async (product) => {
   try {
     const response = await Author.post(`/products`, product);
-    console.log(response);
-
     return response.data;
   } catch (error) {
     throw error;
@@ -60,7 +56,6 @@ export const createProduct = async (product) => {
 };
 
 export const updateProduct = async (product) => {
-  console.log(product);
   try {
     const response = await Author.put(`/products/${product.id}`, product);
     return response.data;
@@ -71,8 +66,6 @@ export const updateProduct = async (product) => {
 
 export const restoreProduct = async (id) => {
   try {
-    console.log(id);
-
     const response = await Author.put(`/products/${id}/restore`);
     return response.data;
   } catch (error) {
