@@ -4,9 +4,13 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Popconfirm, Space, Table, Tag } from "antd";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import CreateDiscount from "./_components/CreateDiscount";
 
 const Discounts = () => {
+  const [modalCreateOpen, setModalCreateOpen] = useState(false);
+
   const dataSource = [
     {
       key: "1",
@@ -16,6 +20,7 @@ const Discounts = () => {
       date_start: "20/10/2024",
       date_end: "20/11/2024",
       created_name: "Admin",
+      discount_value:"20%"
     },
   ];
 
@@ -28,14 +33,17 @@ const Discounts = () => {
     {
       title: "Tên chiến dịch",
       key: "name",
-      render: (_, discounts) => (
-        <Link to={`1`}>{discounts.name}</Link>
-      ),
+      render: (_, discounts) => <Link to={`1`}>{discounts.name}</Link>,
     },
     {
       title: "Người tạo",
       dataIndex: "created_name",
       key: "created_name",
+    },
+    {
+      title: "Giảm giá",
+      dataIndex: "discount_value",
+      key: "discount_value",
     },
     {
       title: "Trạng thái",
@@ -60,7 +68,7 @@ const Discounts = () => {
     {
       title: "Hành động",
       key: "action",
-      align:"center",
+      align: "center",
       render: () => (
         <Space size="middle">
           <Popconfirm
@@ -112,10 +120,7 @@ const Discounts = () => {
     <>
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý chiến dịch giảm giá</h1>
-        <Button
-          type="primary"
-          // onClick={() => setModalCreateOpen(true)}
-        >
+        <Button type="primary" onClick={() => setModalCreateOpen(true)}>
           <PlusCircleOutlined
           // disabled={isPending}
           />
@@ -123,6 +128,11 @@ const Discounts = () => {
         </Button>
       </div>
       <Table dataSource={dataSource} columns={columns} pagination={false} />
+
+      <CreateDiscount
+        open={modalCreateOpen}
+        onCancel={() => setModalCreateOpen(false)}
+      />
     </>
   );
 };
