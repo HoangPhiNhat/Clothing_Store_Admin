@@ -2,6 +2,7 @@ import { EyeOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { Button, Table } from "antd";
 import { useState } from "react";
 import CreateCourier from "./_components/CreateCourier";
+import { Link } from "react-router-dom";
 
 const Courier = () => {
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
@@ -48,9 +49,11 @@ const Courier = () => {
       key: "vehicleId",
       align: "center",
       render: () => (
-        <Button>
-          <EyeOutlined />
-        </Button>
+        <Link to={`${1}`}>
+          <Button>
+            <EyeOutlined />
+          </Button>
+        </Link>
       ),
     },
   ];
@@ -59,10 +62,7 @@ const Courier = () => {
     <>
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý tài xế</h1>
-        <Button
-          type="primary"
-          onClick={() => setModalCreateOpen(true)}
-        >
+        <Button type="primary" onClick={() => setModalCreateOpen(true)}>
           <PlusCircleOutlined
           //  disabled={isPending}
           />

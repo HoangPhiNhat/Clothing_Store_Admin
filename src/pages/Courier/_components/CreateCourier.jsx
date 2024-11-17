@@ -68,7 +68,7 @@ const CreateCourier = ({ open, onCancel }) => {
             name="address"
             rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
           >
-            <Input.TextArea placeholder="Vui lòng nhập địa chỉ" />
+            <Input placeholder="Vui lòng nhập địa chỉ" />
           </Form.Item>
           {/* Button */}
           <div className="mt-6 flex justify-between items-center">
@@ -147,12 +147,12 @@ const CreateCourier = ({ open, onCancel }) => {
     },
   ];
 
-  const handleNext = async (step, values, isLastStep = false) => {
+  const handleNext = (step, values, isLastStep = false) => {
     const updatedData = {
       ...formData,
       [step]: values,
     };
-    await setFormData(updatedData);
+    setFormData(updatedData);
 
     if (isLastStep) {
       message.success("Form submitted successfully!");
