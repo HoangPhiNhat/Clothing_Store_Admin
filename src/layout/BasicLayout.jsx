@@ -4,6 +4,7 @@ import {
   PieChartOutlined,
   ShoppingCartOutlined,
   TagsOutlined,
+  TruckOutlined,
   UnorderedListOutlined,
   UserOutlined
 } from "@ant-design/icons";
@@ -59,12 +60,21 @@ const LayoutAdmin = () => {
           key: "/admin/products/trash",
           label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
         },
+        {
+          key: "/admin/products/variant",
+          label: <Link to="/admin/products/variant">Biến thể</Link>,
+        },
       ],
     },
     {
       key: "/admin/orders",
       icon: <ShoppingCartOutlined />,
       label: <Link to="/admin/orders">Đơn hàng</Link>,
+    },
+    {
+      key: "/admin/couriers",
+      icon: <TruckOutlined />,
+      label: <Link to="/admin/couriers">Chuyển phát nhanh</Link>,
     },
   ];
 

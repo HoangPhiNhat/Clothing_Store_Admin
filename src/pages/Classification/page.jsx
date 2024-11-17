@@ -1,20 +1,21 @@
 import {
   DeleteOutlined,
   EditOutlined,
-  EyeInvisibleOutlined,
-  EyeOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import Loading from "../../components/base/Loading/Loading";
-import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
-import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
-import CreateCategory from "./_components/CreateCategory";
-import UpdateCategory from "./_components/UpdateCategory";
 
-const Category = () => {
+import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+
+import useClassificationMutation from "../../hooks/Classification/useClassificationMutation";
+import useClassificationQuery from "../../hooks/Classification/useClassificationQuery";
+import CreateClassification from "./_components/CreateClassification";
+import UpdateClassification from "./_components/UpdateClassification";
+import Loading from "../../components/base/Loading/Loading";
+
+const Classification = () => {
+  const { id } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
   const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
@@ -22,74 +23,41 @@ const Category = () => {
   const [pageCategory, setPageCategory] = useState(1);
   const [deletingCategoryId, setDeletingCategoryId] = useState(null);
 
-  const {
-    data: categories,
-    isLoading,
-    isError,
-  } = useCategoryQuery("GET_ALL_CATEGORY", null, pageCategory);
+  const { data: classification, isLoading } = useClassificationQuery(
+    "GET_CLASSIFICATION_BY_ID",
+    id,
+    pageCategory
+  );
 
-  const { mutate: deleteCategory, isPending } = useCategoryMutation({
+  const { mutate: deleteCategory, isPending } = useClassificationMutation({
     action: "DELETE",
     onSuccess: () => {
       setDeletingCategoryId(null);
-      messageApi.success("Xóa danh mục thành công.");
+      messageApi.success("Xóa danh mục phân loại thành công.");
     },
     onError: (error) => {
-      setDeletingCategoryId(null);
-      message.error("Xóa danh mục thất bại. " + error.response.data.message);
+      selectedCategory(null);
+      message.error("Xóa danh mục phân loại thất bại. " + error);
     },
   });
 
-  const { mutate: toggleStatusCategory, isPending: isPendingToggle } =
-    useCategoryMutation({
-      action: "TOGGLE_STATUS",
-      onSuccess: () => {
-        setDeletingCategoryId(null);
-        messageApi.success("Cập nhật trạng thái danh mục thành công.");
-      },
-      onError: (error) => {
-        setDeletingCategoryId(null);
-        message.error(
-          "Cập nhật trạng thái danh mục thất bại. " +
-            error.response.data.message
-        );
-      },
-    });
+  const handleModalUpdate = (category) => {
+    setSelectedCategory(category);
+    setModalUpdateOpen(true);
+  };
 
   const columns = [
     {
       title: "Mã danh mục",
       dataIndex: "category_code",
-      with: "10%",
     },
     {
       title: "Tên danh mục",
       dataIndex: "name",
-      render: (_, categories) => (
-        <Link className="text-black" to={`${categories.id}`}>
-          {categories.name}
-        </Link>
-      ),
       onFilter: (value, record) => record.name.indexOf(value) === 0,
       sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ["ascend", "descend"],
-      width: "20%",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "is_active",
-      render: (_, categories) => (
-        <span
-          className={
-            categories.is_active
-              ? "text-white bg-green-500 px-2 py-1 rounded-md"
-              : "text-white bg-red-500 px-2 py-1 rounded-md"
-          }
-        >
-          {categories.is_active ? "Kích hoạt" : "Đã ẩn"}
-        </span>
-      ),
-      width: "10%",
+      width: "40%",
     },
     {
       title: "Ngày tạo",
@@ -112,25 +80,6 @@ const Category = () => {
       key: "action",
       render: (_, category) => (
         <Space size="small">
-          <Popconfirm
-            title="Thay đổi trạng thái"
-            description={
-              category.is_active
-                ? "Bạn có muốn ẩn danh mục này không?"
-                : "Bạn có muốn hiển thị danh mục này không?"
-            }
-            okText={deletingCategoryId === category.id ? `Đang xóa` : `Có`}
-            cancelText="Không"
-            onConfirm={() => {
-              setDeletingCategoryId(category.id);
-              toggleStatusCategory(category);
-            }}
-          >
-            <Button type="primary" loading={deletingCategoryId === category.id}>
-              {category.is_active ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-            </Button>
-          </Popconfirm>
-
           <Button
             disabled={deletingCategoryId === category.id}
             onClick={() => handleModalUpdate(category)}
@@ -146,6 +95,7 @@ const Category = () => {
             onConfirm={() => {
               setDeletingCategoryId(category.id);
               deleteCategory(category);
+              console.log();
             }}
           >
             <Button
@@ -161,47 +111,40 @@ const Category = () => {
     },
   ];
 
-  const dataSource = (categories?.data.data || []).map((category, index) => ({
+  const dataSource = (classification?.data || []).map((category, index) => ({
     key: category.id,
     index: index + 1,
     ...category,
   }));
 
-  const handleModalUpdate = (category) => {
-    setSelectedCategory(category);
-    setModalUpdateOpen(true);
-  };
-
-  if (isError) {
-    return <div>Error: {isError.message}</div>;
-  }
   if (isLoading) return <Loading />;
 
   return (
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl">Quản lý danh mục</h1>
+        <h1 className="text-xl">Quản lý danh mục phân loại</h1>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
-          <PlusCircleOutlined disabled={isPending || isPendingToggle} />
+          <PlusCircleOutlined disabled={isPending} />
           Thêm
         </Button>
       </div>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
       <Pagination
+        disabled={isPending}
         current={pageCategory}
-        disabled={isPending || isPendingToggle}
         className="mt-5"
         align="end"
-        total={categories?.data.total}
+        total={classification.total}
         pageSize={5}
         onChange={(page) => setPageCategory(page)}
       />
-      <CreateCategory
+      <CreateClassification
+        id={id}
         open={modalCreateOpen}
         onCancel={() => setModalCreateOpen(false)}
       />
-      <UpdateCategory
+      <UpdateClassification
         open={modalUpdateOpen}
         onCancel={() => setModalUpdateOpen(false)}
         category={selectedCategory}
@@ -210,4 +153,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Classification;

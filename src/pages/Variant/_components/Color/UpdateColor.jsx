@@ -1,18 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from "react";
 import { Button, Modal, Form, Input, message } from "antd";
-import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
-import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
+import useColorMutation from "../../../../hooks/Color/useColorMutation";
+import useAutoFocus from "../../../../hooks/customHook/useAutoFocus";
 
-const UpdateCategory = ({ open, onCancel, category }) => {
+const UpdateColor = ({ open, onCancel, color }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const inputRef = useAutoFocus(open);
 
-  const { mutate: updateCategory, isPending } = useCategoryMutation({
+  const { mutate: updateColor, isPending } = useColorMutation({
     action: "UPDATE",
     onSuccess: () => {
-      messageApi.success("Cập nhật danh mục thành công");
+      messageApi.success("Cập nhật màu sắc thành công");
       onCancel();
     },
     onError: (error) => {
@@ -21,18 +21,18 @@ const UpdateCategory = ({ open, onCancel, category }) => {
   });
 
   useEffect(() => {
-    if (category) {
+    if (color) {
       form.setFieldsValue({
-        name: category.name,
+        name: color.name,
       });
     }
-  }, [category, form]);
+  }, [color, form]);
 
   const onFinish = (values) => {
-    if (category && category.id) {
-      updateCategory({ ...values, id: category.id });
+    if (color && color.id) {
+      updateColor({ ...values, id: color.id });
     } else {
-      messageApi.error("Không tìm thấy ID của danh mục phân loại");
+      messageApi.error("Không tìm thấy ID của màu sắc");
     }
   };
 
@@ -40,7 +40,7 @@ const UpdateCategory = ({ open, onCancel, category }) => {
     <>
       {contextHolder}
       <Modal
-        title="Cập nhật danh mục"
+        title="Cập nhật màu sắc"
         open={open}
         onCancel={isPending ? null : onCancel}
         footer={[
@@ -59,23 +59,23 @@ const UpdateCategory = ({ open, onCancel, category }) => {
       >
         <Form
           form={form}
-          name="updateCategory"
           style={{ maxWidth: 600 }}
           onFinish={onFinish}
           autoComplete="off"
+          name="updateColor"
         >
           <Form.Item
             name="name"
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập tên danh mục!",
+                message: "Vui lòng nhập tên màu sắc!",
               },
             ]}
           >
             <Input
               ref={inputRef}
-              placeholder="Tên danh mục"
+              placeholder="Tên màu sắc"
               disabled={isPending}
             />
           </Form.Item>
@@ -85,4 +85,4 @@ const UpdateCategory = ({ open, onCancel, category }) => {
   );
 };
 
-export default UpdateCategory;
+export default UpdateColor;

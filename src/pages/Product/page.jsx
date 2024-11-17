@@ -67,7 +67,13 @@ const ProductManagePage = () => {
       dataIndex: "thumbnail",
       key: "thumbnail",
       width: "15%",
-      render: (thumbnail) => <img className="w-20" src={thumbnail} alt="" />,
+      render: (thumbnail, product) => (
+        <img
+          className="w-24 h-24 object-cover"
+          src={thumbnail}
+          alt={product.name}
+        />
+      ),
     },
     {
       title: "Tên sản phẩm",
@@ -199,7 +205,7 @@ const ProductManagePage = () => {
           value={searchKey}
           onChange={(e) => {
             setSearhKey(e.target.value);
-            setPageProduct(1)
+            setPageProduct(1);
           }}
         />
         <Link to="add">
@@ -217,7 +223,6 @@ const ProductManagePage = () => {
         pagination={false}
       />
       <Pagination
-        defaultCurrent={1}
         current={pageProduct}
         onChange={(page) => {
           setPageProduct(page);

@@ -1,32 +1,25 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  createProduct,
-  removeProduct,
-  restoreProduct,
-  updateProduct,
-} from "../../services/product";
+import { createSize, removeSize, updateSize } from "../../services/size";
 
-const useProductMutation = ({ action, onSuccess, onError }) => {
+const useSizeMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
   const { mutate, ...rest } = useMutation({
-    mutationFn: async (product) => {
+    mutationFn: async (size) => {
       switch (action) {
         case "CREATE":
-          return await createProduct(product);
+          return await createSize(size);
         case "DELETE":
-          return await removeProduct(product);
+          return await removeSize(size);
         case "UPDATE":
-          return await updateProduct(product);
-        case "RESTORE":
-          return await restoreProduct(product);
+          return await updateSize(size);
         default:
           return null;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       onSuccess && onSuccess(data);
       queryClient.invalidateQueries({
-        queryKey: ["PRODUCT_KEY"],
+        queryKey: ["SIZE_KEY"],
       });
     },
     onError: (error) => {
@@ -38,4 +31,4 @@ const useProductMutation = ({ action, onSuccess, onError }) => {
   return { mutate, ...rest };
 };
 
-export default useProductMutation;
+export default useSizeMutation;

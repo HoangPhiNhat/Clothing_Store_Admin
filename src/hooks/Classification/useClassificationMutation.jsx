@@ -2,11 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createCategory,
   removeCategory,
-  toggleStatusCategory,
   updateCategory,
 } from "../../services/category";
 
-const useCategoryMutation = ({ action, onSuccess, onError }) => {
+const useClassificationMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
 
   const { mutate, ...rest } = useMutation({
@@ -18,8 +17,6 @@ const useCategoryMutation = ({ action, onSuccess, onError }) => {
           return await removeCategory(category);
         case "UPDATE":
           return await updateCategory(category);
-        case "TOGGLE_STATUS":
-          return await toggleStatusCategory(category);
         default:
           return null;
       }
@@ -27,7 +24,7 @@ const useCategoryMutation = ({ action, onSuccess, onError }) => {
     onSuccess: () => {
       onSuccess && onSuccess();
       queryClient.invalidateQueries({
-        queryKey: ["CATEGORY_KEY"],
+        queryKey: ["GET_CLASSIFICATION"],
       });
     },
     onError: (error) => {
@@ -39,4 +36,4 @@ const useCategoryMutation = ({ action, onSuccess, onError }) => {
   return { mutate, ...rest };
 };
 
-export default useCategoryMutation;
+export default useClassificationMutation;

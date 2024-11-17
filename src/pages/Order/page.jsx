@@ -83,7 +83,7 @@ const Order = () => {
           {orders.order_status}
         </span>
       ),
-      width: "10%",
+      width: "15%",
     },
     {
       title: "Phương thức thanh toán",
@@ -103,12 +103,12 @@ const Order = () => {
     {
       title: "Ngày đặt",
       dataIndex: "created_at",
-      width: "15%",
+      width: "10%",
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "updated_at",
-      width: "15%",
+      width: "10%",
     },
     {
       title: "Hành động",

@@ -12,9 +12,9 @@ const SignUp = () => {
     try {
       const response = await signUp(values);
       console.log(response);
-      messageApi.success("Dang ki thanh cong");
+      messageApi.success(response.message);
     } catch (error) {
-      console.log(error.message);
+      messageApi.error(error.response.data.message);
     }
   };
 

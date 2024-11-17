@@ -7,8 +7,10 @@ import {
   getCategoryById,
 } from "../../services/category";
 
-const useCategoryQuery = (action, id, page) => {
-  let queryKey = id ? ["CATEGORY_KEY", id] : ["CATEGORY_KEY", page];
+const useClassificationQuery = (action, id, page) => {
+  let queryKey = page
+    ? ["GET_CLASSIFICATION", page]
+    : ["GET_CLASSIFICATION", id];
 
   const { data, ...rest } = useQuery({
     queryKey,
@@ -31,4 +33,4 @@ const useCategoryQuery = (action, id, page) => {
   });
   return { data, ...rest };
 };
-export default useCategoryQuery;
+export default useClassificationQuery;

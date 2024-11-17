@@ -1,32 +1,28 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  createProduct,
-  removeProduct,
-  restoreProduct,
-  updateProduct,
-} from "../../services/product";
+import { createColor, removeColor, updateColor } from "../../services/color";
 
-const useProductMutation = ({ action, onSuccess, onError }) => {
+const useColorMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
   const { mutate, ...rest } = useMutation({
-    mutationFn: async (product) => {
+    mutationFn: async (color) => {
       switch (action) {
         case "CREATE":
-          return await createProduct(product);
+          return await createColor(color);
         case "DELETE":
-          return await removeProduct(product);
+          return await removeColor(color);
         case "UPDATE":
-          return await updateProduct(product);
-        case "RESTORE":
-          return await restoreProduct(product);
+          return await updateColor(color);
         default:
           return null;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
+      console.log(data);
+      console.log(variables);
+      
       onSuccess && onSuccess(data);
       queryClient.invalidateQueries({
-        queryKey: ["PRODUCT_KEY"],
+        queryKey: ["COLOR_KEY"],
       });
     },
     onError: (error) => {
@@ -38,4 +34,4 @@ const useProductMutation = ({ action, onSuccess, onError }) => {
   return { mutate, ...rest };
 };
 
-export default useProductMutation;
+export default useColorMutation;

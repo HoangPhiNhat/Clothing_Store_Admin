@@ -32,7 +32,9 @@ const OrderDetail = () => {
       dataIndex: "thumbnail",
       key: "thumbnail",
       width: "20%",
-      render: (thumbnail) => <img className="w-20" src={thumbnail} alt="" />,
+      render: (thumbnail, product) => (
+        <img className="w-24 h-24 object-cover" src={thumbnail} alt={product.name} />
+      ),
     },
     {
       title: "Tên sản phẩm",
@@ -77,7 +79,7 @@ const OrderDetail = () => {
   if (isErrorOrder) return <h1>Error order</h1>;
   if (isErrorProducts) return <h1>Error products</h1>;
   if (isLoadingOrder) return <Loading />;
-  
+
   return (
     <>
       <div>

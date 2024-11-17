@@ -1,18 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from "react";
 import { Button, Modal, Form, Input, message } from "antd";
-import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
-import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
+import useSizeMutation from "../../../../hooks/Size/useSizeMutation";
+import useAutoFocus from "../../../../hooks/customHook/useAutoFocus";
 
-const UpdateCategory = ({ open, onCancel, category }) => {
+const UpdateSize = ({ open, onCancel, size }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const inputRef = useAutoFocus(open);
 
-  const { mutate: updateCategory, isPending } = useCategoryMutation({
+  const { mutate: updateSize, isPending } = useSizeMutation({
     action: "UPDATE",
     onSuccess: () => {
-      messageApi.success("Cập nhật danh mục thành công");
+      messageApi.success("Cập nhật kích thước thành công");
       onCancel();
     },
     onError: (error) => {
@@ -21,18 +21,18 @@ const UpdateCategory = ({ open, onCancel, category }) => {
   });
 
   useEffect(() => {
-    if (category) {
+    if (size) {
       form.setFieldsValue({
-        name: category.name,
+        name: size.name,
       });
     }
-  }, [category, form]);
+  }, [size, form]);
 
   const onFinish = (values) => {
-    if (category && category.id) {
-      updateCategory({ ...values, id: category.id });
+    if (size && size.id) {
+      updateSize({ ...values, id: size.id });
     } else {
-      messageApi.error("Không tìm thấy ID của danh mục phân loại");
+      messageApi.error("Không tìm thấy ID của kích thước");
     }
   };
 
@@ -40,7 +40,7 @@ const UpdateCategory = ({ open, onCancel, category }) => {
     <>
       {contextHolder}
       <Modal
-        title="Cập nhật danh mục"
+        title="Cập nhật kích thước"
         open={open}
         onCancel={isPending ? null : onCancel}
         footer={[
@@ -59,23 +59,23 @@ const UpdateCategory = ({ open, onCancel, category }) => {
       >
         <Form
           form={form}
-          name="updateCategory"
           style={{ maxWidth: 600 }}
           onFinish={onFinish}
           autoComplete="off"
+          name="updateSize"
         >
           <Form.Item
             name="name"
             rules={[
               {
                 required: true,
-                message: "Vui lòng nhập tên danh mục!",
+                message: "Vui lòng nhập tên kích thước!",
               },
             ]}
           >
             <Input
               ref={inputRef}
-              placeholder="Tên danh mục"
+              placeholder="Tên kích thước"
               disabled={isPending}
             />
           </Form.Item>
@@ -85,4 +85,4 @@ const UpdateCategory = ({ open, onCancel, category }) => {
   );
 };
 
-export default UpdateCategory;
+export default UpdateSize;

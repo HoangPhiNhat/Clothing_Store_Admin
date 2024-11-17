@@ -5,10 +5,11 @@ const Page404 = () => {
     <Result
       status="404"
       title="404"
-      subTitle="Sorry, the page you visited does not exist."
+      iconFontSize="120"
+      subTitle="Xin lỗi, trang bạn truy cập không tồn tại."
       extra={
         <Link to={"/admin"}>
-          <Button type="primary">Back Home</Button>
+          <Button type="primary">Trở về</Button>
         </Link>
       }
     />

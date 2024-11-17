@@ -37,9 +37,9 @@ export const removeColor = async (colorId) => {
   }
 };
 
-export const updateColor = async (colorId, color) => {
+export const updateColor = async (color) => {
   try {
-    const response = await Author.put(`/colors/${colorId}`, color);
+    const response = await Author.put(`/colors/${color.id}`, color);
     return response.data;
   } catch (error) {
     throw error;
