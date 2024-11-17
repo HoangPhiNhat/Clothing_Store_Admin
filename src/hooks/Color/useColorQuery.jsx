@@ -5,18 +5,18 @@ import {
   getColorById,
 } from "../../services/color";
 
-const useColorQuery = (action, id, page) => {
-  const queryKey = id ? ["COLOR_KEY", id] : ["COLOR_KEY", page];
+const useColorQuery = (action, id) => {
+  const queryKey = id ? ["COLOR_KEY", id] : ["COLOR_KEY", ];
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
       switch (action) {
         case "GET_ALL_COLOR":
-          return await getAllColor(page);
+          return await getAllColor();
         case "GET_COLOR_BY_ID":
           return await getColorById(id);
         case "GET_ALL_COLOR_TRASH":
-          return await getAllColorTrash(page);
+          return await getAllColorTrash();
         default:
           return null;
       }

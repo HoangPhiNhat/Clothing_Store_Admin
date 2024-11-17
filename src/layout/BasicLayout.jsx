@@ -60,6 +60,10 @@ const LayoutAdmin = () => {
           key: "/admin/products/trash",
           label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
         },
+        {
+          key: "/admin/products/variant",
+          label: <Link to="/admin/products/variant">Biến thể</Link>,
+        },
       ],
     },
     {
