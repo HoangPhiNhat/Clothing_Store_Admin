@@ -17,7 +17,6 @@ const useAttributeQuery = (productId, page, pageSize) => {
     keepPreviousData: true,
     cacheTime: 0,
   });
-console.log(data);
   return { data, ...rest };
 };
 

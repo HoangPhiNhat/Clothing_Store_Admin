@@ -57,12 +57,6 @@ const ProductManagePage = () => {
 
   const columns = [
     {
-      title: "Mã sản phẩm",
-      dataIndex: "sku",
-      key: "sku",
-      width: "10%",
-    },
-    {
       title: "Ảnh sản phẩm",
       dataIndex: "thumbnail",
       key: "thumbnail",

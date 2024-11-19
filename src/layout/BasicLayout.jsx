@@ -25,9 +25,9 @@ const LayoutAdmin = () => {
 
   const items = [
     {
-      key: "/admin/dashboard",
+      key: "/admin/statistical",
       icon: <PieChartOutlined />,
-      label: <Link to="/admin/dashboard">Thống kê</Link>,
+      label: <Link to="/admin/statistical">Thống kê</Link>,
     },
     {
       key: "/admin/users",
