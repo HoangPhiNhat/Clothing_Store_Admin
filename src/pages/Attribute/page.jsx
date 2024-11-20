@@ -60,6 +60,7 @@ const ProductAttribute = () => {
     onError: (error) =>
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
+  
   const { mutate: updateAttribute, isPending: updatePending } =
     useAttributeMutation({
       action: "UPDATE",

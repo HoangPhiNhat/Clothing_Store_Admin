@@ -1,25 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  createCategory,
-  removeCategory,
-  toggleStatusCategory,
-  updateCategory,
-} from "../../services/category";
+import { createOrderForShipper } from "../../services/shipment";
 
 const useShipmentMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
 
   const { mutate, ...rest } = useMutation({
-    mutationFn: async (category) => {
+    mutationFn: async (order) => {
       switch (action) {
         case "CREATE":
-          return await createCategory(category);
-        case "DELETE":
-          return await removeCategory(category);
-        case "UPDATE":
-          return await updateCategory(category);
-        case "TOGGLE_STATUS":
-          return await toggleStatusCategory(category);
+          return await createOrderForShipper(order);
         default:
           return null;
       }

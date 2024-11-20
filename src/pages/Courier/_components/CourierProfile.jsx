@@ -2,6 +2,7 @@ import {
   CheckOutlined,
   EditOutlined,
   LockOutlined,
+  PlusCircleOutlined,
   UnlockOutlined,
 } from "@ant-design/icons";
 import {
@@ -24,6 +25,7 @@ import Loading from "../../../components/base/Loading/Loading";
 import useCourierMutation from "../../../hooks/Courier/useCourierMutation";
 import useCourierQuery from "../../../hooks/Courier/useCourierQuery";
 import useShipmentQuery from "../../../hooks/Shipment/useShipmentQuery";
+import CreateOrderForShipper from "./CreateOrderForShipper";
 
 const CourierProfile = () => {
   const [editable, setEditable] = useState(false); // Trạng thái Edit
@@ -32,6 +34,7 @@ const CourierProfile = () => {
   const { id } = useParams();
   const [statusCourier, setStatusCourier] = useState();
   const [pageShipment, setPageShipment] = useState(1);
+  const [modalCreateOpen, setModalCreateOpen] = useState(false);
 
   // Fetch dữ liệu tài xế
   const { data: courier, isLoading } = useCourierQuery(
@@ -349,10 +352,15 @@ const CourierProfile = () => {
           {/* List order */}
           <div className="col-span-7 bg-white rounded-lg shadow-lg p-6">
             <div>
-              <h2 className="text-lg font-semibold mb-4">
-                Danh sách đơn hàng đã giao
-              </h2>
-              
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-lg font-semibold mb-4">
+                  Danh sách đơn hàng đã giao
+                </h2>
+                <Button type="primary" onClick={() => setModalCreateOpen(true)}>
+                  <PlusCircleOutlined />
+                  Tạo đơn hàng cho tài xế
+                </Button>
+              </div>
             </div>
             <div>
               <Table
@@ -371,6 +379,13 @@ const CourierProfile = () => {
               />
             </div>
           </div>
+
+          {/* Create order for shipper */}
+          <CreateOrderForShipper
+            open={modalCreateOpen}
+            onCancel={() => setModalCreateOpen(false)}
+            id={id}
+          />
         </div>
       </div>
     </>

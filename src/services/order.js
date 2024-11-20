@@ -13,6 +13,15 @@ export const getAllOrder = async (page) => {
   }
 };
 
+export const getOrderForShipper = async () => {
+  try {
+    const res = await Author.get("/orders/status");
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getOrderById = async (id) => {
   try {
     const response = await Author.get(`orders/${id}`);
@@ -24,7 +33,9 @@ export const getOrderById = async (id) => {
 
 export const getProductsForOrderId = async (id, page) => {
   try {
-    const response = await Author.get(`orders/${id}/products?page=${page}&size=5`);
+    const response = await Author.get(
+      `orders/${id}/products?page=${page}&size=5`
+    );
     return response;
   } catch (error) {
     throw error;
