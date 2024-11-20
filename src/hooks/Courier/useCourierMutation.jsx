@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toggelStatusUser } from "../../services/auth";
 import { createCourier, updateCourier } from "../../services/courier";
 
 const useCourierMutation = ({ action, onSuccess, onError }) => {
@@ -11,8 +12,8 @@ const useCourierMutation = ({ action, onSuccess, onError }) => {
           return await createCourier(courier);
         case "UPDATE":
           return await updateCourier(courier);
-        case "DELETE":
-          return null;
+        case "TOGGLE_ACCOUNT_COURIER":
+          return await toggelStatusUser(courier);
         default:
           return null;
       }
@@ -25,7 +26,6 @@ const useCourierMutation = ({ action, onSuccess, onError }) => {
     },
     onError: (error) => {
       onError && onError(error);
-      console.log(error);
     },
   });
 

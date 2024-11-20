@@ -1,23 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllAttribute } from "../../services/productAttribute";
+import { getAllCourier, getCourierById } from "../../services/courier";
 
-const useCourierQuery = (productId, page, pageSize) => {
-  const queryKey = ["ATTRIBUTE_KEY", productId, page, pageSize];
+const useCourierQuery = (action, id, page) => {
+  let queryKey = page ? ["COURIER_KEY", page] : ["COURIER_KEY", id];
 
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
-     try {
-       return await getAllAttribute(productId, page, pageSize);
-     } catch (error) {
-       console.error("Error in queryFn:", error);
-       throw error;
-     }
+      switch (action) {
+        case "GET_ALL_COURIER":
+          return await getAllCourier(page);
+        case "GET_COURIER_BY_ID":
+          return await getCourierById(id);
+        default:
+          return null;
+      }
     },
     keepPreviousData: true,
     cacheTime: 0,
   });
-console.log(data);
   return { data, ...rest };
 };
 

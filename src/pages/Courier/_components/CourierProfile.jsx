@@ -2,7 +2,7 @@ import {
   CheckOutlined,
   EditOutlined,
   LockOutlined,
-  UploadOutlined,
+  UnlockOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -11,61 +11,156 @@ import {
   Form,
   Input,
   message,
+  Pagination,
+  Popconfirm,
   Row,
+  Table,
   Tag,
-  Upload,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+import Loading from "../../../components/base/Loading/Loading";
 import useCourierMutation from "../../../hooks/Courier/useCourierMutation";
+import useCourierQuery from "../../../hooks/Courier/useCourierQuery";
+import useShipmentQuery from "../../../hooks/Shipment/useShipmentQuery";
 
 const CourierProfile = () => {
   const [editable, setEditable] = useState(false); // Trạng thái Edit
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const { id } = useParams();
+  const [statusCourier, setStatusCourier] = useState();
+  const [pageShipment, setPageShipment] = useState(1);
 
-  const [courier, setCourier] = useState({
-    personal: {
-      name: "Baylee Dietrich",
-      status: "Available",
-      phone_number: "(460) 700 02 08",
-      email: "Wellington78@yahoo.com",
-      address: "11891 Beahan Square, Lindenhurst, NY 11390",
-    },
-    vehicle: {
-      vehicle_name: "Vespa Primavera 150",
-      license_plate: "JDN 994",
-    },
-    avatar: "",
-  });
+  // Fetch dữ liệu tài xế
+  const { data: courier, isLoading } = useCourierQuery(
+    "GET_COURIER_BY_ID",
+    id,
+    null
+  );
 
-  const handleAvatarChange = (info) => {
-    if (info.file.status === "done") {
-      setCourier({ ...courier, avatar: info.file.response.url });
+  // Mapping dữ liệu vào Form khi dữ liệu thay đổi
+  useEffect(() => {
+    if (courier && courier.data) {
+      // Kiểm tra dữ liệu và gán giá trị cho form
+      const { user, vehicle } = courier.data;
+      const initialValues = {
+        personal: {
+          name: user?.name || "",
+          phone_number: user?.phone || "",
+          email: user?.email || "",
+          address: user?.address || "",
+        },
+        vehicle: {
+          vehicle_name: vehicle?.vehicle_name || "",
+          license_plate: vehicle?.license_plate || "",
+        },
+      };
+      setStatusCourier(user.is_blocked);
+      form.setFieldsValue(initialValues);
     }
-  };
+  }, [courier, form]);
 
-  const handleInputChange = (field, value) => {
-    setCourier({ ...courier, [field]: value });
-  };
-
+  // Hàm xử lý cập nhật thông tin
   const { mutate: updateCourier, isPending } = useCourierMutation({
     action: "UPDATE",
     onSuccess: () => {
-      messageApi.success("Cập nhật thông tin tài xế thành công.")
+      messageApi.success("Cập nhật thông tin tài xế thành công.");
+      setEditable(false); // Quay lại chế độ xem sau khi cập nhật
     },
     onError: (error) => {
-      messageApi.error(`Cập nhập thông tin tài xế thất bại. ${error.response.data.message}`);
+      messageApi.error(
+        `Cập nhật thông tin tài xế thất bại. ${error.response.data.message}`
+      );
     },
   });
 
-  const handleSubmit = (values) => {
-    updateCourier(values);
+  const onFinish = (values) => {
+    updateCourier({ id, ...values }); // Gửi dữ liệu sau khi chỉnh sửa
   };
+
+  //Block account shipper
+  const { mutate: toggleAccoutCourier, isPending: isPendingBlockAccount } =
+    useCourierMutation({
+      action: "TOGGLE_ACCOUNT_COURIER",
+      onSuccess: () => {
+        if (statusCourier) {
+          messageApi.success("Mở khoá tài khoản thành công.");
+        } else {
+          messageApi.success("Khoá tài khoản thành công.");
+        }
+      },
+      onError: (error) => {
+        if (statusCourier) {
+          messageApi.error(
+            "Mở khoá tài khoản thất bại. " + error.response.data.message
+          );
+        } else {
+          messageApi.error(
+            "Khoá tài khoản thất bại." + error.response.data.message
+          );
+        }
+      },
+    });
 
   // Style cho Input khi không ở chế độ Edit
   const inputStyle = editable
     ? {}
     : { border: "none", backgroundColor: "transparent", pointerEvents: "none" };
+
+  // Data shipment-detail
+  const { data: shipmentDetails, isLoading: isLoadingShipment } =
+    useShipmentQuery("GET_SHIPMENT_BY_COURIER_ID", id, pageShipment);
+
+  const dataSource = (shipmentDetails?.data.data || []).map(
+    (shipmentDetail, index) => ({
+      key: shipmentDetail.id,
+      index: index + 1,
+      ...shipmentDetail,
+    })
+  );
+
+  const columns = [
+    {
+      title: "Mã đơn hàng",
+      key: "orderCode",
+      render: (_, shipment) => <span>{shipment.order.order_code}</span>,
+    },
+    {
+      title: "Trạng thái giao hàng",
+      key: "orderCode",
+      align: "center",
+      render: (_, shipment) => {
+        switch (shipment.order.order_status) {
+          case "Đã huỷ":
+            return <Tag color="#f50">Đã huỷ</Tag>;
+          case "Trả hàng":
+            return <Tag color="warning">Trả hàng</Tag>;
+          case "Đã giao":
+            return <Tag color="success">Đã giao</Tag>;
+          case "Chờ lấy hàng":
+            return <Tag color="#2db7f5">Chờ lấy hàng</Tag>;
+          case "Chờ xác nhận":
+            return <Tag color="#108ee9">Chờ xác nhận</Tag>;
+          case "Đang giao":
+            return <Tag color="cyan">Đang giao</Tag>;
+        }
+      },
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "created_at",
+      key: "created_at",
+    },
+    {
+      title: "Địa chỉ giao hàng",
+      key: "address",
+      render: (_, shipment) => <span>{shipment.order.order_address}</span>,
+    },
+  ];
+
+  if (isLoading || isLoadingShipment) return <Loading />;
 
   return (
     <>
@@ -75,35 +170,16 @@ const CourierProfile = () => {
           {/* Profile */}
           <Form
             form={form}
-            onFinish={handleSubmit}
-            initialValues={{
-              personal: courier.personal,
-              vehicle: courier.vehicle,
-            }}
-            disabled={isPending}
+            onFinish={onFinish}
+            disabled={isPending || isPendingBlockAccount}
             className="col-span-3 bg-white rounded-lg shadow-lg p-6 flex flex-col items-center"
           >
             <div className="relative">
-              <Avatar size={120} src={courier.avatar || null} className="mb-4">
-                {courier.personal.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </Avatar>
-              {editable && (
-                <Upload
-                  showUploadList={false}
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="absolute bottom-0 right-0"
-                >
-                  <Button
-                    icon={<UploadOutlined />}
-                    size="small"
-                    className="p-1"
-                  />
-                </Upload>
-              )}
+              <Avatar
+                size={120}
+                src={courier?.data?.user.avatar || null}
+                className="mb-4"
+              ></Avatar>
             </div>
 
             <div className="mt-6 w-full">
@@ -112,169 +188,157 @@ const CourierProfile = () => {
                   <label>Trạng thái</label>
                 </Col>
                 <Col span={19}>
-                  <Tag color="green" className="text-center">
-                    {courier.personal.status}
+                  <Tag
+                    color={
+                      courier?.data?.status === "available" ? "green" : "red"
+                    }
+                    className="text-center"
+                  >
+                    {courier?.data.status}
                   </Tag>
                 </Col>
               </Row>
 
               {/* Personal Information Fields */}
-              <Form.Item
-                name={["personal", "name"]}
-                className="mt-5"
-                rules={[
-                  { required: true, message: "Vui lòng nhập tên tài xế!" },
-                ]}
-              >
-                <Row gutter={24}>
-                  <Col span={5} className="flex items-center">
-                    <label>Tên tài xế</label>
-                  </Col>
-                  <Col span={19}>
-                    <Input
-                      value={courier.personal.name}
-                      onChange={(e) =>
-                        handleInputChange("personal", "name", e.target.value)
-                      }
-                      style={inputStyle}
-                    />
-                  </Col>
-                </Row>
-              </Form.Item>
+              <Row gutter={24}>
+                <Col span={5} className="flex items-center">
+                  <label>Tên tài xế</label>
+                </Col>
+                <Col span={19}>
+                  <Form.Item
+                    name={["personal", "name"]}
+                    className="mt-5"
+                    rules={[
+                      { required: true, message: "Vui lòng nhập tên tài xế!" },
+                    ]}
+                  >
+                    <Input style={inputStyle} />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-              <Form.Item
-                name={["personal", "phone_number"]}
-                className="mt-5"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
-                ]}
-              >
-                <Row gutter={24}>
-                  <Col span={5} className="flex items-center">
-                    <label>Số điện thoại</label>
-                  </Col>
-                  <Col span={19}>
-                    <Input
-                      value={courier.personal.phone_number}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "personal",
-                          "phone_number",
-                          e.target.value
-                        )
-                      }
-                      style={inputStyle}
-                    />
-                  </Col>
-                </Row>
-              </Form.Item>
+              <Row gutter={24}>
+                <Col span={5} className="flex items-center">
+                  <label>Số điện thoại</label>
+                </Col>
+                <Col span={19}>
+                  <Form.Item
+                    name={["personal", "phone_number"]}
+                    className="mt-5"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập số điện thoại!",
+                      },
+                    ]}
+                  >
+                    <Input style={inputStyle} />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-              <Form.Item name={["personal", "email"]}>
-                <Row gutter={24}>
-                  <Col span={5} className="flex items-center">
-                    <label>Email</label>
-                  </Col>
-                  <Col span={19}>
-                    <Input
-                      value={courier.personal.email}
-                      disabled={editable}
-                      style={inputStyle}
-                    />
-                  </Col>
-                </Row>
-              </Form.Item>
+              <Row gutter={24}>
+                <Col span={5} className="flex items-center">
+                  <label>Email</label>
+                </Col>
+                <Col span={19}>
+                  <Form.Item name={["personal", "email"]}>
+                    <Input disabled style={inputStyle} />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-              <Form.Item
-                name={["personal", "address"]}
-                rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
-              >
-                <Row gutter={24}>
-                  <Col span={5} className="flex items-center">
-                    <label>Địa chỉ</label>
-                  </Col>
-                  <Col span={19}>
-                    <Input
-                      value={courier.personal.address}
-                      onChange={(e) =>
-                        handleInputChange("personal", "address", e.target.value)
-                      }
-                      style={inputStyle}
-                    />
-                  </Col>
-                </Row>
-              </Form.Item>
+              <Row gutter={24}>
+                <Col span={5} className="flex items-center">
+                  <label>Địa chỉ</label>
+                </Col>
+                <Col span={19}>
+                  <Form.Item
+                    name={["personal", "address"]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập địa chỉ!" },
+                    ]}
+                  >
+                    <Input style={inputStyle} />
+                  </Form.Item>
+                </Col>
+              </Row>
 
               {/* Vehicle Information Fields */}
-              <Form.Item
-                name={["vehicle", "vehicle_name"]}
-                rules={[
-                  { required: true, message: "Vui lòng nhập tên phương tiện!" },
-                ]}
-              >
-                <Row gutter={24}>
-                  <Col span={5} className="flex items-center">
-                    <label>Phương tiện</label>
-                  </Col>
-                  <Col span={19}>
-                    <Input
-                      value={courier.vehicle.vehicle_name}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "vehicle",
-                          "vehicle_name",
-                          e.target.value
-                        )
-                      }
-                      style={inputStyle}
-                    />
-                  </Col>
-                </Row>
-              </Form.Item>
+              <Row gutter={24}>
+                <Col span={5} className="flex items-center">
+                  <label>Phương tiện</label>
+                </Col>
+                <Col span={19}>
+                  <Form.Item
+                    name={["vehicle", "vehicle_name"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập tên phương tiện!",
+                      },
+                    ]}
+                  >
+                    <Input style={inputStyle} />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-              <Form.Item
-                name={["vehicle", "license_plate"]}
-                rules={[
-                  { required: true, message: "Vui lòng nhập biển số xe!" },
-                ]}
-              >
-                <Row gutter={24}>
-                  <Col span={5} className="flex items-center">
-                    <label>Biển số xe</label>
-                  </Col>
-                  <Col span={19}>
-                    <Input
-                      value={courier.vehicle.license_plate}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "vehicle",
-                          "license_plate",
-                          e.target.value
-                        )
-                      }
-                      style={inputStyle}
-                    />
-                  </Col>
-                </Row>
-              </Form.Item>
+              <Row gutter={24}>
+                <Col span={5} className="flex items-center">
+                  <label>Biển số xe</label>
+                </Col>
+                <Col span={19}>
+                  <Form.Item
+                    name={["vehicle", "license_plate"]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập biển số xe!" },
+                    ]}
+                  >
+                    <Input style={inputStyle} />
+                  </Form.Item>
+                </Col>
+              </Row>
             </div>
 
             <div className="flex justify-between items-center mt-6 w-full">
-              <Button disabled={isPending} icon={<LockOutlined />} danger>
-                Khoá tài khoản
-              </Button>
+              <Popconfirm
+                title="Thay đổi trạng thái tài khoản"
+                description={
+                  statusCourier
+                    ? "Bạn có mở khoá này không?"
+                    : "Bạn có khoá này không?"
+                }
+                okText={
+                  isPendingBlockAccount
+                    ? statusCourier
+                      ? `Đang mở khoá`
+                      : `Đang khoá`
+                    : `Có`
+                }
+                cancelText="Không"
+                onConfirm={() => {
+                  toggleAccoutCourier(id);
+                }}
+              >
+                <Button
+                  disabled={isPending}
+                  icon={statusCourier ? <UnlockOutlined /> : <LockOutlined />}
+                  type="primary"
+                  danger={!statusCourier}
+                >
+                  {statusCourier ? "Mở khoá tài khoản" : "Khoá tài khoản"}
+                </Button>
+              </Popconfirm>
+
               <Button
                 loading={isPending}
                 icon={editable ? <CheckOutlined /> : <EditOutlined />}
                 type="default"
+                disabled={isPendingBlockAccount}
                 onClick={() => {
-                  if (editable) {
-                    // Gọi hàm lưu dữ liệu khi nhấn "Save"
-                    form.submit();
-                    setEditable(false);
-                  } else {
-                    // Chuyển sang chế độ chỉnh sửa
-                    setEditable(true);
-                  }
+                  if (editable) form.submit();
+                  setEditable(!editable);
                 }}
               >
                 {editable ? "Lưu" : "Cập nhật"}
@@ -284,10 +348,28 @@ const CourierProfile = () => {
 
           {/* List order */}
           <div className="col-span-7 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-lg font-semibold mb-4">
-              Danh sách đơn hàng đã giao
-            </h2>
-            <div className="text-gray-500 text-center">No data</div>
+            <div>
+              <h2 className="text-lg font-semibold mb-4">
+                Danh sách đơn hàng đã giao
+              </h2>
+              
+            </div>
+            <div>
+              <Table
+                dataSource={dataSource}
+                columns={columns}
+                pagination={false}
+              />
+
+              <Pagination
+                disabled={isPending || isPendingBlockAccount}
+                className="mt-5"
+                align="end"
+                total={shipmentDetails?.data.total}
+                pageSize={5}
+                onChange={(page) => setPageShipment(page)}
+              />
+            </div>
           </div>
         </div>
       </div>
