@@ -18,6 +18,7 @@ const { Header, Sider, Content } = Layout;
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -74,7 +75,7 @@ const LayoutAdmin = () => {
     {
       key: "/admin/couriers",
       icon: <TruckOutlined />,
-      label: <Link to="/admin/couriers">Chuyển phát nhanh</Link>,
+      label: <Link to="/admin/couriers">Tài xế</Link>,
     },
   ];
 
