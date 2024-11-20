@@ -321,7 +321,7 @@ const CourierProfile = () => {
                 }
                 cancelText="Không"
                 onConfirm={() => {
-                  toggleAccoutCourier(id);
+                  toggleAccoutCourier(courier?.data.user_id);
                 }}
               >
                 <Button
