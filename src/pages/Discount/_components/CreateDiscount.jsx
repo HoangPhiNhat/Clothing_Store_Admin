@@ -1,83 +1,73 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  message,
-  Modal,
-  Select,
-  Steps,
-  Table,
-} from "antd";
-import { useState } from "react";
+import { Button, DatePicker, Form, Input, message, Modal } from "antd";
 import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { useState } from "react";
+import useDisCountMutation from "../../../hooks/Discount/useDiscountMutation";
+dayjs.extend(customParseFormat);
+const { RangePicker } = DatePicker;
 
-//Table
-const columns = [
-  {
-    title: "Name",
-    dataIndex: "name",
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: "Age",
-    dataIndex: "age",
-  },
-  {
-    title: "Address",
-    dataIndex: "address",
-  },
-];
+// Disable ngày nhỏ hơn hôm nay
+const disabledStartDate = (current) => {
+  return current && current < dayjs().endOf("day");
+};
 
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Jim Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-  },
-];
+// Disable ngày kết thúc nhỏ hơn ngày bắt đầu
+const disabledEndDate = (startDate) => (current) => {
+  return (
+    current &&
+    (current < dayjs().startOf("day") || (startDate && current < startDate))
+  );
+};
 
-const { Step } = Steps;
 const CreateDiscount = ({ open, onCancel }) => {
-  const [productsId, setProductsId] = useState({});
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const inputRef = useAutoFocus(open);
-  const [current, setCurrent] = useState(0);
-  const [formData, setFormData] = useState([]);
+  const [startDate, setStartDate] = useState(null);
 
-  //Productid
-  const rowSelection = {
-    productsId,
-    onChange: (selectedKeys) => {
-      setProductsId(selectedKeys);
+  const { mutate: createDiscount, isPending } = useDisCountMutation({
+    action: "CREATE",
+    onSuccess: () => {
+      messageApi.success("Thêm chiến dịch giảm giá thành công.");
     },
+    onError: (error) => {
+      messageApi.error(
+        `Thêm chiến dịch giảm giá thất bại.  ${error.response.data.message}`
+      );
+    },
+  });
+
+  const onFinish = (data) => {
+    const discount = {
+      name: data.name,
+      description: data.description || "",
+      discount_percentage: Number(data.discount_percentage),
+      start_date: dayjs(data.date[0]).format("YYYY-MM-DD HH:mm:ss"),
+      end_date: dayjs(data.date[1]).format("YYYY-MM-DD HH:mm:ss"),
+    };
+    console.log(discount);
+    createDiscount(discount);
   };
 
-  //Step
-  const steps = [
-    {
-      title: "Thông tin chiến dịch",
-      content: (
+  return (
+    <>
+      {contextHolder}
+      <Modal
+        title="Tạo chiến dịch giảm giá"
+        open={open}
+        onCancel={() => {
+          onCancel();
+          form.resetFields();
+        }}
+        footer={false}
+      >
         <Form
           form={form}
           layout="vertical"
-          onFinish={(values) => handleNext("discount_info", values)}
+          onFinish={onFinish}
           // disabled={isPending}
         >
           <Form.Item
@@ -92,7 +82,7 @@ const CreateDiscount = ({ open, onCancel }) => {
 
           <Form.Item
             label="Giảm giá"
-            name="discount_value"
+            name="discount_percentage"
             rules={[
               { required: true, message: "Vui lòng nhập phần trăm giảm giá" },
             ]}
@@ -100,177 +90,69 @@ const CreateDiscount = ({ open, onCancel }) => {
             <Input placeholder="Vui lòng nhập phần trăm giảm giá" />
           </Form.Item>
 
-          <div className="flex justify-end">
-            <Form.Item
-              label="Ngày bắt đầu"
-              name="date_start"
-              rules={[
-                { required: true, message: "Vui lòng nhập ngày bắt đầu" },
-              ]}
-              style={{ flex: 1 }}
-            >
-              <DatePicker />
-            </Form.Item>
+          <Form.Item
+            name="date"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn ngày bắt đầu và kết thúc.",
+              },
+            ]}
+          >
+            <RangePicker
+              disabledDate={(current) => {
+                if (!startDate) {
+                  // Nếu chưa có ngày bắt đầu, chỉ disable các ngày trước hôm nay
+                  return disabledStartDate(current);
+                }
+                // Nếu đã có ngày bắt đầu, disable ngày kết thúc trước ngày bắt đầu
+                return disabledEndDate(startDate)(current);
+              }}
+              showTime={{
+                hideDisabledOptions: true,
+                defaultValue: [
+                  dayjs("00:00:00", "HH:mm:ss"),
+                  dayjs("23:59:59", "HH:mm:ss"),
+                ],
+              }}
+              format="YYYY-MM-DD HH:mm:ss"
+              onCalendarChange={(values) => {
+                // Cập nhật ngày bắt đầu khi người dùng chọn
+                if (values && values[0]) {
+                  setStartDate(values[0]);
+                }
+              }}
+              placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+            />
+          </Form.Item>
 
-            <Form.Item
-              label="Ngày kết thúc"
-              name="date_end"
-              rules={[
-                { required: true, message: "Vui lòng nhập ngày kết thúc" },
-              ]}
-              style={{ flex: 1 }}
-            >
-              <DatePicker />
-            </Form.Item>
-          </div>
+          <Form.Item label="Mô tả chiến chiến dịch" name="description">
+            <Input placeholder="Vui lòng nhập mô tả chiến dịch" />
+          </Form.Item>
 
           {/* Button */}
           <div className="mt-6 flex justify-between items-center">
             <Button
               key="cancel"
-              onClick={onCancel}
-              // disabled={isPending}
+              onClick={() => {
+                onCancel();
+                form.resetFields();
+              }}
+              disabled={isPending}
               className="btn btn-secondary"
             >
               Hủy
             </Button>
-
-            <div className="flex gap-2">
-              <Button
-                style={{ margin: "0 8px" }}
-                onClick={() => prev()}
-                disabled={
-                  current === 0
-                  // || isPending
-                }
-              >
-                Trở lại
-              </Button>
-              <Button
-                type="primary"
-                className="btn btn-primary"
-                htmlType="submit"
-                // disabled={isPending}
-              >
-                Tiếp theo
-              </Button>
-            </div>
-          </div>
-        </Form>
-      ),
-    },
-    {
-      title: "Sản phẩm áp dụng",
-      content: (
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={(values) => handleNext("product_apply", values, true)}
-          // disabled={isPending}
-        >
-          <Form.Item name="discount_type" label="Loại chiến dịch">
-            <Select
-              style={{
-                width: 120,
-              }}
-              options={[
-                {
-                  value: "categories",
-                  label: "Danh mục",
-                },
-                {
-                  value: "products",
-                  label: "Sản phẩm",
-                },
-              ]}
-            />
-          </Form.Item>
-
-          {/* Table */}
-          <Form.Item name="productsId" label="Sản phẩm áp dụng">
-            <Table
-              rowSelection={{
-                ...rowSelection,
-              }}
-              columns={columns}
-              dataSource={data}
-              pagination={false}
-            />
-          </Form.Item>
-
-          {/* Button action */}
-          <div className="mt-6 flex justify-between items-center">
             <Button
-              key="cancel"
-              onClick={onCancel}
-              // disabled={isPending}
+              type="primary"
+              htmlType="submit"
+              className="btn btn-primary"
+              loading={isPending}
             >
-              Hủy
+              Tạo chiến dịch
             </Button>
-
-            <div className="flex gap-2">
-              <Button
-                style={{ margin: "0 8px" }}
-                onClick={() => prev()}
-                disabled={
-                  current === 0
-                  //  || isPending
-                }
-              >
-                Trở lại
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                // loading={isPending}
-              >
-                Tạo chiến dịch
-              </Button>
-            </div>
           </div>
         </Form>
-      ),
-    },
-  ];
-
-  const handleNext = (step, values, isLastStep = false) => {
-    const updatedData = {
-      ...formData,
-      [step]: { ...values, productsId },
-    };
-    setFormData(updatedData);
-
-    if (isLastStep) {
-      console.log(updatedData);
-
-      //Call api create
-    } else {
-      setCurrent(current + 1);
-    }
-  };
-
-  const prev = () => {
-    setCurrent(current - 1);
-    form.setFieldsValue(formData[steps[current - 1].title.toLowerCase()]);
-  };
-
-  return (
-    <>
-      {contextHolder}
-      <Modal
-        title="Tạo chiến dịch giảm giá"
-        open={open}
-        onCancel={onCancel}
-        footer={false}
-      >
-        <div>
-          <Steps current={current}>
-            {steps.map((item, index) => (
-              <Step key={index} title={item.title} />
-            ))}
-          </Steps>
-          <div style={{ marginTop: 24 }}>{steps[current].content}</div>
-        </div>
       </Modal>
     </>
   );
