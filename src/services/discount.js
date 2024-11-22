@@ -4,7 +4,7 @@ const size = 5;
 
 export const getAllDiscount = async (page) => {
   try {
-    const res = await Author.get(`/campaigns?size${size}&page=${page}`);
+    const res = await Author.get(`/campaigns?size=${size}&page=${page}`);
     return res;
   } catch (error) {
     throw error;
@@ -14,7 +14,7 @@ export const getAllDiscount = async (page) => {
 export const getProductsOnDiscount = async (id, page) => {
   try {
     const res = await Author.get(
-      `/campaigns/${id}/show?size${size}&page=${page}`
+      `/campaigns/${id}/show?size=${size}&page=${page}`
     );
     return res;
   } catch (error) {
@@ -24,7 +24,7 @@ export const getProductsOnDiscount = async (id, page) => {
 
 export const getAllProductForAddDiscount = async (page) => {
   try {
-    const res = await Author.get(`/campaigns/filter?size${size}&page=${page}`);
+    const res = await Author.get(`/campaigns/filter?size=${size}&page=${page}`);
     return res;
   } catch (error) {
     throw error;
@@ -52,6 +52,17 @@ export const updateDiscount = async (discount) => {
 export const toggleStatusDiscount = async (id) => {
   try {
     const res = await Author.put(`/campaigns/${id}/toggle-status`);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteProductOutDiscount = async (capmpainId, productId) => {
+  try {
+    const res = await Author.delete(
+      `/campaigns/${capmpainId}/product/${productId}`
+    );
     return res;
   } catch (error) {
     throw error;

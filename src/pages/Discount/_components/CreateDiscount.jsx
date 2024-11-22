@@ -31,6 +31,7 @@ const CreateDiscount = ({ open, onCancel }) => {
   const { mutate: createDiscount, isPending } = useDisCountMutation({
     action: "CREATE",
     onSuccess: () => {
+      onCancel(false)
       messageApi.success("Thêm chiến dịch giảm giá thành công.");
     },
     onError: (error) => {

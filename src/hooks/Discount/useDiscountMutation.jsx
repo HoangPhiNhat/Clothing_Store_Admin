@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createDiscount,
+  deleteProductOutDiscount,
   toggleStatusDiscount,
   updateDiscount,
 } from "../../services/discount";
@@ -17,6 +18,11 @@ const useDisCountMutation = ({ action, onSuccess, onError }) => {
           return await updateDiscount(discount);
         case "TOGGLE_STATUS":
           return await toggleStatusDiscount(discount.id);
+        case "DELETE_PRODUCT_OUT_DISCOUNT":
+          return await deleteProductOutDiscount(
+            discount.id,
+            discount.productId
+          );
         default:
           return null;
       }
@@ -24,7 +30,7 @@ const useDisCountMutation = ({ action, onSuccess, onError }) => {
     onSuccess: () => {
       onSuccess && onSuccess();
       queryClient.invalidateQueries({
-        queryKey: ["CATEGORY_KEY"],
+        queryKey: ["DISCOUNT_KEY"],
       });
     },
     onError: (error) => {
