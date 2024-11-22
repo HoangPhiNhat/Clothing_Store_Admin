@@ -33,7 +33,10 @@ import Page404 from "../components/base/Result/Page404";
 import Page500 from "../components/base/Result/Page500";
 
 import Courier from "../pages/Courier/page";
-import CourierProfile from "../pages/Courier/_components/CourierProfile"
+import CourierProfile from "../pages/Courier/_components/CourierProfile";
+
+import Discounts from "../pages/Discount/page";
+import DiscountDetail from "../pages/Discount/_components/DiscountDetail";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -92,7 +95,11 @@ const RouterComponent = () => {
 
             {/* Courier */}
             <Route path="couriers" element={<Courier />} />
-            <Route path="couriers/:id" element={<CourierProfile/>}/>
+            <Route path="couriers/:id" element={<CourierProfile />} />
+
+            {/* Discount */}
+            <Route path="discounts" element={<Discounts />} />
+            <Route path="discounts/:id" element={<DiscountDetail />} />
           </Route>
 
           {/* Auth */}
