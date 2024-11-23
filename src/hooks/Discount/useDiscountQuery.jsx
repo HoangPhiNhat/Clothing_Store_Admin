@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   getAllDiscount,
-  getAllProductForAddDiscount,
   getProductsOnDiscount,
 } from "../../services/discount";
 
@@ -16,13 +15,12 @@ const useDiscountQuery = (action, id, page) => {
           return await getAllDiscount(page);
         case "GET_PRODUCTS_ON_DISCOUNT":
           return await getProductsOnDiscount(id, page);
-        case "GET_ALL_PRODUCT_FOR_ADD_DISCOUNT":
-          return await getAllProductForAddDiscount(page);
         default:
           return null;
       }
     },
   });
+
   return { data, ...rest };
 };
 export default useDiscountQuery;

@@ -22,9 +22,23 @@ export const getProductsOnDiscount = async (id, page) => {
   }
 };
 
-export const getAllProductForAddDiscount = async (page) => {
+export const getAllProductForAddDiscount = async (page, search) => {
   try {
-    const res = await Author.get(`/campaigns/filter?size=${size}&page=${page}`);
+    let api = `/campaigns/filter?size=${size}&page=${page}`;
+
+    if (search.category_id) api += `&categoryId=${search.category_id}`;
+
+    if (search.maxPrice) api += `&maxPrice=${search.maxPrice}`;
+    if (search.minPrice) api += `&minPrice=${search.minPrice}`;
+
+    if (search.minStockQuantity)
+      api += `&minStockQuantity=${search.minStockQuantity}`;
+    if (search.maxStockQuantity)
+      api += `&maxStockQuantity=${search.maxStockQuantity}`;
+
+    if (search.name) api += `$name=${search.name}`;
+
+    const res = await Author.get(api);
     return res;
   } catch (error) {
     throw error;
@@ -63,6 +77,17 @@ export const deleteProductOutDiscount = async (capmpainId, productId) => {
     const res = await Author.delete(
       `/campaigns/${capmpainId}/product/${productId}`
     );
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addProductToDiscount = async (id, productsId) => {
+  try {
+    const res = await Author.post(`/campaigns/${id}/add-product`, {
+      product_id: productsId,
+    });
     return res;
   } catch (error) {
     throw error;

@@ -11,7 +11,7 @@ import BasicLayout from "../layout/BasicLayout";
 import SignUp from "../pages/Auth/Signup";
 import SignIn from "../pages/Auth/Signin";
 
-import Statistical from "../pages/Statistical/page"
+import Statistical from "../pages/Statistical/page";
 
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
@@ -39,6 +39,7 @@ import CourierProfile from "../pages/Courier/_components/CourierProfile";
 
 import Discounts from "../pages/Discount/page";
 import DiscountDetail from "../pages/Discount/_components/DiscountDetail";
+import AddProductToDiscount from "../pages/Discount/_components/AddProductToDiscount";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -65,7 +66,7 @@ const RouterComponent = () => {
             <Route index element={<Home />} />
 
             {/* Statistical */}
-            <Route path="statistical" element={<Statistical />}/>
+            <Route path="statistical" element={<Statistical />} />
 
             {/* Category */}
             <Route path="categories" element={<Category />} />
@@ -98,6 +99,10 @@ const RouterComponent = () => {
             {/* Discount */}
             <Route path="discounts" element={<Discounts />} />
             <Route path="discounts/:id" element={<DiscountDetail />} />
+            <Route
+              path="discounts/:id/addProduct"
+              element={<AddProductToDiscount />}
+            />
           </Route>
 
           {/* Auth */}

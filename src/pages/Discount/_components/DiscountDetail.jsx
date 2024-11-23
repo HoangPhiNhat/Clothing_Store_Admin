@@ -1,11 +1,11 @@
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Loading from "../../../components/base/Loading/Loading";
+import useDisCountMutation from "../../../hooks/Discount/useDiscountMutation";
 import useDiscountQuery from "../../../hooks/Discount/useDiscountQuery";
 import { formatMoney } from "../../../systems/utils/formatMoney";
-import useDisCountMutation from "../../../hooks/Discount/useDiscountMutation";
 
 const DiscountDetail = () => {
   const { id } = useParams();
@@ -114,6 +114,12 @@ const DiscountDetail = () => {
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Chi tiết chiến dịch giảm giá</h1>
+        <Link to={`addProduct`}>
+          <Button type="primary" disabled={isPending}>
+            <PlusCircleOutlined />
+            Thêm sản phẩm
+          </Button>
+        </Link>
       </div>
       <Table dataSource={dataSource} columns={columns} pagination={false} />
       <Pagination

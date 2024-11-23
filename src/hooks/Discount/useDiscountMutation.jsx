@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  addProductToDiscount,
   createDiscount,
   deleteProductOutDiscount,
   toggleStatusDiscount,
@@ -14,6 +15,8 @@ const useDisCountMutation = ({ action, onSuccess, onError }) => {
       switch (action) {
         case "CREATE":
           return await createDiscount(discount);
+        case "CREATE_PRODUCT_FOR_DISCOUNT":
+          return await addProductToDiscount(discount.id, discount.product_id);
         case "UPDATE":
           return await updateDiscount(discount);
         case "TOGGLE_STATUS":

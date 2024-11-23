@@ -5,10 +5,11 @@ let size = 5;
 
 export const getAllCategoryForProduct = async () => {
   try {
-    let queryCategory = `/categories/parent`;
-    return await instance.get(queryCategory);
+    let queryCategory = `/campaigns/category`;
+    return await Author.get(queryCategory);
   } catch (error) {
     console.log(error);
+    throw error;
     // window.location.href = "/admin/page500";
   }
 };
@@ -73,7 +74,9 @@ export const updateCategory = async (category) => {
 
 export const toggleStatusCategory = async (category) => {
   try {
-    const response = await Author.put(`/categories/${category.id}/toggle-status`);
+    const response = await Author.put(
+      `/categories/${category.id}/toggle-status`
+    );
     return response.data;
   } catch (error) {
     throw error;
