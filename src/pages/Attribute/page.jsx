@@ -42,11 +42,8 @@ const ProductAttribute = () => {
   const [pageSize, setPageSize] = useState(10);
   const [hasChanged, setHasChanged] = useState(false);
   const { id } = useParams();
-  const { data: attributes, isLoading  } = useAttributeQuery(
-    id,
-    page,
-    pageSize
-  );
+  const { data: attributes, isLoading } = useAttributeQuery(id, page, pageSize);
+  console.log(attributes);
 
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
@@ -101,8 +98,11 @@ const ProductAttribute = () => {
   const isEditing = (key) => key === editingKey;
 
   const edit = (attribute) => {
+    console.log(attribute);
+
     setEditingKey(attribute.key);
     setEditingData(attribute);
+    console.log(editingData);
   };
 
   const cancel = () => {
@@ -112,37 +112,42 @@ const ProductAttribute = () => {
   };
 
   const save = async () => {
-    setIsPending(true);
-    const values = await form.validateFields();
+    try {
+      setIsPending(true);
+      const values = await form.validateFields();
+      console.log(values);
 
-    if (!hasChanged) {
-      message.info("Không có thay đổi.");
-      setEditingKey(null);
-      setIsPending(false);
-      return;
-    }
-
-    let image = editingData.image;
-
-    if (fileList.length === 0 && publicId) {
-      await deleteFileCloudinary(publicId);
-      image = "";
-    } else if (fileList[0]?.uid !== "-1" && values.image) {
-      if (publicId) {
-        await deleteFileCloudinary(publicId);
+      if (!hasChanged) {
+        message.info("Không có thay đổi.");
+        setEditingKey(null);
+        setIsPending(false);
+        return;
       }
-      image = await uploadFileCloudinary(fileList[0]?.originFileObj);
+
+      let image = editingData.image;
+
+      if (fileList.length === 0 && publicId) {
+        await deleteFileCloudinary(publicId);
+        image = "";
+      } else if (fileList[0]?.uid !== "-1" && values.image) {
+        if (publicId) {
+          await deleteFileCloudinary(publicId);
+        }
+        image = await uploadFileCloudinary(fileList[0]?.originFileObj);
+      }
+
+      updateAttribute({
+        productId: id,
+        attributeId: editingData.id,
+        attribute: { ...values, image },
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setEditingKey(null);
+      setHasChanged(false);
+      setIsPending(false);
     }
-
-    updateAttribute({
-      productId: id,
-      attributeId: editingData.id,
-      attribute: { ...values, image },
-    });
-
-    setEditingKey(null);
-    setHasChanged(false);
-    setIsPending(false);
   };
 
   const handleFieldChange = () => {
@@ -156,6 +161,12 @@ const ProductAttribute = () => {
       rowScope: "row",
       width: "5%",
       sorter: (a, b) => a.index - b.index,
+    },
+    {
+      title: "Mã sản phẩm",
+      dataIndex: "sku",
+      key: "sku",
+      width: "10%",
     },
     {
       title: "Ảnh",
@@ -227,17 +238,17 @@ const ProductAttribute = () => {
     },
     {
       title: "Màu sắc",
-      dataIndex: "color",
+      dataIndex: "color_name",
       key: "color",
       width: "15%",
-      render: (color) => <>{color.name}</>,
+      render: (color) => <>{color}</>,
     },
     {
       title: "Kích thước",
-      dataIndex: "size",
+      dataIndex: "size_name",
       key: "size",
       width: "15%",
-      render: (size) => <>{size.name}</>,
+      render: (size) => <>{size}</>,
     },
     {
       title: "Số lượng",
@@ -260,7 +271,7 @@ const ProductAttribute = () => {
         ),
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "operation",
       width: "10%",
       render: (_, attribute) => {
@@ -292,13 +303,19 @@ const ProductAttribute = () => {
             <Button
               disabled={deletingAttributeId === attribute.id}
               type="default"
-              onClick={() => edit(attribute)}
+              onClick={() => {
+                edit(attribute);
+              console.log(attribute);
+              
+              }}
               className="bg-[#fadd04]"
             >
               <EditOutlined />
             </Button>
             <Popconfirm
               onConfirm={() => {
+                console.log(attribute.id);
+
                 setDeletingAttributeId(attribute.id);
                 deleteAttribute({ productId: id, attributeId: attribute.id });
                 if (attribute.image) {
@@ -329,7 +346,7 @@ const ProductAttribute = () => {
     key: index + 1,
     index: index + 1,
   }));
- if (isLoading) return <Loading />;
+  if (isLoading) return <Loading />;
 
   return (
     <>
