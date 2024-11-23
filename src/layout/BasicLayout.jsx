@@ -1,12 +1,13 @@
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  PercentageOutlined,
   PieChartOutlined,
   ShoppingCartOutlined,
   TagsOutlined,
   TruckOutlined,
   UnorderedListOutlined,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -18,6 +19,7 @@ const { Header, Sider, Content } = Layout;
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -25,9 +27,9 @@ const LayoutAdmin = () => {
 
   const items = [
     {
-      key: "/admin/dashboard",
+      key: "/admin/statistical",
       icon: <PieChartOutlined />,
-      label: <Link to="/admin/dashboard">Thống kê</Link>,
+      label: <Link to="/admin/statistical">Thống kê</Link>,
     },
     {
       key: "/admin/users",
@@ -74,7 +76,12 @@ const LayoutAdmin = () => {
     {
       key: "/admin/couriers",
       icon: <TruckOutlined />,
-      label: <Link to="/admin/couriers">Chuyển phát nhanh</Link>,
+      label: <Link to="/admin/couriers">Tài xế</Link>,
+    },
+    {
+      key: "/admin/discounts",
+      icon: <PercentageOutlined />,
+      label: <Link to={"/admin/discounts"}>Giảm giá</Link>,
     },
   ];
 

@@ -11,6 +11,8 @@ import BasicLayout from "../layout/BasicLayout";
 import SignUp from "../pages/Auth/Signup";
 import SignIn from "../pages/Auth/Signin";
 
+import Statistical from "../pages/Statistical/page";
+
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 
@@ -31,7 +33,13 @@ import Page401 from "../components/base/Result/Page401";
 import Page403 from "../components/base/Result/Page403";
 import Page404 from "../components/base/Result/Page404";
 import Page500 from "../components/base/Result/Page500";
+
 import Courier from "../pages/Courier/page";
+import CourierProfile from "../pages/Courier/_components/CourierProfile";
+
+import Discounts from "../pages/Discount/page";
+import DiscountDetail from "../pages/Discount/_components/DiscountDetail";
+import AddProductToDiscount from "../pages/Discount/_components/AddProductToDiscount";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -57,39 +65,44 @@ const RouterComponent = () => {
             {/* Index */}
             <Route index element={<Home />} />
 
+            {/* Statistical */}
+            <Route path="statistical" element={<Statistical />} />
+
             {/* Category */}
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
-
             {/* Classification */}
             <Route path="categories/:id" element={<Classification />} />
-
             {/* Product */}
             <Route path="products" element={<ProductManagePage />} />
             <Route path="products/add" element={<CreateProduct />} />
             <Route path="products/trash" element={<TrashProduct />} />
             <Route path="products/:id/edit" element={<UpdateProduct />} />
-
             {/* Product att */}
             <Route
               path="products/:id/attributes"
               element={<ProductAttribute />}
             />
-
             {/* Product variant */}
             <Route path="products/variant" element={<Variant />} />
-
             {/* Order */}
             <Route path="orders" element={<Order />} />
             <Route path="orders/:id" element={<OrderDetail />} />
-
             {/* Page error */}
             <Route path="*" element={<Page404 />} />
             <Route path="page403" element={<Page403 />} />
             <Route path="page500" element={<Page500 />} />
-
             {/* Courier */}
             <Route path="couriers" element={<Courier />} />
+            <Route path="couriers/:id" element={<CourierProfile />} />
+
+            {/* Discount */}
+            <Route path="discounts" element={<Discounts />} />
+            <Route path="discounts/:id" element={<DiscountDetail />} />
+            <Route
+              path="discounts/:id/addProduct"
+              element={<AddProductToDiscount />}
+            />
           </Route>
 
           {/* Auth */}

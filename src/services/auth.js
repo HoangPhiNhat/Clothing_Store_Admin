@@ -2,7 +2,7 @@
 import UnAuthor from "../services/baseApi/UnAuthorApi";
 // import instance from "../configs/axios";
 // import axios from "axios";
-// import Author from "../services/baseApi/AuthorApi";
+import Author from "../services/baseApi/AuthorApi";
 // const url = "/auth";
 
 export const signIn = async (user) => {
@@ -19,14 +19,19 @@ export const signUp = (user) => {
 
 export const refreshToken = async () => {
   try {
-    const data = await UnAuthor.post(
-      `/refresh`,
-      {
-        refresh_token: localStorage.getItem("refresh"), // Thêm refresh token vào body
-      }
-    );
+    const data = await UnAuthor.post(`/refresh`, {
+      refresh_token: localStorage.getItem("refresh"), // Thêm refresh token vào body
+    });
     localStorage.setItem("access", data.access_token);
     localStorage.setItem("refresh", data.refresh_token);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const toggelStatusUser = async (user) => {
+  try {
+    return await Author.put(`/users/${user.id}/toggle-blacklist`);
   } catch (error) {
     throw error;
   }
