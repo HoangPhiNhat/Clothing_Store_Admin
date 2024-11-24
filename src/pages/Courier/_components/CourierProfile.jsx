@@ -27,6 +27,7 @@ import useCourierMutation from "../../../hooks/Courier/useCourierMutation";
 import useCourierQuery from "../../../hooks/Courier/useCourierQuery";
 import useShipmentQuery from "../../../hooks/Shipment/useShipmentQuery";
 import CreateOrderForShipper from "./CreateOrderForShipper";
+import GetOrderForShipment from "./GetOrderForShipment";
 
 const CourierProfile = () => {
   const [editable, setEditable] = useState(false); // Trạng thái Edit
@@ -36,6 +37,8 @@ const CourierProfile = () => {
   const [statusCourier, setStatusCourier] = useState();
   const [pageShipment, setPageShipment] = useState(1);
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
+  const [modalGetOrderOpen, setModalGetOrderOpen] = useState(false);
+  const [idShipment, setIdShipment] = useState(null);
 
   // Fetch dữ liệu tài xế
   const { data: courier, isLoading } = useCourierQuery(
@@ -153,8 +156,13 @@ const CourierProfile = () => {
       title: "Hành động",
       key: "action",
       align: "center",
-      render: () => (
-        <Button>
+      render: (_, shipment) => (
+        <Button
+          onClick={() => {
+            setModalGetOrderOpen(true);
+            setIdShipment(shipment.id);
+          }}
+        >
           <EyeOutlined />
         </Button>
       ),
@@ -391,6 +399,15 @@ const CourierProfile = () => {
             onCancel={() => setModalCreateOpen(false)}
             id={id}
           />
+
+          {/* View list product for shipment */}
+          {idShipment && (
+            <GetOrderForShipment
+              open={modalGetOrderOpen}
+              onCancel={() => setModalGetOrderOpen()}
+              idShipment={idShipment}
+            />
+          )}
         </div>
       </div>
     </>
