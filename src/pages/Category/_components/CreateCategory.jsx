@@ -21,7 +21,7 @@ const CreateCategory = ({ open, onCancel }) => {
   // const [publicId, setPublicId] = useState(null);
 
   const { data: categories, isLoading } = useCategoryQuery(
-    "GET_ALL_CATEGORY_FOR_PRODUCT"
+    "GET_ALL_CATEGORY_PARENT"
   );
 
   const { mutate: createCategory, isPending } = useCategoryMutation({
@@ -33,32 +33,11 @@ const CreateCategory = ({ open, onCancel }) => {
     },
     onError: (error) => {
       messageApi.error(`Lỗi khi thêm danh mục: ${error.response.data.message}`);
-      // if (publicId) {
-      //   deleteFileCloudinary(publicId);
-      // }
       console.log(error);
     },
   });
 
   if (isLoading) return <Loading />;
-
-  // const onFinish = async (values) => {
-  //   try {
-  //     const { image } = values;
-
-  //     setIsPendingUpload(true);
-  //     const thumbnail = await uploadFileCloudinary(image.fileList[0].thumbUrl);
-  //     setPublicId(extractPublicId(thumbnail));
-
-  //     let category = { ...values, image: thumbnail };
-
-  //     createCategory(category);
-  //   } catch (error) {
-  //     console.log("Error create category" + error);
-  //   } finally {
-  //     setIsPendingUpload(false);
-  //   }
-  // };
 
   const onFinish = (values) => {
     createCategory(values);
@@ -79,10 +58,7 @@ const CreateCategory = ({ open, onCancel }) => {
             key="submit"
             type="primary"
             onClick={() => form.submit()}
-            loading={
-              isPending
-              //  ||  isPendingUpload
-            }
+            loading={isPending}
           >
             {isPending
               ? // || isPendingUpload
@@ -142,29 +118,6 @@ const CreateCategory = ({ open, onCancel }) => {
               ))}
             </Select>
           </Form.Item>
-
-          {/* <Form.Item name="image" label="Ảnh">
-            <Upload
-              accept=".jpg, .jpeg, .png"
-              listType="picture"
-              maxCount={1}
-              beforeUpload={(file) => {
-                const isImage =
-                  file.type === "image/jpeg" ||
-                  file.type === "image/png" ||
-                  file.type === "image/jpg";
-                if (!isImage) {
-                  message.error(
-                    "Chỉ chấp nhận tệp định dạng JPG, PNG, hoặc JPEG!"
-                  );
-                  return Upload.LIST_IGNORE;
-                }
-                return false;
-              }}
-            >
-              <Button icon={<UploadOutlined />}>Click để thêm ảnh</Button>
-            </Upload>
-          </Form.Item> */}
         </Form>
       </Modal>
     </>

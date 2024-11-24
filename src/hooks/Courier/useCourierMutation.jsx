@@ -7,6 +7,7 @@ const useCourierMutation = ({ action, onSuccess, onError }) => {
 
   const { mutate, ...rest } = useMutation({
     mutationFn: async (courier) => {
+      
       switch (action) {
         case "CREATE":
           return await createCourier(courier);
