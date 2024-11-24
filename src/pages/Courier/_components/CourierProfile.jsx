@@ -379,6 +379,7 @@ const CourierProfile = () => {
                 align="end"
                 total={shipmentDetails?.data.total}
                 pageSize={5}
+                current={pageShipment}
                 onChange={(page) => setPageShipment(page)}
               />
             </div>
