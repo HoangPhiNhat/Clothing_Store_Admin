@@ -1,6 +1,7 @@
 import {
   CheckOutlined,
   EditOutlined,
+  EyeOutlined,
   LockOutlined,
   PlusCircleOutlined,
   UnlockOutlined,
@@ -126,28 +127,20 @@ const CourierProfile = () => {
 
   const columns = [
     {
-      title: "Mã đơn hàng",
+      title: "Mã giao hàng",
       key: "orderCode",
-      render: (_, shipment) => <span>{shipment.order.order_code}</span>,
+      dataIndex: "code",
     },
     {
       title: "Trạng thái giao hàng",
-      key: "orderCode",
+      key: "status",
       align: "center",
       render: (_, shipment) => {
-        switch (shipment.order.order_status) {
-          case "Đã huỷ":
-            return <Tag color="#f50">Đã huỷ</Tag>;
-          case "Trả hàng":
-            return <Tag color="warning">Trả hàng</Tag>;
-          case "Đã giao":
-            return <Tag color="success">Đã giao</Tag>;
-          case "Chờ lấy hàng":
-            return <Tag color="#2db7f5">Chờ lấy hàng</Tag>;
-          case "Chờ xác nhận":
-            return <Tag color="#108ee9">Chờ xác nhận</Tag>;
-          case "Đang giao":
-            return <Tag color="cyan">Đang giao</Tag>;
+        switch (shipment.status) {
+          case "Chưa hoàn thành":
+            return <Tag color="warning">Chưa hoàn thành</Tag>;
+          case "Hoàn thành giao hàng":
+            return <Tag color="success">Hoàn thành giao hàng</Tag>;
         }
       },
     },
@@ -157,9 +150,14 @@ const CourierProfile = () => {
       key: "created_at",
     },
     {
-      title: "Địa chỉ giao hàng",
-      key: "address",
-      render: (_, shipment) => <span>{shipment.order.order_address}</span>,
+      title: "Hành động",
+      key: "action",
+      align: "center",
+      render: () => (
+        <Button>
+          <EyeOutlined />
+        </Button>
+      ),
     },
   ];
 
@@ -187,27 +185,33 @@ const CourierProfile = () => {
 
             <div className="mt-6 w-full">
               <Row gutter={24}>
-                <Col span={5}>
+                <Col span={8}>
                   <label>Trạng thái</label>
                 </Col>
-                <Col span={19}>
+                <Col span={16}>
                   <Tag
                     color={
-                      courier?.data?.status === "available" ? "green" : "red"
+                      courier?.data?.status === "available"
+                        ? "green"
+                        : courier?.data.status === "offline"
+                        ? "red"
+                        : "blue"
                     }
                     className="text-center"
                   >
-                    {courier?.data.status}
+                    {courier?.data.status === "available"
+                      ? "Online"
+                      : courier?.data.status}
                   </Tag>
                 </Col>
               </Row>
 
               {/* Personal Information Fields */}
               <Row gutter={24}>
-                <Col span={5} className="flex items-center">
+                <Col span={8} className="flex items-center">
                   <label>Tên tài xế</label>
                 </Col>
-                <Col span={19}>
+                <Col span={16}>
                   <Form.Item
                     name={["personal", "name"]}
                     className="mt-5"
@@ -221,10 +225,10 @@ const CourierProfile = () => {
               </Row>
 
               <Row gutter={24}>
-                <Col span={5} className="flex items-center">
+                <Col span={8} className="flex items-center">
                   <label>Số điện thoại</label>
                 </Col>
-                <Col span={19}>
+                <Col span={16}>
                   <Form.Item
                     name={["personal", "phone_number"]}
                     className="mt-5"
@@ -241,10 +245,10 @@ const CourierProfile = () => {
               </Row>
 
               <Row gutter={24}>
-                <Col span={5} className="flex items-center">
+                <Col span={8} className="flex items-center">
                   <label>Email</label>
                 </Col>
-                <Col span={19}>
+                <Col span={16}>
                   <Form.Item name={["personal", "email"]}>
                     <Input disabled style={inputStyle} />
                   </Form.Item>
@@ -252,10 +256,10 @@ const CourierProfile = () => {
               </Row>
 
               <Row gutter={24}>
-                <Col span={5} className="flex items-center">
+                <Col span={8} className="flex items-center">
                   <label>Địa chỉ</label>
                 </Col>
-                <Col span={19}>
+                <Col span={16}>
                   <Form.Item
                     name={["personal", "address"]}
                     rules={[
@@ -269,10 +273,10 @@ const CourierProfile = () => {
 
               {/* Vehicle Information Fields */}
               <Row gutter={24}>
-                <Col span={5} className="flex items-center">
+                <Col span={8} className="flex items-center">
                   <label>Phương tiện</label>
                 </Col>
-                <Col span={19}>
+                <Col span={16}>
                   <Form.Item
                     name={["vehicle", "vehicle_name"]}
                     rules={[
@@ -288,10 +292,10 @@ const CourierProfile = () => {
               </Row>
 
               <Row gutter={24}>
-                <Col span={5} className="flex items-center">
+                <Col span={8} className="flex items-center">
                   <label>Biển số xe</label>
                 </Col>
-                <Col span={19}>
+                <Col span={16}>
                   <Form.Item
                     name={["vehicle", "license_plate"]}
                     rules={[
