@@ -333,6 +333,7 @@ const CourierProfile = () => {
                 }
                 cancelText="Không"
                 onConfirm={() => {
+                  console.log(courier?.data.user_id);
                   toggleAccoutCourier(courier?.data.user_id);
                 }}
               >

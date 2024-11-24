@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getAllCategory,
   getAllCategoryForProduct,
+  getAllCategoryParent,
   getAllCategoryTrash,
   getAllClassification,
   getCategoryById,
@@ -24,6 +25,8 @@ const useCategoryQuery = (action, id, page) => {
           return await getAllCategoryForProduct();
         case "GET_CLASSIFICATION_BY_ID":
           return await getAllClassification(id, page);
+        case "GET_ALL_CATEGORY_PARENT":
+          return await getAllCategoryParent();
         default:
           return null;
       }
