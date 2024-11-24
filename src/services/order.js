@@ -45,7 +45,7 @@ export const getProductsForOrderId = async (id, page) => {
 export const confirmOder = async (id) => {
   try {
     const response = await Author.put(`/orders/${id}/order-status`, {
-      order_status: "Đã xác nhận",
+      order_status: "Chờ giao hàng",
     });
     return response;
   } catch (error) {
