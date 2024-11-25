@@ -1,15 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { getShipmentByCourierId } from "../../services/shipment";
+import { getOrderByShipmentId } from "../../services/shipmentDetail";
 
-const useShipmentQuery = (action, id, page) => {
-  let queryKey = page ? ["SHIPMENT_KEY", page] : ["SHIPMENT_KEY", id];
+const useShipmentDetailQuery = (action, id) => {
+  let queryKey = ["SHIPMENT_DETAIL_KEY", id]
+
 
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
       switch (action) {
         case "GET_SHIPMENT_BY_COURIER_ID":
-          return await getShipmentByCourierId(id, page);
+          return await getOrderByShipmentId(id);
         default:
           return null;
       }
@@ -17,4 +18,4 @@ const useShipmentQuery = (action, id, page) => {
   });
   return { data, ...rest };
 };
-export default useShipmentQuery;
+export default useShipmentDetailQuery;

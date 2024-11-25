@@ -185,7 +185,7 @@ const Order = () => {
         disabled={isPendingConfirm || isPendingReject}
         className="mt-5"
         align="end"
-        defaultCurrent={1}
+        current={pageOrder}
         total={orders?.data.total}
         pageSize={5}
         onChange={(page) => setPageOrder(page)}

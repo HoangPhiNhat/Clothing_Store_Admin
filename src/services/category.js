@@ -93,3 +93,12 @@ export const getAllClassification = async (id, page) => {
     throw error;
   }
 };
+
+export const getAllCategoryParent = async () => {
+  try {
+    const res = await Author.get("/categories/parent");
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

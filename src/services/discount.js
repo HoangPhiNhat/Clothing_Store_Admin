@@ -36,7 +36,7 @@ export const getAllProductForAddDiscount = async (page, search) => {
     if (search.maxStockQuantity)
       api += `&maxStockQuantity=${search.maxStockQuantity}`;
 
-    if (search.name) api += `$name=${search.name}`;
+    if (search.name) api += `&name=${search.name}`;
 
     const res = await Author.get(api);
     return res;
