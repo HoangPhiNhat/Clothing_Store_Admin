@@ -37,7 +37,9 @@ const Classification = () => {
     },
     onError: (error) => {
       selectedCategory(null);
-      message.error("Xóa danh mục phân loại thất bại. " + error);
+      message.error(
+        "Xóa danh mục phân loại thất bại. " + error.response.data.message
+      );
     },
   });
 

@@ -35,7 +35,13 @@ const SignIn = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("access", data.access_token);
       localStorage.setItem("refresh", data.refresh_token);
-      navigate("/admin");
+      if (data.user.role === "admin") {
+        navigate("/admin");
+      } else if (data.user.role === "shipper") {
+        navigate("/shipper");
+      }
+
+      //Shipper
     },
   });
   const onFinish = async (values) => {

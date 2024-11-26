@@ -31,7 +31,7 @@ export const refreshToken = async () => {
 
 export const toggelStatusUser = async (user) => {
   try {
-    return await Author.put(`/users/${user.id}/toggle-blacklist`);
+    return await Author.put(`/users/${user}/toggle-blacklist`);
   } catch (error) {
     throw error;
   }

@@ -101,11 +101,13 @@ const CourierProfile = () => {
       onError: (error) => {
         if (statusCourier) {
           messageApi.error(
-            "Mở khoá tài khoản thất bại. " + error.response.data.message
+            "Mở khoá tài khoản thất bại. ",
+            error.response.data.message
           );
         } else {
           messageApi.error(
-            "Khoá tài khoản thất bại." + error.response.data.message
+            "Khoá tài khoản thất bại. ",
+            error.response.data.message
           );
         }
       },

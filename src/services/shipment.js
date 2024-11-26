@@ -4,7 +4,9 @@ const size = 5;
 
 export const getShipmentByCourierId = async (id, page) => {
   try {
-    const res = await Author.get(`/shipments/1/user?size=${size}&page=${page}`);
+    const res = await Author.get(
+      `/shipments/${id}/user?size=${size}&page=${page}`
+    );
     return res;
   } catch (error) {
     console.log("Error get shipment by id : " + error);
