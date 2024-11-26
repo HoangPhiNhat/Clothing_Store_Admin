@@ -16,9 +16,11 @@ const ShipmentsPage = () => {
   const { mutate: updateStatusShipment } = useShippperMutation({
     action: "START_SHIPMENT",
     onSuccess: () => {
+      setIdUpdateStatus(null);
       messageApi.success("Bắt đầu lô hàng thành công.");
     },
     onError: (error) => {
+      setIdUpdateStatus(null);
       messageApi.error(
         "Bắt đầu lô hàng thất bại. " + error.response.data.message
       );
@@ -73,6 +75,7 @@ const ShipmentsPage = () => {
 
           <Button
             type="primary"
+            disabled={idUpdateStatus == shipment.id}
             onClick={() => {
               setModalGetOrderOpen(true);
               setOrders(shipment.shipment_details);

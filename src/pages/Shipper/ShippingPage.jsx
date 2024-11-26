@@ -1,6 +1,7 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { Button, message, Popconfirm, Space, Table } from "antd";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Loading from "../../components/base/Loading/Loading";
 import useShippperMutation from "../../hooks/Shipper/useShipperMutation";
 import useShipperQuery from "../../hooks/Shipper/useShipperQuery";
@@ -20,13 +21,13 @@ const ShippingPage = () => {
       action: "DELIVERY_SUCCESS",
       onSuccess: () => {
         setidDeleverySuccess(null);
-        messageApi.success("Cập nhật trạng thái đã giao hàng thành công. ");
+        messageApi.success("Cập nhật trạng thái đã giao hàng thành công.");
       },
       onError: (error) => {
         setidDeleverySuccess(null);
-        messageApi.success(
-          "Cập nhật trạng thái đã giao hàng thất bại. ",
-          error.response.data.message
+        messageApi.error(
+          "Cập nhật trạng thái đã giao hàng thất bại. " +
+            error.response.data.message
         );
         console.log(error);
       },
@@ -37,11 +38,14 @@ const ShippingPage = () => {
       action: "DELIVERY_FAIL",
       onSuccess: () => {
         setidDeleveryFail(null);
-        messageApi.success("Cập nhật trạng thái trả hàng thành công. ");
+        messageApi.success("Cập nhật trạng thái trả hàng thành công.");
       },
       onError: (error) => {
         setidDeleveryFail(null);
-        "Cập nhật trạng trả hoàn hàng thất bại. ", error.response.data.message;
+        messageApi.error(
+          "Cập nhật trạng thái trả hàng thất bại. " +
+            error.response.data.message
+        );
         console.log(error);
       },
     });
@@ -58,10 +62,19 @@ const ShippingPage = () => {
     },
   });
 
-  const dataSource = (shippings?.data || []).map((shipping) => ({
-    key: shipping.id,
-    ...shipping,
-  }));
+  const dataSource = useMemo(
+    () =>
+      (shippings?.data[0] ? shippings?.data[0].shipment_details : [] || []).map((shipping, index) => ({
+        key: index,
+        ...shipping.order,
+      })),
+    [shippings]
+  );
+
+  const hasPendingOrders = useMemo(
+    () => dataSource.some((item) => item.order_status === "Đang giao"),
+    [dataSource]
+  );
 
   const columns = [
     {
@@ -113,7 +126,7 @@ const ShippingPage = () => {
             <Button
               type="primary"
               danger
-              loading={idDeleveryFail == shipping.id}
+              loading={idDeleveryFail === shipping.id}
               disabled={isPendingDeliverySucess}
             >
               <CloseCircleOutlined />
@@ -133,7 +146,7 @@ const ShippingPage = () => {
             <Button
               type="primary"
               disabled={isPendingDeliveryFail}
-              loading={idDeleverySuccess == shipping.id}
+              loading={idDeleverySuccess === shipping.id}
             >
               <CheckCircleOutlined />
             </Button>
@@ -150,7 +163,11 @@ const ShippingPage = () => {
       {contextHolder}
       <Table dataSource={dataSource} columns={columns} pagination={false} />
       <div className="flex mt-5 justify-center">
-        <Button type="primary" onClick={() => updateStatusShipment()}>
+        <Button
+          type="primary"
+          onClick={() => updateStatusShipment(shippings?.data[0].shipment_id)}
+          disabled={hasPendingOrders}
+        >
           Hoàn thành lô hàng
         </Button>
       </div>

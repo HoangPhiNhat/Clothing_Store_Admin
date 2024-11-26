@@ -22,7 +22,7 @@ const useShippperMutation = ({ action, onSuccess, onError }) => {
     onSuccess: () => {
       onSuccess && onSuccess();
       queryClient.invalidateQueries({
-        queryKey: ["SHIPPER"],
+        queryKey: ["SHIPPER-KEY"],
       });
     },
     onError: (error) => {
