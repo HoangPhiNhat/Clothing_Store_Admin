@@ -41,6 +41,10 @@ import Discounts from "../pages/Discount/page";
 import DiscountDetail from "../pages/Discount/_components/DiscountDetail";
 import AddProductToDiscount from "../pages/Discount/_components/AddProductToDiscount";
 
+import ShipperLayout from "../layout/ShipperLayout";
+import ShippingPage from "../pages/Shipper/ShippingPage";
+import ShipmentsPage from "../pages/Shipper/ShipmentsPage";
+
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
   return isAuthenticated ? children : <Navigate to="/signin" />;
@@ -103,6 +107,20 @@ const RouterComponent = () => {
               path="discounts/:id/addProduct"
               element={<AddProductToDiscount />}
             />
+          </Route>
+
+          {/* Shipper */}
+          <Route
+            path="/shipper"
+            element={
+              <PrivateRoute>
+                <ShipperLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<Home />} />
+            <Route path="shipping" element={<ShippingPage />} />
+            <Route path="shipments" element={<ShipmentsPage />} />
           </Route>
 
           {/* Auth */}
