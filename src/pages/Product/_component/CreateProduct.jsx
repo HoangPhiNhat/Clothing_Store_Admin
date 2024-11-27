@@ -178,27 +178,29 @@ const CreateProduct = () => {
                       }))}
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="regular_price"
-                    label="Giá bán"
-                    className="flex-1"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng nhập giá gốc",
-                      },
-                      {
-                        type: "number",
-                        min: 1,
-                        message: "Giá gốc cần lớn hơn 0 đồng",
-                      },
-                    ]}
-                  >
-                    <InputNumber className="w-full" placeholder="Giá gốc" />
-                  </Form.Item>
                 </Col>
               </Row>
-
+              <Row>
+                {" "}
+                <Form.Item
+                  name="regular_price"
+                  label="Giá bán"
+                  className="flex-1"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập giá gốc",
+                    },
+                    {
+                      type: "number",
+                      min: 1,
+                      message: "Giá gốc cần lớn hơn 0 đồng",
+                    },
+                  ]}
+                >
+                  <InputNumber className="w-full" placeholder="Giá gốc" />
+                </Form.Item>
+              </Row>
               <Form.Item
                 name="short_description"
                 label="Mô tả ngắn"
