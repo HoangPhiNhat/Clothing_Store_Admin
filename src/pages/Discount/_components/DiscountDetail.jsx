@@ -1,5 +1,5 @@
 import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
+import { Breadcrumb, Button, message, Pagination, Popconfirm, Space, Table } from "antd";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Loading from "../../../components/base/Loading/Loading";
@@ -113,7 +113,19 @@ const DiscountDetail = () => {
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl">Chi tiết chiến dịch giảm giá</h1>
+        <div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Trang chủ",
+              },
+              {
+                title: <a href="">Chi tiết chiến dịch</a>,
+              },
+            ]}
+          />
+          <h1 className="text-xl">Chi tiết chiến dịch giảm giá</h1>
+        </div>
         <Link to={`addProduct`}>
           <Button type="primary" disabled={isPending}>
             <PlusCircleOutlined />

@@ -97,6 +97,8 @@ const Order = () => {
               ? "text-white bg-red-500 px-2 py-1 rounded-md"
               : orders.order_status === "Chờ xác nhận"
               ? "text-white bg-yellow-400 px-2 py-1 rounded-md"
+              : orders.order_status === "Trả hàng"
+              ? "text-white bg-red-500 px-2 py-1 rounded-md"
               : "text-white bg-green-500 px-2 py-1 rounded-md"
           }
         >
@@ -172,11 +174,13 @@ const Order = () => {
             </Tooltip>
           </Space>
         ) : (
-          <Link to={`${order.id}`}>
-            <Button>
-              <EyeOutlined />
-            </Button>
-          </Link>
+          <Tooltip title="Chi tiết đơn hàng">
+            <Link to={`${order.id}`}>
+              <Button>
+                <EyeOutlined />
+              </Button>
+            </Link>
+          </Tooltip>
         ),
     },
   ];

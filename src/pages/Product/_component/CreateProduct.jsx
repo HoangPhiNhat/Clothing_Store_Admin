@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 
 import {
+  Breadcrumb,
   Button,
   Col,
   Form,
@@ -300,6 +301,16 @@ console.log(categories);
   return (
     <div className="container mx-auto">
       {contextHolder}
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Thêm sản phẩm</a>,
+          },
+        ]}
+      />
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-medium">Tạo sản phẩm mới</h1>
         <Link to="/admin/products">

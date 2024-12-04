@@ -4,6 +4,7 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import {
+  Breadcrumb,
   Button,
   Input,
   message,
@@ -191,7 +192,17 @@ const ProductManagePage = () => {
   return (
     <>
       {contextHolder}
-      <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm</h1>
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Danh sách sản phẩm</a>,
+          },
+        ]}
+      />
+      <h1 className="text-2xl font-medium mb-2">Quản lý sản phẩm</h1>
       <div className="flex justify-between">
         <Input
           placeholder="Tìm kiếm theo tên và danh mục"

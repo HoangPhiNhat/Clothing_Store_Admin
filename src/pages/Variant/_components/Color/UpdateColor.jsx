@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect } from "react";
 import { Button, Modal, Form, Input, message } from "antd";
@@ -12,11 +13,11 @@ const UpdateColor = ({ open, onCancel, color }) => {
   const { mutate: updateColor, isPending } = useColorMutation({
     action: "UPDATE",
     onSuccess: () => {
-      messageApi.success("Cập nhật màu sắc thành công");
+      message.success("Cập nhật màu sắc thành công");
       onCancel();
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi cập nhật: ${error.response.data.message}`);
+      message.error(`Lỗi khi cập nhật: ${error.response.data.message}`);
     },
   });
 
@@ -32,7 +33,7 @@ const UpdateColor = ({ open, onCancel, color }) => {
     if (color && color.id) {
       updateColor({ ...values, id: color.id });
     } else {
-      messageApi.error("Không tìm thấy ID của màu sắc");
+      message.error("Không tìm thấy ID của màu sắc");
     }
   };
 

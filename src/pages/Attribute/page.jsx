@@ -6,6 +6,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import {
+  Breadcrumb,
   Button,
   Form,
   InputNumber,
@@ -29,6 +30,7 @@ import {
 import { useForm } from "antd/es/form/Form.js";
 import Loading from "../../components/base/Loading/Loading.jsx";
 import { formatMoney } from "../../systems/utils/formatMoney.js";
+import useProductQuery from "../../hooks/Product/useProductQuery.jsx";
 
 const ProductAttribute = () => {
   const [isPending, setIsPending] = useState(false);
@@ -44,7 +46,9 @@ const ProductAttribute = () => {
   const [hasChanged, setHasChanged] = useState(false);
   const { id } = useParams();
   const { data: attributes, isLoading } = useAttributeQuery(id, page, pageSize);
+  const { data: product } = useProductQuery("GET_PRODUCT_BY_ID",id, null, null);
   console.log(attributes);
+  console.log(product);
 
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
@@ -395,7 +399,22 @@ const ProductAttribute = () => {
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-medium">Các biến thể của sản phẩm</h1>
+        <div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Trang chủ",
+              },
+              {
+                title: <a href="">Danh sách thuộc tính</a>,
+              },
+              {
+                title: <a href="">{product?.name}</a>,
+              },
+            ]}
+          />
+          <h1 className="text-2xl font-medium">Các thuộc tính của sản phẩm</h1>
+        </div>
         <CreateAttribute />
       </div>
       <Form form={form} onFinish={save}>

@@ -58,9 +58,9 @@ const ShipperOrderHistory = () => {
       key: "order_status",
       render: (_, order) =>
         order.order_status == "Đã giao" ? (
-          <Tag color="#87d068">Giao hàng thành công</Tag>
+          <Tag color="success">Giao hàng thành công</Tag>
         ) : (
-          <Tag color="#f50">Trả hàng</Tag>
+          <Tag color="red">Trả hàng</Tag>
         ),
     },
     {
