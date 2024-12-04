@@ -1,17 +1,15 @@
 /* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
-import Author from "./baseApi/AuthorApi"
+import Author from "./baseApi/AuthorApi";
 import { PAGING } from "../systems/constants";
 const size = PAGING.SIZE;
 
 export const getAllCategoryForProduct = async () => {
   try {
-    let queryCategory = `/campaigns/category`;
+    let queryCategory = `/categories`;
     return await Author.get(queryCategory);
   } catch (error) {
-    console.log(error);
     throw error;
-    // window.location.href = "/admin/page500";
   }
 };
 

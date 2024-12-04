@@ -68,7 +68,7 @@ const LayoutAdmin = () => {
     {
       icon: <ProfileOutlined />,
       key: "/admin/products/variant",
-      label: <Link to="/admin/products/variant">Biến thể</Link>,
+      label: <Link to="/admin/products/variant">Quản lí thuộc tính</Link>,
     },
     {
       key: "/admin/orders",
