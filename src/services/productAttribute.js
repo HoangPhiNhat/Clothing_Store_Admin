@@ -16,8 +16,9 @@ export const getAllAttribute = async (productId, page , size) => {
 
 export const createAttribute = async (productId, attributes) => {
   try {
+    console.log(productId);
     const response = await Author.post(
-      `/products/${productId}/productAtts`,
+      `/products/${Number(productId)}/productAtts`,
       attributes
     );
     return response.data;

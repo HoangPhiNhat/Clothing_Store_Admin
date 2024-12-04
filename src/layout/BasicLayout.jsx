@@ -43,7 +43,11 @@ const LayoutAdmin = () => {
         {
           key: "/admin/categories",
           label: <Link to="/admin/categories">Danh sách</Link>,
-        }
+        },
+        {
+          key: "/admin/categories/trash",
+          label: <Link to="/admin/categories/trash">Danh sách đã ẩn</Link>,
+        },
       ],
     },
     {
