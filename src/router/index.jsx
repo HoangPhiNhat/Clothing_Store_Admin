@@ -13,10 +13,10 @@ import SignIn from "../pages/Auth/Signin";
 
 import Statistical from "../pages/Statistical/page";
 
-import TrashCategory from "../pages/Category/_components/TrashCategory";
+import TrashCategory from "../pages/Category/_componet/TrashCategory";
 import Category from "../pages/Category/page";
 
-import Classification from "../pages/Classification/page";
+// import Classification from "../pages/Classification/page";
 
 import CreateProduct from "../pages/Product/_component/CreateProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
@@ -72,7 +72,7 @@ const RouterComponent = () => {
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
             {/* Classification */}
-            <Route path="categories/:id" element={<Classification />} />
+            {/* <Route path="categories/:id" element={<Classification />} /> */}
             {/* Product */}
             <Route path="products" element={<ProductManagePage />} />
             <Route path="products/add" element={<CreateProduct />} />

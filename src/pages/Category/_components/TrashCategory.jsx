@@ -4,11 +4,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
-import Loading from "../../../components/base/Loading/Loading";
 
 const TrashCategory = () => {
   const [messageApi, contextHolder] = message.useMessage();
-
   const [pageCategory, setPageCategory] = useState(1);
   const [deletingCategoryId, setDeletingCategoryId] = useState(null);
 
@@ -21,13 +19,16 @@ const TrashCategory = () => {
   const { mutate: deleteCategory, isPending } = useCategoryMutation({
     action: "RESTORE",
     onSuccess: () => messageApi.success("Khôi phục danh mục thành công."),
-    onError: (error) => message.error("Khôi phục danh mục thất bại. " + error),
+    onError: (error) =>
+      message.error(
+        "Khôi phục danh mục thất bại. " + error.response.data.message
+      ),
   });
 
   const columns = [
     {
-      title: "Mã danh mục",
-      dataIndex: "category_code",
+      title: "#",
+      dataIndex: "sku",
       rowScope: "row",
       sorter: (a, b) => a.index - b.index,
     },
@@ -42,13 +43,11 @@ const TrashCategory = () => {
     {
       title: "Ngày tạo",
       dataIndex: "created_at",
-      render: (_, categories) => (categories.created_at),
       width: "20%",
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "updated_at",
-      render: (_, categories) => (categories.updated_at),
       width: "20%",
     },
     {
@@ -62,8 +61,8 @@ const TrashCategory = () => {
             okText={isPending ? `Đang xóa` : `Có`}
             cancelText="Không"
             onConfirm={() => {
-              deleteCategory(category);
-              setDeletingCategoryId(category.id);
+                deleteCategory(category);
+                setDeletingCategoryId(category.id);
             }}
           >
             <Button
@@ -88,8 +87,6 @@ const TrashCategory = () => {
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
-  
- if (isLoading) return <Loading />;
 
   return (
     <>
@@ -103,11 +100,14 @@ const TrashCategory = () => {
           </Button>
         </Link>
       </div>
+
       <Table
         columns={columns}
         dataSource={dataSource}
+        loading={isLoading}
         pagination={false}
       />
+
       <Pagination
         disabled={isPending}
         className="mt-5"

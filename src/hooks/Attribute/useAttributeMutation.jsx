@@ -10,6 +10,8 @@ const useAttributeMutation = ({ action, onSuccess, onError }) => {
 
   const { mutate, ...rest } = useMutation({
     mutationFn: async (params) => {
+      console.log(params);
+      
       switch (action) {
         case "CREATE":
           return await createAttribute(params.productId, params.attributes);

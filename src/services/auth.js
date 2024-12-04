@@ -7,6 +7,8 @@ import Author from "../services/baseApi/AuthorApi";
 
 export const signIn = async (user) => {
   try {
+    console.log(user);
+    
     return await UnAuthor.post("/login", user);
   } catch (error) {
     throw error;

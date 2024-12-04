@@ -48,7 +48,11 @@ export const getProductById = async (id) => {
 
 export const createProduct = async (product) => {
   try {
-    const response = await Author.post(`/products`, product);
+    const response = await Author.post(`/products`, product, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
     throw error;

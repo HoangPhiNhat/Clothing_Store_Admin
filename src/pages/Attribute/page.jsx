@@ -28,6 +28,7 @@ import {
 } from "../../services/cloudinary.js";
 import { useForm } from "antd/es/form/Form.js";
 import Loading from "../../components/base/Loading/Loading.jsx";
+import { formatMoney } from "../../systems/utils/formatMoney.js";
 
 const ProductAttribute = () => {
   const [isPending, setIsPending] = useState(false);
@@ -57,7 +58,7 @@ const ProductAttribute = () => {
     onError: (error) =>
       message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
   });
-  
+
   const { mutate: updateAttribute, isPending: updatePending } =
     useAttributeMutation({
       action: "UPDATE",
@@ -175,19 +176,7 @@ const ProductAttribute = () => {
       width: "15%",
       render: (_, attribute) => {
         return isEditing(attribute.key) ? (
-          <Form.Item
-            name="image"
-            rules={[
-              () => ({
-                validator(_, value) {
-                  if (value.fileList.length <= 0) {
-                    return Promise.reject("Vui lòng nhập ảnh biến thể");
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
-          >
+          <Form.Item name="image">
             <Upload
               listType="picture-card"
               fileList={fileList}
@@ -251,10 +240,65 @@ const ProductAttribute = () => {
       render: (size) => <>{size}</>,
     },
     {
+      title: "Giá bán",
+      dataIndex: "regular_price",
+      key: "regular_price",
+      width: "10%",
+      render: (_, attribute) =>
+        isEditing(attribute.key) ? (
+          <Form.Item
+            rules={[
+              { required: true, message: "Vui lòng nhập giá" },
+              { min: 1, type: "number", message: "Giá lớn hơn 0" },
+            ]}
+            name="regular_price"
+          >
+            <InputNumber className="w-full" onChange={handleFieldChange} />
+          </Form.Item>
+        ) : (
+          <div>{formatMoney(attribute.regular_price)}đ</div>
+        ),
+    },
+    {
+      title: "Giá khuyến mãi",
+      dataIndex: "reduced_price",
+      key: "reduced_price",
+      width: "10%",
+      render: (_, attribute) =>
+        isEditing(attribute.key) ? (
+          <Form.Item
+            rules={[
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const regularPrice = getFieldValue("regular_price");
+                  if (!regularPrice) {
+                    return Promise.reject("Vui lòng nhập giá gốc trước");
+                  }
+                  if (Number(value) < 0) {
+                    return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
+                  }
+                  if (Number(value) && regularPrice <= Number(value)) {
+                    return Promise.reject(
+                      "Giá khuyến mãi phải thấp hơn giá gốc"
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+            name="reduced_price"
+          >
+            <InputNumber className="w-full" onChange={handleFieldChange} />
+          </Form.Item>
+        ) : (
+          <div>{formatMoney(attribute.reduced_price)}đ</div>
+        ),
+    },
+    {
       title: "Số lượng",
       dataIndex: "stock_quantity",
       key: "stock_quantity",
-      width: "15%",
+      width: "10%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
           <Form.Item
@@ -305,8 +349,7 @@ const ProductAttribute = () => {
               type="default"
               onClick={() => {
                 edit(attribute);
-              console.log(attribute);
-              
+                console.log(attribute);
               }}
               className="bg-[#fadd04]"
             >
@@ -341,7 +384,7 @@ const ProductAttribute = () => {
     },
   ];
 
-  const dataSource = attributes?.data.map((attribute, index) => ({
+  const dataSource = attributes?.map((attribute, index) => ({
     ...attribute,
     key: index + 1,
     index: index + 1,
