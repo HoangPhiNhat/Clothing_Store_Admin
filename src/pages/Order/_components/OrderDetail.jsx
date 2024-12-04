@@ -104,20 +104,20 @@ const OrderDetail = () => {
     }
   }
 
-  if (statusDeliveryPending) {
+  if (statusDeliveryPending && status != "error") {
     status = "process";
     current = 2;
   }
 
-  if (statusDelivery) {
+  if (statusDelivery && status != "error") {
     status = "process";
     current = 3;
   }
 
-  if (statusDeliveryCompletion) {
-    if (statusDeliveryCompletion == "Đã giao") {
+  if (statusDeliveryCompletion && status != "error") {
+    if (statusDeliveryCompletion.status == "Đã giao") {
       current = 4;
-      status = "success";
+      status = "finish";
     } else {
       current = 4;
       status = "error";
@@ -150,7 +150,6 @@ const OrderDetail = () => {
         responsive
         current={current}
         status={status}
-        // status="process"
         items={[
           {
             title: "Chờ xác nhận",
@@ -189,10 +188,7 @@ const OrderDetail = () => {
             title: "Hoàn thành giao hàng",
             description:
               statusDeliveryCompletion &&
-              `${
-                statusDeliveryCompletion.status -
-                statusDeliveryCompletion.created_at
-              }`,
+              `${statusDeliveryCompletion.status} - ${statusDeliveryCompletion.created_at}`,
           },
         ]}
       />

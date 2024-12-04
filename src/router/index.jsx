@@ -13,7 +13,7 @@ import SignUp from "../pages/Auth/Signup";
 
 import Statistical from "../pages/Statistical/page";
 
-import TrashCategory from "../pages/Category/_componet/TrashCategory";
+import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 
 // import Classification from "../pages/Classification/page";

@@ -1,14 +1,9 @@
 /* eslint-disable no-useless-catch */
 import UnAuthor from "../services/baseApi/UnAuthorApi";
-// import instance from "../configs/axios";
-// import axios from "axios";
 import Author from "../services/baseApi/AuthorApi";
-// const url = "/auth";
 
 export const signIn = async (user) => {
   try {
-    console.log(user);
-    
     return await UnAuthor.post("/login", user);
   } catch (error) {
     throw error;

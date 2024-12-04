@@ -7,8 +7,8 @@ import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
-import CreateCategory from "./_componet/CreateCategory";
-import UpdateCategory from "./_componet/UpdateCategory";
+import CreateCategory from "./_components/CreateCategory";
+import UpdateCategory from "./_components/UpdateCategory";
 
 const Category = () => {
   const [messageApi, contextHolder] = message.useMessage();
