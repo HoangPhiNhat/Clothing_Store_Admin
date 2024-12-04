@@ -37,32 +37,16 @@ export const toggelStatusUser = async (user) => {
   }
 };
 
-// export const resendActiveAccountEmail = (username) => {
-//     return UnauthorApi.get(`${url}/registration/active-mail?username=${username}`);
-// };
+export const logout = async () => {
+  try {
+    const res = Author.post("auth/logout");
 
-// export const sendResetPasswordEmail = (usernameOrEmail) => {
-//     return UnauthorApi.get(`${url}/password/forgot-mail?usernameOrEmail=${usernameOrEmail}`);
-// };
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
 
-// export const getUsernameFromForgotPasswordToken = (token) => {
-//     return UnauthorApi.get(`${url}/password/forgot/username?forgotPasswordToken=${token}`);
-// };
-
-// export const resetNewPassword = (token, newPassword) => {
-//     const body = {
-//         "forgotPasswordToken": token,
-//         "newPassword": newPassword
-//     };
-
-//     return UnauthorApi.put(`${url}/password/new-password`, body);
-// };
-
-// export const changePassword = (oldPassword, newPassword) => {
-//     const body = {
-//         "oldPassword": oldPassword,
-//         "newPassword": newPassword
-//     };
-
-//     return AuthorApi.put(`${url}/password/change`, body);
-// };
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

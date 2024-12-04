@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import {
   Avatar,
+  Breadcrumb,
   Button,
   Col,
   Form,
@@ -175,6 +176,20 @@ const CourierProfile = () => {
   return (
     <>
       {contextHolder}
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="/admin/couriers">Danh sách tài xế</a>,
+          },
+          {
+            title: <a>{id}</a>,
+          },
+        ]}
+      />
       <div className="p-4 bg-gray-100 h-screen">
         <div className="grid grid-cols-10 gap-4 h-full">
           {/* Profile */}

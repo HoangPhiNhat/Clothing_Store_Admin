@@ -3,7 +3,7 @@ import {
   PlusCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Table } from "antd";
+import { Avatar, Breadcrumb, Button, Table } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Loading from "../../components/base/Loading/Loading";
@@ -76,6 +76,17 @@ const Courier = () => {
 
   return (
     <>
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Danh sách tài xế</a>,
+          },
+        ]}
+      />
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl">Quản lý tài xế</h1>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>

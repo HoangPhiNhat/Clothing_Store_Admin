@@ -1,18 +1,20 @@
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, List, Popover } from "antd";
+import { logout } from "../../services/auth";
 
 const UserProfile = () => {
-const user = JSON.parse(localStorage.getItem("user"));
-const name = user?.name;
+  const user = JSON.parse(localStorage.getItem("user"));
+  const name = user?.name;
+  const handleLogout = async () => {
+    await logout();
+  };
 
   const content = (
     <List>
-      <List.Item>My Account</List.Item>
-      <List.Item>Update Password</List.Item>
       <List.Item>
-        <Button type="primary">
+        <Button type="primary" onClick={() => handleLogout()}>
           <LogoutOutlined />
-          Logout
+          Đăng xuất
         </Button>
       </List.Item>
     </List>

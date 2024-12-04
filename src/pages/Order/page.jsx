@@ -172,11 +172,11 @@ const Order = () => {
             </Tooltip>
           </Space>
         ) : (
-          <Button>
-            <Link to={`${order.id}`}>
+          <Link to={`${order.id}`}>
+            <Button>
               <EyeOutlined />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         ),
     },
   ];
