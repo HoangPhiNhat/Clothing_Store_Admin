@@ -1,9 +1,6 @@
 /* eslint-disable no-useless-catch */
 import UnAuthor from "../services/baseApi/UnAuthorApi";
-// import instance from "../configs/axios";
-// import axios from "axios";
 import Author from "../services/baseApi/AuthorApi";
-// const url = "/auth";
 
 export const signIn = async (user) => {
   try {
@@ -37,32 +34,34 @@ export const toggelStatusUser = async (user) => {
   }
 };
 
-// export const resendActiveAccountEmail = (username) => {
-//     return UnauthorApi.get(`${url}/registration/active-mail?username=${username}`);
-// };
+export const logout = async () => {
+  try {
+    const res = Author.post("auth/logout");
 
-// export const sendResetPasswordEmail = (usernameOrEmail) => {
-//     return UnauthorApi.get(`${url}/password/forgot-mail?usernameOrEmail=${usernameOrEmail}`);
-// };
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
 
-// export const getUsernameFromForgotPasswordToken = (token) => {
-//     return UnauthorApi.get(`${url}/password/forgot/username?forgotPasswordToken=${token}`);
-// };
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
 
-// export const resetNewPassword = (token, newPassword) => {
-//     const body = {
-//         "forgotPasswordToken": token,
-//         "newPassword": newPassword
-//     };
+export const getStatusShipper = async () => {
+  try {
+    const res = Author.get("delivery-persons/statusForShipper");
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
 
-//     return UnauthorApi.put(`${url}/password/new-password`, body);
-// };
-
-// export const changePassword = (oldPassword, newPassword) => {
-//     const body = {
-//         "oldPassword": oldPassword,
-//         "newPassword": newPassword
-//     };
-
-//     return AuthorApi.put(`${url}/password/change`, body);
-// };
+export const updateStatusShipper = async (status) => {
+  try {
+    const res = Author.put("delivery-persons/statusForShipper", { status });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

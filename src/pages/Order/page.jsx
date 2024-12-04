@@ -1,5 +1,18 @@
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
-import { Button, message, Pagination, Popconfirm, Space, Table } from "antd";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
+import {
+  Breadcrumb,
+  Button,
+  message,
+  Pagination,
+  Popconfirm,
+  Space,
+  Table,
+  Tooltip,
+} from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Loading from "../../components/base/Loading/Loading";
@@ -12,6 +25,11 @@ const Order = () => {
   const [pageOrder, setPageOrder] = useState(1);
   const [rejectOrderPending, setRejectOrderPending] = useState(null);
   const [confirmOrderPending, setConfirmOrderPending] = useState(null);
+
+  const setDefaultStatePending = () => {
+    setConfirmOrderPending(null);
+    setRejectOrderPending(null);
+  };
 
   const { mutate: confirmOrder, isPending: isPendingConfirm } =
     useOrderMutation({
@@ -27,11 +45,6 @@ const Order = () => {
         setDefaultStatePending();
       },
     });
-
-  const setDefaultStatePending = () => {
-    setConfirmOrderPending(null);
-    setRejectOrderPending(null);
-  };
 
   const { mutate: rejectOrder, isPending: isPendingReject } = useOrderMutation({
     action: "REJECT",
@@ -58,17 +71,24 @@ const Order = () => {
       title: "Mã đơn hàng",
       dataIndex: "order_code",
       render: (_, orders) => (
-        <Link to={`${orders.id}`}>{orders.order_code}</Link>
+        <Tooltip title="Xem chi tiết đơn hàng.">
+          <Link to={`${orders.id}`}>{orders.order_code}</Link>
+        </Tooltip>
       ),
       with: "5%",
     },
     {
       title: "Người đặt",
       render: (_, orders) => orders.user.name,
+      width: "15%",
+    },
+    {
+      title: "Ngày đặt",
+      dataIndex: "created_at",
       width: "10%",
     },
     {
-      title: "Trạng thái đặt hàng",
+      title: "Trạng thái đơn hàng",
       dataIndex: "order_status",
       render: (_, orders) => (
         <span
@@ -101,62 +121,63 @@ const Order = () => {
       width: "10%",
     },
     {
-      title: "Ngày đặt",
-      dataIndex: "created_at",
-      width: "10%",
-    },
-    {
-      title: "Ngày cập nhật",
-      dataIndex: "updated_at",
-      width: "10%",
-    },
-    {
       title: "Hành động",
       key: "action",
-      render: (_, order) => (
-        <Space size="middle">
-          <Popconfirm
-            title="Xác nhận đơn hàng"
-            description="Bạn có muốn từ chối đơn hàng này không?"
-            okText="Có"
-            cancelText="Không"
-            onConfirm={() => {
-              // APi reject
-              setRejectOrderPending(order.id);
-              rejectOrder(order);
-            }}
-          >
-            <Button
-              type="primary"
-              danger
-              loading={rejectOrderPending === order.id}
-              disabled={confirmOrderPending === order.id}
-            >
-              <CloseCircleOutlined />
-            </Button>
-          </Popconfirm>
+      render: (_, order) =>
+        order.order_status === "Chờ xác nhận" ? (
+          <Space size="middle">
+            <Tooltip title="Từ chối đơn hàng">
+              <Popconfirm
+                title="Xác nhận đơn hàng"
+                description="Bạn có muốn từ chối đơn hàng này không?"
+                okText="Có"
+                cancelText="Không"
+                onConfirm={() => {
+                  // APi reject
+                  setRejectOrderPending(order.id);
+                  rejectOrder(order);
+                }}
+              >
+                <Button
+                  type="primary"
+                  danger
+                  loading={rejectOrderPending === order.id}
+                  disabled={confirmOrderPending === order.id}
+                >
+                  <CloseCircleOutlined />
+                </Button>
+              </Popconfirm>
+            </Tooltip>
 
-          <Popconfirm
-            title="Xác nhận đơn hàng"
-            description="Bạn có muốn xác nhận đơn hàng này không?"
-            okText="Có"
-            cancelText="Không"
-            onConfirm={() => {
-              // API Confirm
-              setConfirmOrderPending(order.id);
-              confirmOrder(order);
-            }}
-          >
-            <Button
-              type="primary"
-              disabled={rejectOrderPending === order.id}
-              loading={confirmOrderPending === order.id}
-            >
-              <CheckCircleOutlined />
+            <Tooltip title="Xác nhận đơn hàng.">
+              <Popconfirm
+                title="Xác nhận đơn hàng"
+                description="Bạn có muốn xác nhận đơn hàng này không?"
+                okText="Có"
+                cancelText="Không"
+                onConfirm={() => {
+                  // API Confirm
+                  setConfirmOrderPending(order.id);
+                  confirmOrder(order);
+                }}
+              >
+                <Button
+                  type="primary"
+                  disabled={rejectOrderPending === order.id}
+                  loading={confirmOrderPending === order.id}
+                >
+                  <CheckCircleOutlined />
+                </Button>
+              </Popconfirm>
+            </Tooltip>
+          </Space>
+        ) : (
+          <Link to={`${order.id}`}>
+            <Button>
+              <EyeOutlined />
             </Button>
-          </Popconfirm>
-        </Space>
-      ),
+          </Link>
+        ),
     },
   ];
 
@@ -173,14 +194,28 @@ const Order = () => {
 
   return (
     <>
-      {/* Main content */}
+      {/* Breadcrumb */}
       {contextHolder}
-      <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl">Quản lý danh sách đặt hàng</h1>
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Danh sách đơn hàng</a>,
+          },
+        ]}
+      />
+
+      {/* Title  */}
+      <div className="flex items-center justify-between my-5">
+        <h1 className="text-xl">Quản lý danh sách đơn hàng</h1>
       </div>
 
+      {/* Table */}
       <Table columns={columns} dataSource={dataSource} pagination={false} />
 
+      {/* Pagination */}
       <Pagination
         disabled={isPendingConfirm || isPendingReject}
         className="mt-5"

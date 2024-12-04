@@ -1,13 +1,13 @@
 import {
   CheckOutlined,
   EditOutlined,
-  EyeOutlined,
   LockOutlined,
   PlusCircleOutlined,
   UnlockOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
+  Breadcrumb,
   Button,
   Col,
   Form,
@@ -20,14 +20,14 @@ import {
   Tag,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Loading from "../../../components/base/Loading/Loading";
 import useCourierMutation from "../../../hooks/Courier/useCourierMutation";
 import useCourierQuery from "../../../hooks/Courier/useCourierQuery";
 import useShipmentQuery from "../../../hooks/Shipment/useShipmentQuery";
 import CreateOrderForShipper from "./CreateOrderForShipper";
-import GetOrderForShipment from "./GetOrderForShipment";
+import { formatMoney } from "../../../systems/utils/formatMoney";
 
 const CourierProfile = () => {
   const [editable, setEditable] = useState(false); // Trạng thái Edit
@@ -37,8 +37,6 @@ const CourierProfile = () => {
   const [statusCourier, setStatusCourier] = useState();
   const [pageShipment, setPageShipment] = useState(1);
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
-  const [modalGetOrderOpen, setModalGetOrderOpen] = useState(false);
-  const [idShipment, setIdShipment] = useState(null);
 
   // Fetch dữ liệu tài xế
   const { data: courier, isLoading } = useCourierQuery(
@@ -74,7 +72,7 @@ const CourierProfile = () => {
     action: "UPDATE",
     onSuccess: () => {
       messageApi.success("Cập nhật thông tin tài xế thành công.");
-      setEditable(false); // Quay lại chế độ xem sau khi cập nhật
+      setEditable(false);
     },
     onError: (error) => {
       messageApi.error(
@@ -84,7 +82,7 @@ const CourierProfile = () => {
   });
 
   const onFinish = (values) => {
-    updateCourier({ id, ...values }); // Gửi dữ liệu sau khi chỉnh sửa
+    updateCourier({ id, ...values });
   };
 
   //Block account shipper
@@ -101,11 +99,13 @@ const CourierProfile = () => {
       onError: (error) => {
         if (statusCourier) {
           messageApi.error(
-            "Mở khoá tài khoản thất bại. " + error.response.data.message
+            "Mở khoá tài khoản thất bại. ",
+            error.response.data.message
           );
         } else {
           messageApi.error(
-            "Khoá tài khoản thất bại." + error.response.data.message
+            "Khoá tài khoản thất bại. ",
+            error.response.data.message
           );
         }
       },
@@ -130,42 +130,44 @@ const CourierProfile = () => {
 
   const columns = [
     {
-      title: "Mã giao hàng",
+      title: "Mã đơn hàng",
       key: "orderCode",
-      dataIndex: "code",
+      render: (_, order) => (
+        <Link to={`/admin/orders/${order.id}`}>{order.order_code}</Link>
+      ),
     },
     {
       title: "Trạng thái giao hàng",
       key: "status",
       align: "center",
       render: (_, shipment) => {
-        switch (shipment.status) {
-          case "Chưa hoàn thành":
-            return <Tag color="warning">Chưa hoàn thành</Tag>;
-          case "Hoàn thành giao hàng":
-            return <Tag color="success">Hoàn thành giao hàng</Tag>;
+        switch (shipment.order_status) {
+          case "Chờ xác nhận":
+            return <Tag color="warning">Chờ xác nhận</Tag>;
+          case "Đã xác nhận":
+            return <Tag color="success">Đã xác nhận</Tag>;
+          case "Chờ lấy hàng":
+            return <Tag color="success">Chờ lấy hàng</Tag>;
+          case "Đang giao":
+            return <Tag color="success">Đang giao hàng</Tag>;
+          case "Đã giao":
+            return <Tag color="success">Đã giao hàng</Tag>;
+          case "Trả hàng":
+            return <Tag color="success">Trả hàng</Tag>;
+          case "Đã huỷ":
+            return <Tag color="success">Đã huỷ bởi admin</Tag>;
         }
       },
     },
     {
-      title: "Ngày tạo",
+      title: "Ngày mua",
       dataIndex: "created_at",
       key: "created_at",
     },
     {
-      title: "Hành động",
-      key: "action",
-      align: "center",
-      render: (_, shipment) => (
-        <Button
-          onClick={() => {
-            setModalGetOrderOpen(true);
-            setIdShipment(shipment.id);
-          }}
-        >
-          <EyeOutlined />
-        </Button>
-      ),
+      title: "Tổng số tiền",
+      key: "total_amount",
+      render: (_, shipment) => `${formatMoney(shipment.total_amount)} đ`,
     },
   ];
 
@@ -174,6 +176,20 @@ const CourierProfile = () => {
   return (
     <>
       {contextHolder}
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="/admin/couriers">Danh sách tài xế</a>,
+          },
+          {
+            title: <a>{id}</a>,
+          },
+        ]}
+      />
       <div className="p-4 bg-gray-100 h-screen">
         <div className="grid grid-cols-10 gap-4 h-full">
           {/* Profile */}
@@ -199,7 +215,7 @@ const CourierProfile = () => {
                 <Col span={16}>
                   <Tag
                     color={
-                      courier?.data?.status === "available"
+                      courier?.data?.status === "online"
                         ? "green"
                         : courier?.data.status === "offline"
                         ? "red"
@@ -207,9 +223,11 @@ const CourierProfile = () => {
                     }
                     className="text-center"
                   >
-                    {courier?.data.status === "available"
-                      ? "Online"
-                      : courier?.data.status}
+                    {courier?.data.status === "online"
+                      ? "Hoạt động"
+                      : courier?.data.status === "offline"
+                      ? "Không hoạt động"
+                      : "Đang giao hàng"}
                   </Tag>
                 </Col>
               </Row>
@@ -367,7 +385,7 @@ const CourierProfile = () => {
             <div>
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-semibold mb-4">
-                  Danh sách đơn hàng đã giao
+                  Danh sách đơn hàng
                 </h2>
                 <Button type="primary" onClick={() => setModalCreateOpen(true)}>
                   <PlusCircleOutlined />
@@ -395,18 +413,11 @@ const CourierProfile = () => {
           </div>
 
           {/* Create order for shipper */}
-          <CreateOrderForShipper
-            open={modalCreateOpen}
-            onCancel={() => setModalCreateOpen(false)}
-            id={id}
-          />
-
-          {/* View list product for shipment */}
-          {idShipment && (
-            <GetOrderForShipment
-              open={modalGetOrderOpen}
-              onCancel={() => setModalGetOrderOpen()}
-              idShipment={idShipment}
+          {modalCreateOpen && (
+            <CreateOrderForShipper
+              open={modalCreateOpen}
+              onCancel={() => setModalCreateOpen(false)}
+              id={id}
             />
           )}
         </div>

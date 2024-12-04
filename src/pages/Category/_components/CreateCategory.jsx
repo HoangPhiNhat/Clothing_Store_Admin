@@ -1,28 +1,12 @@
 /* eslint-disable react/prop-types */
-import { Button, Form, Input, message, Modal, Select } from "antd";
-// import { useState } from "react";
-import Loading from "../../../components/base/Loading/Loading";
+import { Button, Form, Input, message, Modal } from "antd";
 import useCategoryMutation from "../../../hooks/Category/useCategoryMutation";
-import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
 import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
-// import {
-//   deleteFileCloudinary,
-//   extractPublicId,
-//   uploadFileCloudinary,
-// } from "../../../services/cloudinary";
-
-const { Option } = Select;
 
 const CreateCategory = ({ open, onCancel }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const inputRef = useAutoFocus(open);
-  // const [isPendingUpload, setIsPendingUpload] = useState(false);
-  // const [publicId, setPublicId] = useState(null);
-
-  const { data: categories, isLoading } = useCategoryQuery(
-    "GET_ALL_CATEGORY_PARENT"
-  );
 
   const { mutate: createCategory, isPending } = useCategoryMutation({
     action: "CREATE",
@@ -36,8 +20,6 @@ const CreateCategory = ({ open, onCancel }) => {
       console.log(error);
     },
   });
-
-  if (isLoading) return <Loading />;
 
   const onFinish = (values) => {
     createCategory(values);
@@ -60,18 +42,12 @@ const CreateCategory = ({ open, onCancel }) => {
             onClick={() => form.submit()}
             loading={isPending}
           >
-            {isPending
-              ? // || isPendingUpload
-                "Đang thêm..."
-              : "Thêm danh mục"}
+            {isPending ? "Đang thêm..." : "Thêm"}
           </Button>,
         ]}
       >
         <Form
-          disabled={
-            isPending
-            // || isPendingUpload
-          }
+          disabled={isPending}
           form={form}
           name="basic"
           style={{ maxWidth: 600 }}
@@ -82,7 +58,6 @@ const CreateCategory = ({ open, onCancel }) => {
           <Form.Item
             className="w-full"
             name="name"
-            label="Tên danh mục"
             rules={[
               {
                 required: true,
@@ -95,28 +70,6 @@ const CreateCategory = ({ open, onCancel }) => {
             ]}
           >
             <Input ref={inputRef} />
-          </Form.Item>
-
-          <Form.Item
-            name="parent_id"
-            label="Phân loại"
-            rules={[
-              {
-                type: "array",
-              },
-            ]}
-          >
-            <Select
-              mode="multiple"
-              placeholder="Chọn danh mục"
-              dropdownStyle={{ maxHeight: 250, overflow: "auto" }}
-            >
-              {categories?.data.map((category) => (
-                <Option key={category.id} value={category.id}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select>
           </Form.Item>
         </Form>
       </Modal>

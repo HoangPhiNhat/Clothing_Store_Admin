@@ -13,9 +13,9 @@ export const getAllOrder = async (page) => {
   }
 };
 
-export const getOrderForShipper = async () => {
+export const getOrderForAssignShipper = async () => {
   try {
-    const res = await Author.get("/orders/status");
+    const res = await Author.get("/orders??orderStatus=Đã xác nhận");
     return res;
   } catch (error) {
     throw error;
@@ -45,7 +45,7 @@ export const getProductsForOrderId = async (id, page) => {
 export const confirmOder = async (id) => {
   try {
     const response = await Author.put(`/orders/${id}/order-status`, {
-      order_status: "Chờ lấy hàng",
+      order_status: "Đã xác nhận",
     });
     return response;
   } catch (error) {
@@ -59,6 +59,18 @@ export const rejectOder = async (id) => {
       order_status: "Đã huỷ",
     });
     return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const assignOrderForShipper = async (shipperId, orderId) => {
+  try {
+    const res = await Author.put(`orders/assign-many-delivery-person`, {
+      delivery_person_id: shipperId,
+      order_id: orderId,
+    });
+    return res;
   } catch (error) {
     throw error;
   }

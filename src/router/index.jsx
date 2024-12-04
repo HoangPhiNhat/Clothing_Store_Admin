@@ -5,41 +5,46 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
-import Home from "../pages/Home/Home";
 import BasicLayout from "../layout/BasicLayout";
+import Home from "../pages/Home/Home";
 
-import SignUp from "../pages/Auth/Signup";
 import SignIn from "../pages/Auth/Signin";
+import SignUp from "../pages/Auth/Signup";
 
 import Statistical from "../pages/Statistical/page";
 
 import TrashCategory from "../pages/Category/_components/TrashCategory";
 import Category from "../pages/Category/page";
 
-import Classification from "../pages/Classification/page";
+// import Classification from "../pages/Classification/page";
 
+import ProductAttribute from "../pages/Attribute/page";
 import CreateProduct from "../pages/Product/_component/CreateProduct";
+import TrashProduct from "../pages/Product/_component/TrashProduct";
 import UpdateProduct from "../pages/Product/_component/UpdateProduct";
 import ProductManagePage from "../pages/Product/page";
-import TrashProduct from "../pages/Product/_component/TrashProduct";
-import ProductAttribute from "../pages/Attribute/page";
 
 import Variant from "../pages/Variant/page";
 
-import Order from "../pages/Order/page";
 import OrderDetail from "../pages/Order/_components/OrderDetail";
+import Order from "../pages/Order/page";
 
 import Page401 from "../components/base/Result/Page401";
 import Page403 from "../components/base/Result/Page403";
 import Page404 from "../components/base/Result/Page404";
 import Page500 from "../components/base/Result/Page500";
 
-import Courier from "../pages/Courier/page";
 import CourierProfile from "../pages/Courier/_components/CourierProfile";
+import Courier from "../pages/Courier/page";
 
-import Discounts from "../pages/Discount/page";
-import DiscountDetail from "../pages/Discount/_components/DiscountDetail";
 import AddProductToDiscount from "../pages/Discount/_components/AddProductToDiscount";
+import DiscountDetail from "../pages/Discount/_components/DiscountDetail";
+import Discounts from "../pages/Discount/page";
+
+import ShipperLayout from "../layout/ShipperLayout";
+import ShipperOrderDelivery from "../pages/Shipper/ShipperOrderDelivery";
+import ShipperOrderHistory from "../pages/Shipper/ShipperOrderHistory";
+import ShipperOrderPending from "../pages/Shipper/ShipperOrderPending";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -63,7 +68,7 @@ const RouterComponent = () => {
             }
           >
             {/* Index */}
-            <Route index element={<Home />} />
+            <Route index element={<Statistical />} />
 
             {/* Statistical */}
             <Route path="statistical" element={<Statistical />} />
@@ -72,7 +77,7 @@ const RouterComponent = () => {
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
             {/* Classification */}
-            <Route path="categories/:id" element={<Classification />} />
+            {/* <Route path="categories/:id" element={<Classification />} /> */}
             {/* Product */}
             <Route path="products" element={<ProductManagePage />} />
             <Route path="products/add" element={<CreateProduct />} />
@@ -103,6 +108,21 @@ const RouterComponent = () => {
               path="discounts/:id/addProduct"
               element={<AddProductToDiscount />}
             />
+          </Route>
+
+          {/* Shipper */}
+          <Route
+            path="/shipper"
+            element={
+              <PrivateRoute>
+                <ShipperLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<Home />} />
+            <Route path="shipping" element={<ShipperOrderDelivery />} />
+            <Route path="shippending" element={<ShipperOrderPending />} />
+            <Route path="history" element={<ShipperOrderHistory />} />
           </Route>
 
           {/* Auth */}

@@ -1,22 +1,18 @@
 import {
+  HistoryOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PercentageOutlined,
-  PieChartOutlined,
-  ShoppingCartOutlined,
-  TagsOutlined,
-  TruckOutlined,
-  UnorderedListOutlined,
-  UserOutlined,
+  SnippetsOutlined,
+  TruckOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../resources/images/logo.png";
-import UserProfile from "./_components/UserProfile";
+import ShipperProfile from "./_components/ShipperProfile";
 const { Header, Sider, Content } = Layout;
 
-const LayoutAdmin = () => {
+const ShipperLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -27,61 +23,19 @@ const LayoutAdmin = () => {
 
   const items = [
     {
-      key: "/admin/statistical",
-      icon: <PieChartOutlined />,
-      label: <Link to="/admin/statistical">Thống kê</Link>,
-    },
-    {
-      key: "/admin/users",
-      icon: <UserOutlined />,
-      label: <Link to="/admin/users">Users</Link>,
-    },
-    {
-      icon: <TagsOutlined />,
-      label: "Danh mục",
-      children: [
-        {
-          key: "/admin/categories",
-          label: <Link to="/admin/categories">Danh sách</Link>,
-        },
-        {
-          key: "/admin/categories/trash",
-          label: <Link to="/admin/categories/trash">Danh sách đã ẩn</Link>,
-        },
-      ],
-    },
-    {
-      icon: <UnorderedListOutlined />,
-      label: "Sản phẩm",
-      children: [
-        {
-          key: "/admin/products",
-          label: <Link to="/admin/products">Danh sách</Link>,
-        },
-        {
-          key: "/admin/products/trash",
-          label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
-        },
-        {
-          key: "/admin/products/variant",
-          label: <Link to="/admin/products/variant">Biến thể</Link>,
-        },
-      ],
-    },
-    {
-      key: "/admin/orders",
-      icon: <ShoppingCartOutlined />,
-      label: <Link to="/admin/orders">Đơn hàng</Link>,
-    },
-    {
-      key: "/admin/couriers",
+      key: "/shipper/shipping",
       icon: <TruckOutlined />,
-      label: <Link to="/admin/couriers">Tài xế</Link>,
+      label: <Link to="/shipper/shipping">Đơn hàng đang giao</Link>,
     },
     {
-      key: "/admin/discounts",
-      icon: <PercentageOutlined />,
-      label: <Link to={"/admin/discounts"}>Giảm giá</Link>,
+      key: "/shipper/shippending",
+      icon: <SnippetsOutlined />,
+      label: <Link to="/shipper/shippending">Đơn hàng đợi giao</Link>,
+    },
+    {
+      key: "/shipper/history",
+      icon: <HistoryOutlined />,
+      label: <Link to="/shipper/history">Lịch sử giao hàng</Link>,
     },
   ];
 
@@ -148,7 +102,7 @@ const LayoutAdmin = () => {
               height: 64,
             }}
           />
-          <UserProfile />
+          <ShipperProfile />
         </Header>
         <Content
           style={{
@@ -171,4 +125,4 @@ const LayoutAdmin = () => {
   );
 };
 
-export default LayoutAdmin;
+export default ShipperLayout;

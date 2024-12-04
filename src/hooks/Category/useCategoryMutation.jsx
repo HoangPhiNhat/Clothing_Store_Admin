@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createCategory,
   removeCategory,
-  toggleStatusCategory,
+  restoreCategory,
   updateCategory,
 } from "../../services/category";
 
@@ -18,8 +18,8 @@ const useCategoryMutation = ({ action, onSuccess, onError }) => {
           return await removeCategory(category);
         case "UPDATE":
           return await updateCategory(category);
-        case "TOGGLE_STATUS":
-          return await toggleStatusCategory(category);
+        case "RESTORE":
+          return await restoreCategory(category);
         default:
           return null;
       }
