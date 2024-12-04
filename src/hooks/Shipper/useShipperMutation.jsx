@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deliveryStatus, updateStatusShipments } from "../../services/shipper";
+import { deliveryStatus } from "../../services/shipper";
 
 const useShippperMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
@@ -7,10 +7,8 @@ const useShippperMutation = ({ action, onSuccess, onError }) => {
   const { mutate, ...rest } = useMutation({
     mutationFn: async (shipments) => {
       switch (action) {
-        case "START_SHIPMENT":
-          return await updateStatusShipments(shipments, "Đang giao hàng");
-        case "END_SHIPMENT":
-          return await updateStatusShipments(shipments, "Hoàn thành giao hàng");
+        case "DELIVERY_START":
+          return await deliveryStatus(shipments, "Đang giao");
         case "DELIVERY_SUCCESS":
           return await deliveryStatus(shipments, "Đã giao");
         case "DELIVERY_FAIL":
