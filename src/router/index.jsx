@@ -68,7 +68,7 @@ const RouterComponent = () => {
             }
           >
             {/* Index */}
-            <Route index element={<Home />} />
+            <Route index element={<Statistical />} />
 
             {/* Statistical */}
             <Route path="statistical" element={<Statistical />} />
