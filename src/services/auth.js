@@ -50,3 +50,21 @@ export const logout = async () => {
     throw error;
   }
 };
+
+export const getStatusShipper = async () => {
+  try {
+    const res = Author.get("delivery-persons/statusForShipper");
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateStatusShipper = async (status) => {
+  try {
+    const res = Author.put("delivery-persons/statusForShipper", { status });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
