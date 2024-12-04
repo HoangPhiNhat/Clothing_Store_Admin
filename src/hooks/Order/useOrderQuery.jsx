@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getAllOrder,
   getOrderById,
-  getOrderForShipper,
-  getProductsForOrderId,
+  getOrderForAssignShipper,
+  getProductsForOrderId
 } from "../../services/order";
+import { getAllShipperStatusOnline } from "../../services/shipper";
 
 const useOrderQuery = (action, id, page, isOrder) => {
   const queryKey = isOrder
@@ -24,7 +25,9 @@ const useOrderQuery = (action, id, page, isOrder) => {
         case "GET_PRODUCTS_FOR_ORDER_ID":
           return await getProductsForOrderId(id, page);
         case "GET_ORDER_FOR_SHIPPER":
-          return await getOrderForShipper();
+          return await getOrderForAssignShipper();
+        case "GET_ALL_SHIPPER_STATUS_ONLINE":
+          return await getAllShipperStatusOnline();
         default:
           return null;
       }

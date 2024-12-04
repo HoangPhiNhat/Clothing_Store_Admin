@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-catch */
 import Author from "../services/baseApi/AuthorApi";
+
 export const getAllOrderShipping = async () => {
   try {
     const res = await Author.get(`orders/user`);
@@ -34,6 +35,15 @@ export const deliveryStatus = async (id, statusCode) => {
     const res = await Author.put(`orders/${id}/order-status`, {
       order_status: statusCode,
     });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllShipperStatusOnline = async () => {
+  try {
+    const res = await Author.get("delivery-persons?status=online");
     return res;
   } catch (error) {
     throw error;

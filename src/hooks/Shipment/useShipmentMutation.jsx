@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createOrderForShipper } from "../../services/shipment";
+import { assignOrderForShipper } from "../../services/order";
 
 const useShipmentMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
@@ -8,7 +8,10 @@ const useShipmentMutation = ({ action, onSuccess, onError }) => {
     mutationFn: async (order) => {
       switch (action) {
         case "CREATE":
-          return await createOrderForShipper(order);
+          return await assignOrderForShipper(
+            order.delivery_person_id,
+            order.order_id
+          );
         default:
           return null;
       }

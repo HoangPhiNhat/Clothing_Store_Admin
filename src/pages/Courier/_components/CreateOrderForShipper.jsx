@@ -1,13 +1,38 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Button, Form, message, Modal, Table } from "antd";
+import { createStyles } from "antd-style";
+
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 import useShipmentMutation from "../../../hooks/Shipment/useShipmentMutation";
 import useOrderQuery from "../../../hooks/Order/useOrderQuery";
 import Loading from "../../../components/base/Loading/Loading";
+import { formatMoney } from "../../../systems/utils/formatMoney";
+
+const useStyle = createStyles(({ css, token }) => {
+  const { antCls } = token;
+  return {
+    customTable: css`
+      ${antCls}-table {
+        ${antCls}-table-container {
+          ${antCls}-table-body,
+          ${antCls}-table-content {
+            scrollbar-width: thin;
+            scrollbar-color: #eaeaea transparent;
+            scrollbar-gutter: stable;
+          }
+        }
+      }
+    `,
+  };
+});
 
 const CreateOrderForShipper = ({ open, onCancel, id }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [ordersId, setOrdersId] = useState({});
+  const { styles } = useStyle();
 
   const { data: orders, isLoading } = useOrderQuery("GET_ORDER_FOR_SHIPPER");
 
@@ -15,10 +40,10 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
     action: "CREATE",
     onSuccess: () => {
       onCancel();
-      messageApi.success("Thêm đơn hàng cho tài xế thành công");
+      message.success("Thêm đơn hàng cho tài xế thành công");
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi thêm đơn hàng: ${error.response.data.message}`);
+      message.error(`Lỗi khi thêm đơn hàng: ${error.response.data.message}`);
       console.log(error);
     },
   });
@@ -28,17 +53,22 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
     {
       title: "Mã đơn hàng",
       key: "name",
-      render: (_, order) => <span>{order.order_code}</span>,
+      render: (_, order) => (
+        <Link to={`/admin/orders/${order.id}`}>{order.order_code}</Link>
+      ),
+      width: "20%",
     },
     {
       title: "Tổng số tiền",
       key: "age",
-      render: (_, order) => <span>{order.total_amount}</span>,
+      render: (_, order) => `${formatMoney(order.total_amount)}đ`,
+      width: "20%",
     },
     {
       title: "Address",
       key: "address",
-      render: () => <span>address</span>,
+      dataIndex: "order_address",
+      width: "60%",
     },
   ];
 
@@ -57,11 +87,10 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
   };
 
   const onFinish = () => {
-    let orders = [];
-    for (let orderId of ordersId) {
-      orders.push({ order_id: Number(orderId) });
-    }
-    createOrderForShipper({ delivery_person_id: Number(id), orders: orders });
+    createOrderForShipper({
+      delivery_person_id: Number(id),
+      order_id: ordersId,
+    });
   };
 
   if (isLoading) return <Loading />;
@@ -73,6 +102,7 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
         title="Thêm đơn hàng cho tài xế"
         open={open}
         onCancel={isPending ? null : onCancel}
+        className="max-w-4xl w-full"
         footer={[
           <Button key="cancel" onClick={onCancel}>
             Hủy
@@ -90,20 +120,29 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
         <Form
           disabled={isPending}
           name="basic"
-          style={{ maxWidth: 600 }}
           initialValues={{ remember: true }}
           onFinish={onFinish}
           autoComplete="off"
         >
           {/* Table select order */}
-          <Form.Item name="ordersId">
+          <Form.Item
+            name="ordersId"
+            style={{
+              margin: 0,
+            }}
+          >
             <Table
+              className={styles.customTable}
               rowSelection={{
                 ...rowSelection,
               }}
               columns={columns}
               dataSource={data}
               pagination={false}
+              scroll={{
+                x: "max-content",
+                y: 55 * 5,
+              }}
             />
           </Form.Item>
         </Form>
