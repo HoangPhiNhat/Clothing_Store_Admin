@@ -33,9 +33,10 @@ const ShipperProfile = () => {
       console.error("Error updating status:", error);
     }
   };
-
+  
   // Đăng xuất
   const handleLogout = async () => {
+    await updateStatusShipper("offline");
     await logout();
   };
 
