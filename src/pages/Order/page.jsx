@@ -1,4 +1,8 @@
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import {
   Breadcrumb,
   Button,
@@ -119,54 +123,61 @@ const Order = () => {
     {
       title: "Hành động",
       key: "action",
-      render: (_, order) => (
-        <Space size="middle">
-          <Tooltip title="Từ chối đơn hàng">
-            <Popconfirm
-              title="Xác nhận đơn hàng"
-              description="Bạn có muốn từ chối đơn hàng này không?"
-              okText="Có"
-              cancelText="Không"
-              onConfirm={() => {
-                // APi reject
-                setRejectOrderPending(order.id);
-                rejectOrder(order);
-              }}
-            >
-              <Button
-                type="primary"
-                danger
-                loading={rejectOrderPending === order.id}
-                disabled={confirmOrderPending === order.id}
+      render: (_, order) =>
+        order.order_status === "Chờ xác nhận" ? (
+          <Space size="middle">
+            <Tooltip title="Từ chối đơn hàng">
+              <Popconfirm
+                title="Xác nhận đơn hàng"
+                description="Bạn có muốn từ chối đơn hàng này không?"
+                okText="Có"
+                cancelText="Không"
+                onConfirm={() => {
+                  // APi reject
+                  setRejectOrderPending(order.id);
+                  rejectOrder(order);
+                }}
               >
-                <CloseCircleOutlined />
-              </Button>
-            </Popconfirm>
-          </Tooltip>
+                <Button
+                  type="primary"
+                  danger
+                  loading={rejectOrderPending === order.id}
+                  disabled={confirmOrderPending === order.id}
+                >
+                  <CloseCircleOutlined />
+                </Button>
+              </Popconfirm>
+            </Tooltip>
 
-          <Tooltip title="Xác nhận đơn hàng.">
-            <Popconfirm
-              title="Xác nhận đơn hàng"
-              description="Bạn có muốn xác nhận đơn hàng này không?"
-              okText="Có"
-              cancelText="Không"
-              onConfirm={() => {
-                // API Confirm
-                setConfirmOrderPending(order.id);
-                confirmOrder(order);
-              }}
-            >
-              <Button
-                type="primary"
-                disabled={rejectOrderPending === order.id}
-                loading={confirmOrderPending === order.id}
+            <Tooltip title="Xác nhận đơn hàng.">
+              <Popconfirm
+                title="Xác nhận đơn hàng"
+                description="Bạn có muốn xác nhận đơn hàng này không?"
+                okText="Có"
+                cancelText="Không"
+                onConfirm={() => {
+                  // API Confirm
+                  setConfirmOrderPending(order.id);
+                  confirmOrder(order);
+                }}
               >
-                <CheckCircleOutlined />
-              </Button>
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
+                <Button
+                  type="primary"
+                  disabled={rejectOrderPending === order.id}
+                  loading={confirmOrderPending === order.id}
+                >
+                  <CheckCircleOutlined />
+                </Button>
+              </Popconfirm>
+            </Tooltip>
+          </Space>
+        ) : (
+          <Button>
+            <Link to={`${order.id}`}>
+              <EyeOutlined />
+            </Link>
+          </Button>
+        ),
     },
   ];
 
