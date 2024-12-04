@@ -2,10 +2,10 @@
 import Author from "../services/baseApi/AuthorApi";
 const size = 5;
 
-export const getShipmentByCourierId = async (id, page) => {
+export const getShipmentByCourierId = async (shipperId, page) => {
   try {
     const res = await Author.get(
-      `/shipments/${id}/user?size=${size}&page=${page}`
+      `orders/${shipperId}/delivery-person?size=${size}&page=${page}`
     );
     return res;
   } catch (error) {

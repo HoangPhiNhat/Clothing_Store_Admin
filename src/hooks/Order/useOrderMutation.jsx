@@ -1,5 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { confirmOder, rejectOder } from "../../services/order";
+import {
+  assignOrderForShipper,
+  confirmOder,
+  rejectOder,
+} from "../../services/order";
 
 const useOrderMutation = ({ action, onSuccess, onError }) => {
   const queryClient = useQueryClient();
@@ -11,6 +15,8 @@ const useOrderMutation = ({ action, onSuccess, onError }) => {
           return await confirmOder(order.id);
         case "REJECT":
           return await rejectOder(order.id);
+        case "ASSIGN_ORDER_FOR_SHIPPER":
+          return await assignOrderForShipper(order.shipperId, order.orderId);
         default:
           return null;
       }
