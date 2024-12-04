@@ -1,14 +1,15 @@
 import {
+  HistoryOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  TruckOutlined,
-  UserOutlined,
+  SnippetsOutlined,
+  TruckOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../resources/images/logo.png";
-import UserProfile from "./_components/UserProfile";
+import ShipperProfile from "./_components/ShipperProfile";
 const { Header, Sider, Content } = Layout;
 
 const ShipperLayout = () => {
@@ -27,9 +28,14 @@ const ShipperLayout = () => {
       label: <Link to="/shipper/shipping">Đơn hàng đang giao</Link>,
     },
     {
-      key: "/shipper/shipments",
-      icon: <UserOutlined />,
-      label: <Link to="/shipper/shipments">Lô hàng đợi giao</Link>,
+      key: "/shipper/shippending",
+      icon: <SnippetsOutlined />,
+      label: <Link to="/shipper/shippending">Đơn hàng đợi giao</Link>,
+    },
+    {
+      key: "/shipper/history",
+      icon: <HistoryOutlined />,
+      label: <Link to="/shipper/history">Lịch sử giao hàng</Link>,
     },
   ];
 
@@ -96,7 +102,7 @@ const ShipperLayout = () => {
               height: 64,
             }}
           />
-          <UserProfile />
+          <ShipperProfile />
         </Header>
         <Content
           style={{
