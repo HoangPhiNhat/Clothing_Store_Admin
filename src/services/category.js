@@ -17,8 +17,6 @@ export const getAllCategoryForProduct = async () => {
 
 export const getAllCategory = async (page) => {
   try {
-    console.log(123);
-    
     let queryCategory = `/categories?sort=DESC&size=${size}`;
     if (page) queryCategory += `&page=${page}`;
     return await instance.get(queryCategory);

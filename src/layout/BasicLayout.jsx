@@ -3,11 +3,11 @@ import {
   MenuUnfoldOutlined,
   PercentageOutlined,
   PieChartOutlined,
+  ProfileOutlined,
   ShoppingCartOutlined,
   TagsOutlined,
   TruckOutlined,
   UnorderedListOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -31,24 +31,25 @@ const LayoutAdmin = () => {
       icon: <PieChartOutlined />,
       label: <Link to="/admin/statistical">Thống kê</Link>,
     },
-    {
-      key: "/admin/users",
-      icon: <UserOutlined />,
-      label: <Link to="/admin/users">Users</Link>,
-    },
+    // {
+    //   key: "/admin/users",
+    //   icon: <UserOutlined />,
+    //   label: <Link to="/admin/users">Users</Link>,
+    // },
     {
       icon: <TagsOutlined />,
-      label: "Danh mục",
-      children: [
-        {
-          key: "/admin/categories",
-          label: <Link to="/admin/categories">Danh sách</Link>,
-        },
-        {
-          key: "/admin/categories/trash",
-          label: <Link to="/admin/categories/trash">Danh sách đã ẩn</Link>,
-        },
-      ],
+      // label: "Danh mục",
+      label: <Link to="/admin/categories">Danh mục</Link>,
+      // children: [
+      //   {
+      //     key: "/admin/categories",
+      //     label: <Link to="/admin/categories">Danh sách</Link>,
+      //   },
+      //   {
+      //     key: "/admin/categories/trash",
+      //     label: <Link to="/admin/categories/trash">Danh sách đã ẩn</Link>,
+      //   },
+      // ],
     },
     {
       icon: <UnorderedListOutlined />,
@@ -62,11 +63,12 @@ const LayoutAdmin = () => {
           key: "/admin/products/trash",
           label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
         },
-        {
-          key: "/admin/products/variant",
-          label: <Link to="/admin/products/variant">Biến thể</Link>,
-        },
       ],
+    },
+    {
+      icon: <ProfileOutlined />,
+      key: "/admin/products/variant",
+      label: <Link to="/admin/products/variant">Biến thể</Link>,
     },
     {
       key: "/admin/orders",

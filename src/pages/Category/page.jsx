@@ -27,8 +27,16 @@ const Category = () => {
 
   const { mutate: deleteCategory, isPending } = useCategoryMutation({
     action: "DELETE",
-    onSuccess: () => messageApi.success("Xóa danh mục thành công."),
-    onError: (error) => message.error("Xóa danh mục thất bại. " + error),
+    onSuccess: () => {
+      setDeletingCategoryId(null);
+      messageApi.success("Xóa danh mục thành công.");
+    },
+    onError: (error) => {
+      setDeletingCategoryId(null);
+      messageApi.error(
+        "Xóa danh mục thất bại. " + error?.response.data.message
+      );
+    },
   });
 
   const columns = [
