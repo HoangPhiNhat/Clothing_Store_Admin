@@ -38,11 +38,13 @@ const ProductManagePage = () => {
   const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
+      setDeletingProductId(null);
       messageApi.success(data.message);
-      console.log("Deleted attribute:", data);
     },
-    onError: (error) =>
-      message.error("Xóa sản phẩm thất bại: " + error.response.data.message),
+    onError: (error) => {
+      setDeletingProductId(null);
+      message.error("Xóa sản phẩm thất bại: " + error.response.data.message);
+    },
   });
 
   useEffect(() => {

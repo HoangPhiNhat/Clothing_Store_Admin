@@ -53,17 +53,18 @@ const LayoutAdmin = () => {
     },
     {
       icon: <UnorderedListOutlined />,
-      label: "Sản phẩm",
-      children: [
-        {
-          key: "/admin/products",
-          label: <Link to="/admin/products">Danh sách</Link>,
-        },
-        {
-          key: "/admin/products/trash",
-          label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
-        },
-      ],
+      // label: "Sản phẩm",
+      label: <Link to="/admin/products">Danh sách sản phẩm</Link>,
+      // children: [
+      //   {
+      //     key: "/admin/products",
+      //     label: <Link to="/admin/products">Danh sách</Link>,
+      //   },
+      //   {
+      //     key: "/admin/products/trash",
+      //     label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
+      //   },
+      // ],
     },
     {
       icon: <ProfileOutlined />,
@@ -124,9 +125,11 @@ const LayoutAdmin = () => {
         onBreakpoint={handleBreakpoint}
         theme="light"
       >
-        <div className="px-5 py-3">
-          <img src={logo} alt="" />
-        </div>
+        <Link to={`/admin`}>
+          <div className="px-5 py-3">
+            <img src={logo} alt="" />
+          </div>
+        </Link>
         <Menu
           theme="light"
           mode="inline"

@@ -64,8 +64,10 @@ const ProductAttribute = () => {
         setPublicId(null);
       }
     },
-    onError: (error) =>
-      message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
+    onError: (error) => {
+      setDeletingAttributeId(null);
+      message.error("Xóa thuộc tính thất bại: " + error.response.data.message);
+    },
   });
 
   const { mutate: updateAttribute, isPending: updatePending } =
