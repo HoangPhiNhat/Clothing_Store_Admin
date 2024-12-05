@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { UploadOutlined } from "@ant-design/icons";
-import { Button, Form, Input, message, Modal, Steps, Upload } from "antd";
+import { Button, Form, Input, message, Modal, Steps } from "antd";
 import { useState } from "react";
-import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 import useCourierMutation from "../../../hooks/Courier/useCourierMutation";
+import useAutoFocus from "../../../hooks/customHook/useAutoFocus";
 
 const { Step } = Steps;
 
@@ -42,15 +41,6 @@ const CreateCourier = ({ open, onCancel }) => {
           onFinish={(values) => handleNext("personal", values)}
           disabled={isPending}
         >
-          <Form.Item label="Ảnh" name="image">
-            <Upload
-              fileList={fileList}
-              onChange={({ fileList: newFileList }) => setFileList(newFileList)}
-              beforeUpload={() => false} // Prevent auto upload
-            >
-              <Button icon={<UploadOutlined />}>Thêm ảnh</Button>
-            </Upload>
-          </Form.Item>
           <Form.Item
             label="Tên"
             name="name"
@@ -71,7 +61,13 @@ const CreateCourier = ({ open, onCancel }) => {
           <Form.Item
             label="Số điện thoại"
             name="phone_number"
-            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại" },
+              {
+                pattern: /^[0-9]{10}$/,
+                message: "Số điện thoại phải là 10 chữ số",
+              },
+            ]}
           >
             <Input placeholder="Vui lòng nhập số điện thoại" />
           </Form.Item>
