@@ -6,6 +6,7 @@ import {
 import {
   Breadcrumb,
   Button,
+  message,
   Pagination,
   Popconfirm,
   Space,
@@ -20,6 +21,7 @@ import { formatMoney } from "../../systems/utils/formatMoney";
 import ShipperOrderDetail from "./ShipperOrderDetail";
 
 const ShipperOrderDelivery = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
   const [deliverySuccessId, setDeliverySuccessId] = useState(null);
   const [deliveryFailId, setDeliveryFailId] = useState(null);
@@ -36,9 +38,10 @@ const ShipperOrderDelivery = () => {
     useShippperMutation({
       action: "DELIVERY_SUCCESS",
       onSuccess: () => {
-        console.log("Success");
+        messageApi.success("Hoàn thành đơn hàng thành công.");
       },
       onError: (error) => {
+        messageApi.error("Hoàn thành đơn hàng thất bại.");
         console.log(error);
       },
     });
@@ -47,9 +50,10 @@ const ShipperOrderDelivery = () => {
     useShippperMutation({
       action: "DELIVERY_FAIL",
       onSuccess: () => {
-        console.log("Fail");
+        messageApi.success("Trả hàng thành công.");
       },
       onError: (error) => {
+        messageApi.error("Trả hàng thất bại.");
         console.log(error);
       },
     });
@@ -170,6 +174,7 @@ const ShipperOrderDelivery = () => {
 
   return (
     <>
+      {contextHolder}
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

@@ -3,7 +3,15 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Button, Pagination, Popconfirm, Space, Table, message } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Pagination,
+  Popconfirm,
+  Space,
+  Table,
+  message,
+} from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
@@ -119,17 +127,17 @@ const Category = () => {
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
         <div>
-        <Breadcrumb
-          items={[
-            {
-              title: "Trang chủ",
-            },
-            {
-              title: <a href="">Danh sách danh mục</a>,
-            },
-          ]}
-        />
-        <h1 className="text-xl">Quản lý danh mục</h1>
+          <Breadcrumb
+            items={[
+              {
+                title: "Trang chủ",
+              },
+              {
+                title: "Danh sách danh mục",
+              },
+            ]}
+          />
+          <h1 className="text-xl">Quản lý danh mục</h1>
         </div>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
           <PlusCircleOutlined disabled={isPending} />

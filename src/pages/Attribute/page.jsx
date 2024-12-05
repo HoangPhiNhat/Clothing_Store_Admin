@@ -46,7 +46,12 @@ const ProductAttribute = () => {
   const [hasChanged, setHasChanged] = useState(false);
   const { id } = useParams();
   const { data: attributes, isLoading } = useAttributeQuery(id, page, pageSize);
-  const { data: product } = useProductQuery("GET_PRODUCT_BY_ID",id, null, null);
+  const { data: product } = useProductQuery(
+    "GET_PRODUCT_BY_ID",
+    id,
+    null,
+    null
+  );
   console.log(attributes);
   console.log(product);
 
@@ -369,10 +374,10 @@ const ProductAttribute = () => {
                   setPublicId(extractPublicId(attribute.image));
                 }
               }}
-              title="Delete attribute"
-              description="Do you want to delete this attribute?"
-              okText="Yes"
-              cancelText="No"
+              title="Xoá biến thể"
+              description="Bạn có muốn xoá biến thể này không ?"
+              okText="Có"
+              cancelText="Không"
             >
               <Button
                 disabled={updatePending | isPending}
@@ -406,10 +411,10 @@ const ProductAttribute = () => {
                 title: "Trang chủ",
               },
               {
-                title: <a href="">Danh sách thuộc tính</a>,
+                title: <a href="/admin/products">Danh sách thuộc tính</a>,
               },
               {
-                title: <a href="">{product?.name}</a>,
+                title: `${product?.name}`,
               },
             ]}
           />

@@ -198,7 +198,7 @@ const ProductManagePage = () => {
             title: "Trang chủ",
           },
           {
-            title: <a href="">Danh sách sản phẩm</a>,
+            title: "Danh sách sản phẩm",
           },
         ]}
       />
