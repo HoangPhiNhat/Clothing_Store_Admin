@@ -3,7 +3,7 @@ import {
   ShoppingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Card, Select, Row, Col, Tag, Button, Radio } from "antd";
+import { Card, Select, Row, Col, Tag, Button, Radio, Breadcrumb } from "antd";
 import { Line, Column } from "@ant-design/charts";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -47,6 +47,8 @@ const Statistical = () => {
     data: data?.statistics,
     xField: "day",
     yField: "orders",
+    smooth: true,
+    lineStyle: { stroke: "#3f8600", lineWidth: 4 },
     columnStyle: { fill: "#3f86f8" },
   };
 
@@ -54,7 +56,8 @@ const Statistical = () => {
     data: data?.statistics,
     xField: "day",
     yField: "customers",
-    columnStyle: { fill: "#fa8c16" },
+    lineStyle: { stroke: "#3f8600", lineWidth: 3 },
+    columnStyle: { fill: "#3f86f8" },
   };
 
   const handleTimePeriodChange = (e) => {
@@ -116,7 +119,17 @@ const Statistical = () => {
     { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
   ];
   return (
-    <div className="p-6">
+    <div className="">
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Thống kê</a>,
+          },
+        ]}
+      />
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl font-semibold">Tổng quan</h2>
         <div className="flex gap-5">
