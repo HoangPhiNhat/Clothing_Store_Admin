@@ -13,10 +13,12 @@ export const getAllCategoryForProduct = async () => {
   }
 };
 
-export const getAllCategory = async (page) => {
+export const getAllCategory = async (page, size, sort) => {
   try {
-    let queryCategory = `/categories?sort=DESC&size=${size}`;
-    if (page) queryCategory += `&page=${page}`;
+    let queryCategory = `/categories?size=${size}&page=${page}`;
+    if (sort.sortField && sort.sortOrder)
+      queryCategory += `&sort=${sort.sortField},${sort.sortOrder}`;
+
     return await instance.get(queryCategory);
   } catch (error) {
     throw error;
@@ -44,7 +46,6 @@ export const removeCategory = async (category) => {
 
 export const getCategoryById = async (category) => {
   try {
-    console.log(category);
     const response = await Author.get(`/categories/${category.id}`);
     return response;
   } catch (error) {
