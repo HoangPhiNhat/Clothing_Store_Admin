@@ -53,8 +53,6 @@ const ProductAttribute = () => {
     null
   );
   console.log(attributes);
-  console.log(product);
-
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -241,14 +239,14 @@ const ProductAttribute = () => {
       dataIndex: "color_name",
       key: "color",
       width: "15%",
-      render: (color) => <>{color}</>,
+      render: (_, attribute) => <>{attribute.color.name}</>,
     },
     {
       title: "Kích thước",
       dataIndex: "size_name",
       key: "size",
       width: "15%",
-      render: (size) => <>{size}</>,
+      render: (_, attribute) => <>{attribute.size.name}</>,
     },
     {
       title: "Giá bán",
@@ -395,7 +393,7 @@ const ProductAttribute = () => {
     },
   ];
 
-  const dataSource = attributes?.map((attribute, index) => ({
+  const dataSource = attributes?.data.map((attribute, index) => ({
     ...attribute,
     key: index + 1,
     index: index + 1,
