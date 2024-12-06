@@ -88,10 +88,10 @@ const OrderDetail = () => {
 
   if (isLoadingOrder) return <Loading />;
 
-  const statusOrderConfirm = order?.data.order_status_histories[0];
-  const statusDeliveryPending = order?.data.order_status_histories[1];
-  const statusDelivery = order?.data.order_status_histories[2];
-  const statusDeliveryCompletion = order?.data.order_status_histories[3];
+  const statusOrderConfirm = order?.data.order_status_histories[1];
+  const statusDeliveryPending = order?.data.order_status_histories[2];
+  const statusDelivery = order?.data.order_status_histories[3];
+  const statusDeliveryCompletion = order?.data.order_status_histories[4];
   let current = 0;
   let status = "process";
 

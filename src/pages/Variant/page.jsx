@@ -3,7 +3,7 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Button, message, Popconfirm, Space, Spin, Table } from "antd";
+import { Breadcrumb, Button, message, Popconfirm, Space, Spin, Table } from "antd";
 import { useState } from "react";
 import useColorMutation from "../../hooks/Color/useColorMutation";
 import useColorQuery from "../../hooks/Color/useColorQuery";
@@ -174,7 +174,17 @@ const Variant = () => {
   return (
     <>
       {contextHolder}
-      <h1 className="text-2xl font-medium mb-2">Biến thể</h1>
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Danh sách thuộc tính</a>,
+          },
+        ]}
+      />
+      <h1 className="text-2xl font-medium mb-2">Quản lý thuộc tính</h1>
       <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 ">
         {/* Bảng Color */}
         <div className="bg-white shadow-md rounded-lg p-4 h-fit">

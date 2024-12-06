@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Button, Form, Input, message, Modal } from "antd";
 import useAutoFocus from "../../../../hooks/customHook/useAutoFocus";
@@ -13,10 +14,10 @@ const CreateColor = ({ open, onCancel }) => {
     onSuccess: () => {
       form.resetFields();
       onCancel();
-      messageApi.success("Thêm màu sắc thành công");
+      message.success("Thêm màu sắc thành công");
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi thêm màu sắc: ${error.response.data.message}`);
+      message.error(`Lỗi khi thêm màu sắc: ${error.response.data.message}`);
       console.log(error);
     },
   });

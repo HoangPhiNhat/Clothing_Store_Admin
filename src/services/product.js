@@ -1,16 +1,17 @@
 /* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
 import Author from "../services/baseApi/AuthorApi";
-
 let size = 5;
 
-export const getProductAll = async (page, name) => {
+export const getProductAll = async (page, name, size, sort) => {
   try {
-    let api = `/products?page=${page}&size=${size}&sort=DESC`;
-    if (name) api += `&name=${name}`;
-    const response = await instance.get(api);
-    console.log(response);
-    return response.data;
+    let queryProduct = `/products?size=${size}&page=${page}`;
+    if (name) queryProduct += `&name=${name}`;
+    if (sort.sortField && sort.sortOrder) {
+      queryProduct += `&sortField=${sort.sortField}&sort=${sort.sortOrder}`;
+    }
+    const res = await instance.get(queryProduct);
+    return res;
   } catch (error) {
     throw error;
   }

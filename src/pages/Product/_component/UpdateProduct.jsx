@@ -4,6 +4,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import {
+  Breadcrumb,
   Button,
   Col,
   Form,
@@ -34,6 +35,7 @@ const UpdateProduct = () => {
   const [publicId, setPublicId] = useState(null);
   const [newpublicId, setNewPublicId] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
+  const [productName, setProductName] = useState(null);
 
   const { id } = useParams();
 
@@ -85,6 +87,7 @@ const UpdateProduct = () => {
       });
       setImageUrl(product.thumbnail);
       setPreviewImage(product.thumbnail);
+      setProductName(product.name)
     }
   }, [form, product]);
 
@@ -100,7 +103,6 @@ const UpdateProduct = () => {
         setNewPublicId(extractPublicId(image));
       }
 
-      console.log({ ...values, id: id, thumbnail: image });
       updateProduct({ ...values, id: id, thumbnail: image });
     } catch (error) {
       console.error("Error:", error);
@@ -127,10 +129,27 @@ const UpdateProduct = () => {
     <>
       {contextHolder}
       <div className="container mx-auto">
+        <Breadcrumb
+          items={[
+            {
+              title: "Trang chủ",
+            },
+            {
+              title: <a href="">Cập nhật sản phẩm</a>,
+            },
+            {
+              title: <a href="">{productName}</a>,
+            },
+          ]}
+        />
         <div className="flex items-center justify-between mb-5">
-          <h1 className="text-2xl font-medium">Sửa sản phẩm</h1>
+          <h1 className="text-2xl font-medium">Cập nhật sản phẩm</h1>
           <Link to="/admin/products">
-            <Button disabled={isPending || updatePending} className="text-base" type="primary">
+            <Button
+              disabled={isPending || updatePending}
+              className="text-base"
+              type="primary"
+            >
               <RollbackOutlined /> Quay lại danh sách
             </Button>
           </Link>

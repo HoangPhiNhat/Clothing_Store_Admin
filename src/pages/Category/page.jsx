@@ -3,7 +3,15 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Pagination, Popconfirm, Space, Table, message } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Pagination,
+  Popconfirm,
+  Space,
+  Table,
+  message,
+} from "antd";
 import { useState } from "react";
 import useCategoryMutation from "../../hooks/Category/useCategoryMutation";
 import useCategoryQuery from "../../hooks/Category/useCategoryQuery";
@@ -18,12 +26,24 @@ const Category = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [pageCategory, setPageCategory] = useState(1);
   const [deletingCategoryId, setDeletingCategoryId] = useState(null);
+  const [currentSize, setCurrentSize] = useState(10);
+
+  // Sorting and filter
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
 
   const {
     data: categories,
     isLoading,
     isError,
-  } = useCategoryQuery("GET_ALL_CATEGORY", null, pageCategory);
+  } = useCategoryQuery(
+    "GET_ALL_CATEGORY",
+    null,
+    pageCategory,
+    currentSize,
+    sortField,
+    sortOrder
+  );
 
   const { mutate: deleteCategory, isPending } = useCategoryMutation({
     action: "DELETE",
@@ -43,26 +63,30 @@ const Category = () => {
     {
       title: "Mã danh mục",
       dataIndex: "category_code",
+      key: "category_code",
       rowScope: "row",
-      sorter: (a, b) => a.index - b.index,
+      sorter: true,
     },
     {
       title: "Tên danh mục",
       dataIndex: "name",
-      onFilter: (value, record) => record.name.indexOf(value) === 0,
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      sortDirections: ["ascend", "descend"],
+      key: "name",
       width: "40%",
+      sorter: true,
     },
     {
       title: "Ngày tạo",
       dataIndex: "created_at",
+      key: "created_at",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "updated_at",
+      key: "updated_at",
       width: "20%",
+      sorter: true,
     },
     {
       title: "Hành động",
@@ -110,6 +134,18 @@ const Category = () => {
     setModalUpdateOpen(true);
   };
 
+  //Sort
+  const handleTableChange = (pagination, filters, sorter) => {
+    if (sorter) {
+      setPageCategory(1);
+      setSortField(sorter.field);
+      setSortOrder(sorter.order === "ascend" ? "ASC" : "DESC");
+    } else {
+      setSortField(null);
+      setSortOrder(null);
+    }
+  };
+
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
@@ -118,7 +154,19 @@ const Category = () => {
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl">Quản lý danh mục</h1>
+        <div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Trang chủ",
+              },
+              {
+                title: "Danh sách danh mục",
+              },
+            ]}
+          />
+          <h1 className="text-xl">Quản lý danh mục</h1>
+        </div>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
           <PlusCircleOutlined disabled={isPending} />
           Thêm
@@ -130,16 +178,20 @@ const Category = () => {
         dataSource={dataSource}
         loading={isLoading}
         pagination={false}
+        onChange={handleTableChange}
       />
 
       <Pagination
         disabled={isPending}
         className="mt-5"
         align="end"
-        defaultCurrent={1}
+        showSizeChanger
+        current={pageCategory}
         total={categories?.data.total}
-        pageSize={5}
+        pageSize={currentSize}
         onChange={(page) => setPageCategory(page)}
+        pageSizeOptions={["10", "20", "50"]}
+        onShowSizeChange={(_, size) => setCurrentSize(size)}
       />
 
       <CreateCategory

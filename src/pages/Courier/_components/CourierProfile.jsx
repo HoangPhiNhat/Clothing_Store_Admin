@@ -147,15 +147,15 @@ const CourierProfile = () => {
           case "Đã xác nhận":
             return <Tag color="success">Đã xác nhận</Tag>;
           case "Chờ lấy hàng":
-            return <Tag color="success">Chờ lấy hàng</Tag>;
+            return <Tag color="blue">Chờ lấy hàng</Tag>;
           case "Đang giao":
-            return <Tag color="success">Đang giao hàng</Tag>;
+            return <Tag color="blue">Đang giao hàng</Tag>;
           case "Đã giao":
             return <Tag color="success">Đã giao hàng</Tag>;
           case "Trả hàng":
-            return <Tag color="success">Trả hàng</Tag>;
+            return <Tag color="red">Trả hàng</Tag>;
           case "Đã huỷ":
-            return <Tag color="success">Đã huỷ bởi admin</Tag>;
+            return <Tag color="red">Đã huỷ bởi admin</Tag>;
         }
       },
     },
