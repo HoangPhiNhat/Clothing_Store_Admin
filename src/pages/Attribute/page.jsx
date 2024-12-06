@@ -43,9 +43,19 @@ const ProductAttribute = () => {
   const [fileList, setFileList] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  // Sorting and filter
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
   const [hasChanged, setHasChanged] = useState(false);
   const { id } = useParams();
-  const { data: attributes, isLoading } = useAttributeQuery(id, page, pageSize);
+  const { data: attributes, isLoading } = useAttributeQuery(
+    id,
+    page,
+    pageSize,
+    sortField,
+    sortOrder
+  );
   const { data: product } = useProductQuery(
     "GET_PRODUCT_BY_ID",
     id,
@@ -173,10 +183,12 @@ const ProductAttribute = () => {
       sorter: (a, b) => a.index - b.index,
     },
     {
-      title: "Mã sản phẩm",
+      title: "Mã thuộc tính",
       dataIndex: "sku",
       key: "sku",
       width: "10%",
+      rowScope: "row",
+      sorter: true,
     },
     {
       title: "Ảnh",
@@ -243,9 +255,10 @@ const ProductAttribute = () => {
     },
     {
       title: "Kích thước",
-      dataIndex: "size_name",
-      key: "size",
+      dataIndex: "size_id",
       width: "15%",
+      rowScope: "row",
+      sorter: true,
       render: (_, attribute) => <>{attribute.size.name}</>,
     },
     {
@@ -253,6 +266,8 @@ const ProductAttribute = () => {
       dataIndex: "regular_price",
       key: "regular_price",
       width: "10%",
+      rowScope: "row",
+      sorter: true,
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
           <Form.Item
@@ -272,6 +287,8 @@ const ProductAttribute = () => {
       title: "Giá khuyến mãi",
       dataIndex: "reduced_price",
       key: "reduced_price",
+      rowScope: "row",
+      sorter: true,
       width: "10%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
@@ -307,6 +324,8 @@ const ProductAttribute = () => {
       title: "Số lượng",
       dataIndex: "stock_quantity",
       key: "stock_quantity",
+      rowScope: "row",
+      sorter: true,
       width: "10%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
@@ -393,7 +412,20 @@ const ProductAttribute = () => {
     },
   ];
 
-  const dataSource = attributes?.data.map((attribute, index) => ({
+  //Sort
+  const handleTableChange = (pagination, filters, sorter) => {
+    console.log(sorter);
+    
+    if (sorter) {
+      setPage(1);
+      setSortField(sorter.field);
+      setSortOrder(sorter.order === "ascend" ? "ASC" : "DESC");
+    } else {
+      setSortField(null);
+      setSortOrder(null);
+    }
+  };
+  const dataSource = attributes?.data?.data.map((attribute, index) => ({
     ...attribute,
     key: index + 1,
     index: index + 1,
@@ -428,6 +460,7 @@ const ProductAttribute = () => {
           dataSource={dataSource}
           pagination={false}
           rowClassName="custom-row-height"
+          onChange={handleTableChange}
         />
       </Form>
       <Pagination
@@ -438,7 +471,8 @@ const ProductAttribute = () => {
           setPage(page);
           setPageSize(pageSize);
         }}
-        total={attributes?.total}
+        pageSizeOptions={["10", "20", "50"]}
+        total={attributes?.data.total}
         align="end"
       />
     </>

@@ -23,6 +23,11 @@ import { formatMoney } from "../../systems/utils/formatMoney";
 const Order = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
+  const [currentSize, setCurrentSize] = useState(10);
+
+  // Sorting and filter
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
   const [rejectOrderPending, setRejectOrderPending] = useState(null);
   const [confirmOrderPending, setConfirmOrderPending] = useState(null);
 
@@ -64,12 +69,32 @@ const Order = () => {
     data: orders,
     isLoading,
     isError,
-  } = useOrderQuery("GET_ALL_ORDER", null, pageOrder, false);
-
+  } = useOrderQuery(
+    "GET_ALL_ORDER",
+    null,
+    pageOrder,
+    false,
+    currentSize,
+    sortField,
+    sortOrder
+  );
+  //Sort
+  const handleTableChange = (pagination, filters, sorter) => {
+    if (sorter) {
+      setPageOrder(1);
+      setSortField(sorter.field);
+      setSortOrder(sorter.order === "ascend" ? "ASC" : "DESC");
+    } else {
+      setSortField(null);
+      setSortOrder(null);
+    }
+  };
   const columns = [
     {
       title: "Mã đơn hàng",
       dataIndex: "order_code",
+      rowScope: "row",
+      sorter: true,
       render: (_, orders) => (
         <Tooltip title="Xem chi tiết đơn hàng.">
           <Link to={`${orders.id}`}>{orders.order_code}</Link>
@@ -79,17 +104,24 @@ const Order = () => {
     },
     {
       title: "Người đặt",
+      dataIndex: "user_id",
+      rowScope: "row",
+      sorter: true,
       render: (_, orders) => orders.user.name,
       width: "15%",
     },
     {
       title: "Ngày đặt",
       dataIndex: "created_at",
+      rowScope: "row",
+      sorter: true,
       width: "10%",
     },
     {
       title: "Trạng thái đơn hàng",
       dataIndex: "order_status",
+      rowScope: "row",
+      sorter: true,
       render: (_, orders) => (
         <span
           className={
@@ -111,14 +143,21 @@ const Order = () => {
       title: "Phương thức thanh toán",
       dataIndex: "payment_method",
       width: "10%",
+      rowScope: "row",
+      sorter: true,
     },
     {
       title: "Trạng thái thanh toán",
       dataIndex: "payment_status",
+      rowScope: "row",
+      sorter: true,
       width: "10%",
     },
     {
       title: "Tổng số tiền",
+      dataIndex: "total_amount",
+      rowScope: "row",
+      sorter: true,
       render: (_, order) => `${formatMoney(order.total_amount)}đ`,
       width: "10%",
     },
@@ -217,7 +256,12 @@ const Order = () => {
       </div>
 
       {/* Table */}
-      <Table columns={columns} dataSource={dataSource} pagination={false} />
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        pagination={false}
+        onChange={handleTableChange}
+      />
 
       {/* Pagination */}
       <Pagination
@@ -226,7 +270,9 @@ const Order = () => {
         align="end"
         current={pageOrder}
         total={orders?.data.total}
-        pageSize={5}
+        pageSize={currentSize}
+        pageSizeOptions={["10", "20", "50"]}
+        onShowSizeChange={(_, size) => setCurrentSize(size)}
         onChange={(page) => setPageOrder(page)}
       />
     </>

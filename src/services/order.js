@@ -1,12 +1,13 @@
 /* eslint-disable no-useless-catch */
 import Author from "../services/baseApi/AuthorApi";
 
-let size = 5;
-
-export const getAllOrder = async (page) => {
+export const getAllOrder = async (page, size, sort) => {
   try {
-    let queryOrder = `orders?sort=DESC&size=${size}`;
+    let queryOrder = `orders?size=${size}&page=${page}`;
     if (page) queryOrder += `&page=${page}`;
+    if (sort.sortField && sort.sortOrder)
+      queryOrder += `&sort=${sort.sortField},${sort.sortOrder}`;
+
     return await Author.get(queryOrder);
   } catch (error) {
     throw error;

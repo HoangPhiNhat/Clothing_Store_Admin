@@ -22,8 +22,13 @@ import Loading from "../../components/base/Loading/Loading";
 import useDebounce from "../../hooks/customHook/useDebounce";
 
 const ProductManagePage = () => {
-  const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
+  const [pageProduct, setPageProduct] = useState(1);
+  const [currentSize, setCurrentSize] = useState(10);
+
+  // Sorting and filter
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [searchKey, setSearhKey] = useState("");
   const debouncedSearchKey = useDebounce(searchKey, 1000);
@@ -31,7 +36,10 @@ const ProductManagePage = () => {
     "GET_ALL_PRODUCT",
     null,
     pageProduct,
-    debouncedSearchKey
+    debouncedSearchKey,
+    currentSize,
+    sortField,
+    sortOrder
   );
 
   const navigate = useNavigate();
@@ -52,8 +60,20 @@ const ProductManagePage = () => {
       navigate(`?page=${pageProduct}`, { replace: true });
     }
   }, [pageProduct]);
+  console.log(products);
 
-  const dataSource = products?.data?.map((product) => ({
+  //Sort
+  const handleTableChange = (pagination, filters, sorter) => {
+    if (sorter) {
+      setPageProduct(1);
+      setSortField(sorter.field);
+      setSortOrder(sorter.order === "ascend" ? "ASC" : "DESC");
+    } else {
+      setSortField(null);
+      setSortOrder(null);
+    }
+  };
+  const dataSource = products?.data?.data?.map((product) => ({
     ...product,
     key: product.id,
   }));
@@ -76,6 +96,8 @@ const ProductManagePage = () => {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
+      rowScope: "row",
+      sorter: true,
       width: "30%",
       render: (_, product) => (
         <Link
@@ -228,14 +250,16 @@ const ProductManagePage = () => {
         expandable={{ expandedRowRender }}
         dataSource={dataSource}
         pagination={false}
+        onChange={handleTableChange}
       />
       <Pagination
         current={pageProduct}
         onChange={(page) => {
           setPageProduct(page);
         }}
-        pageSize={5}
+        pageSize={currentSize}
         total={products?.total}
+        onShowSizeChange={(_, size) => setCurrentSize(size)}
         showSizeChanger={false}
         align="end"
       />
