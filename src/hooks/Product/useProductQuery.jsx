@@ -22,7 +22,10 @@ const useProductQuery = (
     queryFn: async () => {
       switch (action) {
         case "GET_ALL_PRODUCT":
-          return await getProductAll(page, name, size, sortField, sortOrder);
+          return await getProductAll(page, name, size, {
+            sortField,
+            sortOrder,
+          });
         case "GET_PRODUCT_BY_ID":
           return await getProductById(id);
         case "GET_ALL_PRODUCT_TRASH":

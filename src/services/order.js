@@ -6,7 +6,7 @@ export const getAllOrder = async (page, size, sort) => {
     let queryOrder = `orders?size=${size}&page=${page}`;
     if (page) queryOrder += `&page=${page}`;
     if (sort.sortField && sort.sortOrder)
-      queryOrder += `&sort=${sort.sortField},${sort.sortOrder}`;
+      queryOrder += `&sortField=${sort.sortField}&sort=${sort.sortOrder}`;
 
     return await Author.get(queryOrder);
   } catch (error) {
@@ -16,7 +16,7 @@ export const getAllOrder = async (page, size, sort) => {
 
 export const getOrderForAssignShipper = async () => {
   try {
-    const res = await Author.get("/orders??orderStatus=Đã xác nhận");
+    const res = await Author.get("/orders?orderStatus=Đã xác nhận");
     return res;
   } catch (error) {
     throw error;

@@ -17,7 +17,7 @@ export const getAllCategory = async (page, size, sort) => {
   try {
     let queryCategory = `/categories?size=${size}&page=${page}`;
     if (sort.sortField && sort.sortOrder)
-      queryCategory += `&sort=${sort.sortField},${sort.sortOrder}`;
+      queryCategory += `&sortField=${sort.sortField}&sort=${sort.sortOrder}`;
 
     return await instance.get(queryCategory);
   } catch (error) {

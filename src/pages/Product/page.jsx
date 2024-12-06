@@ -13,13 +13,13 @@ import {
   Space,
   Table,
 } from "antd";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import Loading from "../../components/base/Loading/Loading";
+import useDebounce from "../../hooks/customHook/useDebounce";
 import useProductMutation from "../../hooks/Product/useProductMutation";
 import useProductQuery from "../../hooks/Product/useProductQuery";
 import { formatMoney } from "../../systems/utils/formatMoney";
-import Loading from "../../components/base/Loading/Loading";
-import useDebounce from "../../hooks/customHook/useDebounce";
 
 const ProductManagePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -32,6 +32,7 @@ const ProductManagePage = () => {
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [searchKey, setSearhKey] = useState("");
   const debouncedSearchKey = useDebounce(searchKey, 1000);
+
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT",
     null,
@@ -42,7 +43,6 @@ const ProductManagePage = () => {
     sortOrder
   );
 
-  const navigate = useNavigate();
   const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -55,13 +55,6 @@ const ProductManagePage = () => {
     },
   });
 
-  useEffect(() => {
-    if (pageProduct) {
-      navigate(`?page=${pageProduct}`, { replace: true });
-    }
-  }, [pageProduct]);
-  console.log(products);
-
   //Sort
   const handleTableChange = (pagination, filters, sorter) => {
     if (sorter) {
@@ -73,7 +66,7 @@ const ProductManagePage = () => {
       setSortOrder(null);
     }
   };
-  const dataSource = products?.data?.data?.map((product) => ({
+  const dataSource = products?.data.data.map((product) => ({
     ...product,
     key: product.id,
   }));
@@ -110,14 +103,15 @@ const ProductManagePage = () => {
     },
     {
       title: "Danh mục",
-      key: "Category",
       render: ({ category }) => <span>{category.name}</span>,
+      // dataIndex:"category_id",
       width: "15%",
     },
     {
       title: "Giá gốc",
       dataIndex: "regular_price",
       key: "regular_price",
+      sorter: true,
       width: "10%",
       render: (regular_price) => <div>{formatMoney(regular_price)}đ</div>,
     },
@@ -126,6 +120,7 @@ const ProductManagePage = () => {
       dataIndex: "reduced_price",
       key: "reduced_price",
       width: "10%",
+      sorter: true,
       render: (reduced_price) => <div>{formatMoney(reduced_price)}đ</div>,
     },
     {
@@ -252,16 +247,17 @@ const ProductManagePage = () => {
         pagination={false}
         onChange={handleTableChange}
       />
+
       <Pagination
-        current={pageProduct}
-        onChange={(page) => {
-          setPageProduct(page);
-        }}
-        pageSize={currentSize}
-        total={products?.total}
-        onShowSizeChange={(_, size) => setCurrentSize(size)}
-        showSizeChanger={false}
+        className="mt-5"
         align="end"
+        showSizeChanger
+        current={pageProduct}
+        total={products?.data.total}
+        pageSize={currentSize}
+        onChange={(page) => setPageProduct(page)}
+        pageSizeOptions={["5", "10", "20", "50"]}
+        onShowSizeChange={(_, size) => setCurrentSize(size)}
       />
     </>
   );

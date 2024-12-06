@@ -5,7 +5,7 @@ export const getAllAttribute = async (productId, page, size, sort) => {
   try {
     let queryAttribute = `/products/${productId}/productAtts?size=${size}&page=${page}`;
     if (sort.sortField && sort.sortOrder)
-      queryAttribute += `&sort=${sort.sortField},${sort.sortOrder}`;
+      queryAttribute += `&sortField=${sort.sortField}&sort=${sort.sortOrder}`;
 
      return await Author.get(queryAttribute);
   } catch (error) {
