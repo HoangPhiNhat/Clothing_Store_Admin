@@ -114,8 +114,9 @@ const Order = () => {
       title: "Ngày đặt",
       dataIndex: "created_at",
       rowScope: "row",
-      sorter: true,
-      width: "10%",
+      render: (_, order) => (
+        <div className="font-normal">{order.created_at}</div>
+      ),
     },
     {
       title: "Trạng thái đơn hàng",
@@ -143,6 +144,9 @@ const Order = () => {
       title: "Phương thức thanh toán",
       dataIndex: "payment_method",
       width: "10%",
+      render: (_, order) => (
+        <div className="font-normal">{order.payment_method}</div>
+      ),
       rowScope: "row",
       sorter: true,
     },
@@ -152,13 +156,18 @@ const Order = () => {
       rowScope: "row",
       sorter: true,
       width: "10%",
+      render: (_, order) => (
+        <div className="font-normal">{order.payment_status}</div>
+      ),
     },
     {
       title: "Tổng số tiền",
       dataIndex: "total_amount",
       rowScope: "row",
       sorter: true,
-      render: (_, order) => `${formatMoney(order.total_amount)}đ`,
+      render: (_, order) => (
+        <div className="font-normal">{formatMoney(order.total_amount)}đ</div>
+      ),
       width: "10%",
     },
     {
