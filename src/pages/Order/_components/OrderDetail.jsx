@@ -1,4 +1,4 @@
-import { Breadcrumb, Pagination, Steps, Table } from "antd";
+import { Breadcrumb, Pagination, Steps, Table, Tag } from "antd";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Loading from "../../../components/base/Loading/Loading";
@@ -36,10 +36,10 @@ const OrderDetail = () => {
       dataIndex: "thumbnail",
       key: "thumbnail",
       width: "20%",
-      render: (thumbnail, product) => (
+      render: (_, product) => (
         <img
           className="w-24 h-24 object-cover"
-          src={thumbnail}
+          src={product.thumbnail}
           alt={product.name}
         />
       ),
@@ -205,6 +205,16 @@ const OrderDetail = () => {
           )}
           <h3>Địa chỉ: {order?.data.order_address}</h3>
           <h3>Phương thức thanh toán: {order?.data.payment_method}</h3>
+          <h3>
+            Trạng thái thanh toán:{" "}
+            {order?.data.payment_status === "Thanh toán thất bại" ? (
+              <Tag color="#f50">{order?.data.payment_status}</Tag>
+            ) : order?.data.payment_status === "Chưa thanh toán" ? (
+              <Tag color="gold">{order?.data.payment_status}</Tag>
+            ) : (
+              <Tag color="#87d068">{order?.data.payment_status}</Tag>
+            )}
+          </h3>
         </div>
       </div>
 

@@ -155,9 +155,19 @@ const Order = () => {
       dataIndex: "payment_status",
       rowScope: "row",
       sorter: true,
-      width: "10%",
-      render: (_, order) => (
-        <div className="font-normal">{order.payment_status}</div>
+      width: "15%",
+      render: (_, orders) => (
+        <span
+          className={
+            orders.payment_status === "Thanh toán thất bại"
+              ? "text-white bg-red-500 px-2 py-1 rounded-md"
+              : orders.payment_status === "Chưa thanh toán"
+              ? "text-white bg-yellow-400 px-2 py-1 rounded-md"
+              : "text-white bg-green-500 px-2 py-1 rounded-md"
+          }
+        >
+          {orders.payment_status}
+        </span>
       ),
     },
     {

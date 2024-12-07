@@ -62,7 +62,7 @@ const ProductAttribute = () => {
     null,
     null
   );
-  
+
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -425,7 +425,7 @@ const ProductAttribute = () => {
   //Sort
   const handleTableChange = (pagination, filters, sorter) => {
     console.log(sorter);
-    
+
     if (sorter) {
       setPage(1);
       setSortField(sorter.field);
@@ -475,6 +475,7 @@ const ProductAttribute = () => {
       </Form>
       <Pagination
         showSizeChanger
+        className="mt-5"
         current={page}
         pageSize={pageSize}
         onChange={(page, pageSize) => {

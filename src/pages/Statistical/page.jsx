@@ -1,12 +1,12 @@
+import { Column, Line } from "@ant-design/charts";
 import {
   ClockCircleOutlined,
   ShoppingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Card, Select, Row, Col, Tag, Button, Radio, Breadcrumb } from "antd";
-import { Line, Column } from "@ant-design/charts";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Breadcrumb, Card, Col, Radio, Row, Select } from "antd";
+import { useState } from "react";
 import { fetchDashboardData } from "../../services/dashboard";
 import { formatMoney } from "../../systems/utils/formatMoney";
 
@@ -70,54 +70,57 @@ const Statistical = () => {
       setValue("current");
     }
   };
+  
   const handleValueChange = (value) => {
     setValue(value);
   };
-  const TimelineData = [
-    { status: "Pending", id: "#303822", time: "6 hours ago", color: "orange" },
-    {
-      status: "Delivered",
-      id: "#474038",
-      time: "6 hours ago",
-      color: "green",
-    },
-    {
-      status: "On the way",
-      id: "#357211",
-      time: "6 hours ago",
-      color: "blue",
-    },
-    {
-      status: "On the way",
-      id: "#731863",
-      time: "7 hours ago",
-      color: "blue",
-    },
-    { status: "Cancelled", id: "#142463", time: "11 hours ago", color: "red" },
-  ];
 
-  const orders = [
-    {
-      id: "#303822",
-      name: "Jayden Champlin",
-      address: "11844 Kassulke Corner, Brooklyn, NY 111",
-      items: ["Waldorf Salad x1", "Duck x1", "Pork x1"],
-      total: "$56.00",
-    },
-    {
-      id: "#756065",
-      name: "Geovany Ledner",
-      address: "11332 Alta Radial, Lindenhurst, NY 11526",
-      items: ["Fish Burger x1", "Sprite x1", "Chicken Alfredo x1"],
-      total: "$26.00",
-    },
-  ];
+  // const TimelineData = [
+  //   { status: "Pending", id: "#303822", time: "6 hours ago", color: "orange" },
+  //   {
+  //     status: "Delivered",
+  //     id: "#474038",
+  //     time: "6 hours ago",
+  //     color: "green",
+  //   },
+  //   {
+  //     status: "On the way",
+  //     id: "#357211",
+  //     time: "6 hours ago",
+  //     color: "blue",
+  //   },
+  //   {
+  //     status: "On the way",
+  //     id: "#731863",
+  //     time: "7 hours ago",
+  //     color: "blue",
+  //   },
+  //   { status: "Cancelled", id: "#142463", time: "11 hours ago", color: "red" },
+  // ];
 
-  const trendingProducts = [
-    { name: "Cannelloni", orders: 53, revenue: "$821.50", rank: 1 },
-    { name: "Cheesecake", orders: 51, revenue: "$408.00", rank: 2 },
-    { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
-  ];
+  // const orders = [
+  //   {
+  //     id: "#303822",
+  //     name: "Jayden Champlin",
+  //     address: "11844 Kassulke Corner, Brooklyn, NY 111",
+  //     items: ["Waldorf Salad x1", "Duck x1", "Pork x1"],
+  //     total: "$56.00",
+  //   },
+  //   {
+  //     id: "#756065",
+  //     name: "Geovany Ledner",
+  //     address: "11332 Alta Radial, Lindenhurst, NY 11526",
+  //     items: ["Fish Burger x1", "Sprite x1", "Chicken Alfredo x1"],
+  //     total: "$26.00",
+  //   },
+  // ];
+
+  // const trendingProducts = [
+  //   { name: "Cannelloni", orders: 53, revenue: "$821.50", rank: 1 },
+  //   { name: "Cheesecake", orders: 51, revenue: "$408.00", rank: 2 },
+  //   { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
+  // ];
+
   return (
     <div className="">
       <Breadcrumb
@@ -130,6 +133,7 @@ const Statistical = () => {
           },
         ]}
       />
+
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl font-semibold">Tổng quan</h2>
         <div className="flex gap-5">
@@ -151,6 +155,7 @@ const Statistical = () => {
           </label>
         </div>
       </div>
+
       <div className="flex justify-end mb-4">
         {timePeriod === "month" && (
           <Select className="w-28" onChange={handleValueChange} value={value}>
@@ -172,6 +177,7 @@ const Statistical = () => {
           </Select>
         )}
       </div>
+
       {/* Statistics */}
       <Row gutter={[16, 16]}>
         {/* Daily Revenue */}
@@ -253,7 +259,7 @@ const Statistical = () => {
         </Col>
       </Row>
 
-      <Row>
+      {/* <Row>
         <Col span={8}>
           <Card
             title={
@@ -350,7 +356,7 @@ const Statistical = () => {
             ))}
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </div>
   );
 };
