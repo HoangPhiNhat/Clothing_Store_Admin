@@ -82,10 +82,12 @@ const CreateAttribute = () => {
           }
         })
       );
-console.log(id);
 
-      const finalData = { productId: Number(id), attributes: attributesWithImages };
-console.log(finalData);
+      const finalData = {
+        productId: Number(id),
+        attributes: attributesWithImages,
+      };
+      console.log(finalData);
 
       // Gọi mutation để tạo attribute
       await createAttribute(finalData);
@@ -102,7 +104,15 @@ console.log(finalData);
       dataIndex: "image",
       width: 150,
       render: (_, field) => (
-        <Form.Item name={[field.name, "image"]}>
+        <Form.Item
+          name={[field.name, "image"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng tải lên hình ảnh thuộc tính",
+            },
+          ]}
+        >
           <Upload
             maxCount={1}
             listType="picture-card"
@@ -113,6 +123,8 @@ console.log(finalData);
             }}
             accept=".jpg, .jpeg, .png"
             beforeUpload={(file) => {
+              console.log(file);
+              
               const isImage =
                 file.type === "image/jpeg" ||
                 file.type === "image/png" ||

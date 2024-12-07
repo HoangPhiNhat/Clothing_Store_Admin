@@ -62,7 +62,7 @@ const ProductAttribute = () => {
     null,
     null
   );
-  console.log(attributes);
+  
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
     onSuccess: (data) => {
@@ -248,10 +248,14 @@ const ProductAttribute = () => {
     },
     {
       title: "Màu sắc",
-      dataIndex: "color_name",
+      dataIndex: "color_id",
       key: "color",
       width: "15%",
-      render: (_, attribute) => <>{attribute.color.name}</>,
+      rowScope: "row",
+      sorter: true,
+      render: (_, attribute) => (
+        <div className="font-normal">{attribute.color.name}</div>
+      ),
     },
     {
       title: "Kích thước",
@@ -259,7 +263,9 @@ const ProductAttribute = () => {
       width: "15%",
       rowScope: "row",
       sorter: true,
-      render: (_, attribute) => <>{attribute.size.name}</>,
+      render: (_, attribute) => (
+        <div className="font-normal">{attribute.size.name}</div>
+      ),
     },
     {
       title: "Giá bán",
@@ -280,7 +286,9 @@ const ProductAttribute = () => {
             <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
-          <div>{formatMoney(attribute.regular_price)}đ</div>
+          <div className="font-normal">
+            {formatMoney(attribute.regular_price)}đ
+          </div>
         ),
     },
     {
@@ -317,7 +325,9 @@ const ProductAttribute = () => {
             <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
-          <div>{formatMoney(attribute.reduced_price)}đ</div>
+          <div className="font-normal">
+            {formatMoney(attribute.reduced_price)}đ
+          </div>
         ),
     },
     {
@@ -339,7 +349,7 @@ const ProductAttribute = () => {
             <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
-          <span>{attribute.stock_quantity}</span>
+          <span className="font-normal">{attribute.stock_quantity}</span>
         ),
     },
     {

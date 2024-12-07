@@ -42,6 +42,7 @@ const ProductManagePage = () => {
     sortField,
     sortOrder
   );
+  console.log(products);
 
   const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
@@ -103,8 +104,12 @@ const ProductManagePage = () => {
     },
     {
       title: "Danh mục",
-      render: ({ category }) => <span>{category.name}</span>,
-      // dataIndex:"category_id",
+      render: (_, product) => (
+        <span className="font-normal">{product.category.name}</span>
+      ),
+      dataIndex: "category_id",
+      rowScope: "row",
+      sorter: true,
       width: "15%",
     },
     {

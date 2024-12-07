@@ -118,6 +118,12 @@ console.log(categories);
       render: (_, field) => (
         <Form.Item
           name={[field.name, "image"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng tải lên hình ảnh thuộc tính",
+            },
+          ]}
         >
           <Upload
             maxCount={1}
@@ -156,7 +162,7 @@ console.log(categories);
     {
       title: "Màu sắc",
       dataIndex: "color",
-      width: 200,
+      width: 150,
       render: (_, field) => (
         <Form.Item
           name={[field.name, "color_id"]}
@@ -191,7 +197,7 @@ console.log(categories);
     {
       title: "Kích thước",
       dataIndex: "size",
-      width: 200,
+      width: 150,
       render: (_, field) => (
         <Form.Item
           name={[field.name, "size_id"]}
@@ -216,8 +222,8 @@ console.log(categories);
         <Form.Item
           name={[field.name, "regular_price"]}
           rules={[
-            { required: true, message: "Vui lòng nhập giá" },
-            { min: 0, type: "number", message: "Giá lớn hơn 0" },
+            { required: true, message: "Vui lòng nhập giá bán" },
+            { min: 0, type: "number", message: "Giá bán lớn hơn 0" },
           ]}
         >
           <InputNumber type="number" placeholder="Giá bán" className="w-full" />
@@ -236,20 +242,24 @@ console.log(categories);
               validator(_, value) {
                 const regularPrice = getFieldValue("regular_price");
                 if (!regularPrice) {
-                  return Promise.reject("Vui lòng nhập giá gốc trước");
+                  return Promise.reject("Vui lòng nhập giá bán trước");
                 }
                 if (Number(value) < 0) {
                   return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
                 }
                 if (Number(value) && regularPrice <= Number(value)) {
-                  return Promise.reject("Giá khuyến mãi phải thấp hơn giá gốc");
+                  return Promise.reject("Giá khuyến mãi phải thấp hơn giá bán");
                 }
                 return Promise.resolve();
               },
             }),
           ]}
         >
-          <InputNumber type="number" placeholder="Giá Khuyến mãi" className="w-full" />
+          <InputNumber
+            type="number"
+            placeholder="Giá Khuyến mãi"
+            className="w-full"
+          />
         </Form.Item>
       ),
     },
