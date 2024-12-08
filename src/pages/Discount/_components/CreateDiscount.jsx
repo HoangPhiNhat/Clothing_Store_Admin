@@ -31,8 +31,8 @@ const CreateDiscount = ({ open, onCancel }) => {
   const { mutate: createDiscount, isPending } = useDisCountMutation({
     action: "CREATE",
     onSuccess: () => {
-      onCancel(false)
       form.resetFields();
+      onCancel(false)
       messageApi.success("Thêm chiến dịch giảm giá thành công.");
     },
     onError: (error) => {
@@ -70,7 +70,6 @@ const CreateDiscount = ({ open, onCancel }) => {
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          // disabled={isPending}
         >
           <Form.Item
             label="Tên chiến dịch"
