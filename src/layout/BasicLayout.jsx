@@ -7,7 +7,7 @@ import {
   ShoppingCartOutlined,
   TagsOutlined,
   TruckOutlined,
-  UnorderedListOutlined,
+  UnorderedListOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
