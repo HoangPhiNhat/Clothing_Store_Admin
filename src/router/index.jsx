@@ -45,6 +45,7 @@ import ShipperLayout from "../layout/ShipperLayout";
 import ShipperOrderDelivery from "../pages/Shipper/ShipperOrderDelivery";
 import ShipperOrderHistory from "../pages/Shipper/ShipperOrderHistory";
 import ShipperOrderPending from "../pages/Shipper/ShipperOrderPending";
+import Voucher from "../pages/Voucher/page";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -76,27 +77,37 @@ const RouterComponent = () => {
             {/* Category */}
             <Route path="categories" element={<Category />} />
             <Route path="categories/trash" element={<TrashCategory />} />
+
             {/* Classification */}
             {/* <Route path="categories/:id" element={<Classification />} /> */}
+
             {/* Product */}
             <Route path="products" element={<ProductManagePage />} />
             <Route path="products/add" element={<CreateProduct />} />
             <Route path="products/trash" element={<TrashProduct />} />
             <Route path="products/:id/edit" element={<UpdateProduct />} />
+
             {/* Product att */}
             <Route
               path="products/:id/attributes"
               element={<ProductAttribute />}
             />
+
             {/* Product variant */}
             <Route path="products/variant" element={<Variant />} />
+
             {/* Order */}
             <Route path="orders" element={<Order />} />
             <Route path="orders/:id" element={<OrderDetail />} />
+
+            {/* Voucher */}
+            <Route path="vouchers" element={<Voucher />} />
+
             {/* Page error */}
             <Route path="*" element={<Page404 />} />
             <Route path="page403" element={<Page403 />} />
             <Route path="page500" element={<Page500 />} />
+
             {/* Courier */}
             <Route path="couriers" element={<Courier />} />
             <Route path="couriers/:id" element={<CourierProfile />} />

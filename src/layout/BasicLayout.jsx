@@ -5,9 +5,10 @@ import {
   PieChartOutlined,
   ProfileOutlined,
   ShoppingCartOutlined,
+  TagOutlined,
   TagsOutlined,
   TruckOutlined,
-  UnorderedListOutlined
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -37,8 +38,9 @@ const LayoutAdmin = () => {
     //   label: <Link to="/admin/users">Users</Link>,
     // },
     {
-      icon: <TagsOutlined />,
       // label: "Danh mục",
+      icon: <TagsOutlined />,
+      key: "/admin/categories",
       label: <Link to="/admin/categories">Danh mục</Link>,
       // children: [
       //   {
@@ -52,8 +54,9 @@ const LayoutAdmin = () => {
       // ],
     },
     {
-      icon: <UnorderedListOutlined />,
       // label: "Sản phẩm",
+      icon: <UnorderedListOutlined />,
+      key: "/admin/products",
       label: <Link to="/admin/products">Danh sách sản phẩm</Link>,
       // children: [
       //   {
@@ -84,7 +87,12 @@ const LayoutAdmin = () => {
     {
       key: "/admin/discounts",
       icon: <PercentageOutlined />,
-      label: <Link to={"/admin/discounts"}>Giảm giá</Link>,
+      label: <Link to={"/admin/discounts"}>Chiến dịch giảm giá</Link>,
+    },
+    {
+      key: "/admin/vouchers",
+      icon: <TagOutlined />,
+      label: <Link to={"/admin/vouchers"}>Mã giảm giá</Link>,
     },
   ];
 
