@@ -37,7 +37,7 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const inputRef = useAutoFocus(open);
   // const [startDate, setStartDate] = useState(null);
-  const [showMaxDiscount, setShowMaxDiscount] = useState(voucher.discount_type);
+  const [showMaxDiscount, setShowMaxDiscount] = useState(voucher?.discount_type);
 
   const { mutate: updateVoucher, isPending } = useVoucherMutation({
     action: "UPDATE",
@@ -52,6 +52,7 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
 
   useEffect(() => {
     if (voucher) {
+      setShowMaxDiscount(voucher.discount_type);
       form.setFieldsValue({
         voucher_code: voucher.voucher_code,
         name: voucher.name,
