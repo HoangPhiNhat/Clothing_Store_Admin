@@ -10,9 +10,21 @@ const useShippperMutation = ({ action, onSuccess, onError }) => {
         case "DELIVERY_START":
           return await deliveryStatus(shipments, "Đang giao");
         case "DELIVERY_SUCCESS":
-          return await deliveryStatus(shipments, "Đã giao");
+          return await deliveryStatus(
+            shipments.id,
+            "Đã giao",
+            null,
+            shipments.image
+          );
         case "DELIVERY_FAIL":
-          return await deliveryStatus(shipments, "Trả hàng");
+          console.log(shipments);
+          // return null;
+          return await deliveryStatus(
+            shipments.id,
+            "Trả hàng",
+            shipments.note,
+            null
+          );
         default:
           return null;
       }

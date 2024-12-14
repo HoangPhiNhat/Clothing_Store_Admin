@@ -6,7 +6,6 @@ import {
 import {
   Breadcrumb,
   Button,
-  message,
   Pagination,
   Popconfirm,
   Space,
@@ -15,48 +14,24 @@ import {
 } from "antd";
 import { useState } from "react";
 import Loading from "../../components/base/Loading/Loading";
-import useShippperMutation from "../../hooks/Shipper/useShipperMutation";
 import useShipperQuery from "../../hooks/Shipper/useShipperQuery";
 import { formatMoney } from "../../systems/utils/formatMoney";
 import ShipperOrderDetail from "./ShipperOrderDetail";
+import StatusOrderDelivery from "./_components/StatusOrderDelivery";
 
 const ShipperOrderDelivery = () => {
-  const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
-  const [deliverySuccessId, setDeliverySuccessId] = useState(null);
-  const [deliveryFailId, setDeliveryFailId] = useState(null);
   const [modelOpenDetail, setModelOpenDetail] = useState(false);
   const [productDetails, setProductDetails] = useState();
+  const [modelOpenStatus, setModelOpenStatus] = useState(false);
+  const [statusDelivery, setSatusDelivery] = useState(null);
+  const [deliveryId, setDeliveryId] = useState(null);
 
   const { data: orders, isLoading } = useShipperQuery(
     "GET_ALL_ORDER_SHIPPING",
     null,
     pageOrder
   );
-
-  const { mutate: deliverySuccess, isPending: isPendingDeliverySuccess } =
-    useShippperMutation({
-      action: "DELIVERY_SUCCESS",
-      onSuccess: () => {
-        messageApi.success("Hoàn thành đơn hàng thành công.");
-      },
-      onError: (error) => {
-        messageApi.error("Hoàn thành đơn hàng thất bại.");
-        console.log(error);
-      },
-    });
-
-  const { mutate: deliveryFail, isPending: isPendingDeliveryFail } =
-    useShippperMutation({
-      action: "DELIVERY_FAIL",
-      onSuccess: () => {
-        messageApi.success("Trả hàng thành công.");
-      },
-      onError: (error) => {
-        messageApi.error("Trả hàng thất bại.");
-        console.log(error);
-      },
-    });
 
   const dataSource = (orders?.data.data || []).map((order) => ({
     key: order.id,
@@ -108,16 +83,12 @@ const ShipperOrderDelivery = () => {
                 okText="Có"
                 cancelText="Không"
                 onConfirm={() => {
-                  setDeliveryFailId(order.id);
-                  deliveryFail(order.id);
+                  setModelOpenStatus(true);
+                  setSatusDelivery("fail");
+                  setDeliveryId(order.id);
                 }}
               >
-                <Button
-                  type="primary"
-                  danger
-                  loading={deliveryFailId === order.id}
-                  disabled={deliverySuccessId === order.id}
-                >
+                <Button type="primary" danger>
                   <UndoOutlined />
                 </Button>
               </Popconfirm>
@@ -130,15 +101,12 @@ const ShipperOrderDelivery = () => {
                 okText="Có"
                 cancelText="Không"
                 onConfirm={() => {
-                  setDeliverySuccessId(order.id);
-                  deliverySuccess(order.id);
+                  setModelOpenStatus(true);
+                  setSatusDelivery("success");
+                  setDeliveryId(order.id);
                 }}
               >
-                <Button
-                  type="primary"
-                  disabled={deliveryFailId === order.id}
-                  loading={deliverySuccessId === order.id}
-                >
+                <Button type="primary">
                   <CheckCircleOutlined />
                 </Button>
               </Popconfirm>
@@ -174,7 +142,6 @@ const ShipperOrderDelivery = () => {
 
   return (
     <>
-      {contextHolder}
       {/* Breadcrumb */}
       <Breadcrumb
         items={[
@@ -197,7 +164,6 @@ const ShipperOrderDelivery = () => {
       <Table dataSource={dataSource} columns={columns} pagination={false} />
       {/* Pagination */}
       <Pagination
-        disabled={isPendingDeliverySuccess || isPendingDeliveryFail}
         className="mt-5"
         align="end"
         current={pageOrder}
@@ -214,6 +180,14 @@ const ShipperOrderDelivery = () => {
           products={productDetails}
         />
       )}
+
+      {/* Model */}
+      <StatusOrderDelivery
+        open={modelOpenStatus}
+        onCancel={() => setModelOpenStatus(false)}
+        status={statusDelivery}
+        deliveryId={deliveryId}
+      />
     </>
   );
 };

@@ -45,7 +45,6 @@ const CreateProduct = () => {
   const { data: categories, isLoading } = useCategoryQuery(
     "GET_ALL_CATEGORY_FOR_PRODUCT"
   );
-console.log(categories);
 
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
@@ -443,7 +442,7 @@ console.log(categories);
                   </Form.Item>
                 </Col>
               </Row>
-              <Form.Item
+              {/* <Form.Item
                 name="short_description"
                 label="Mô tả ngắn"
                 rules={[
@@ -455,8 +454,8 @@ console.log(categories);
                   maxLength={200}
                   placeholder="Nhập giá mô tả ngắn"
                 />
-              </Form.Item>
-              <Form.Item
+              </Form.Item> */}
+              {/* <Form.Item
                 name="long_description"
                 label="Mô tả chi tiết"
                 rules={[
@@ -468,7 +467,7 @@ console.log(categories);
                   maxLength={200}
                   placeholder="Nhập giá mô tả chi tiết"
                 />
-              </Form.Item>
+              </Form.Item> */}
             </Col>
             <Col span={6}>
               <Form.Item

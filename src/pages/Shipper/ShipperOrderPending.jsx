@@ -2,6 +2,7 @@ import { CheckCircleOutlined, EyeOutlined } from "@ant-design/icons";
 import {
   Breadcrumb,
   Button,
+  message,
   Pagination,
   Popconfirm,
   Space,
@@ -16,6 +17,7 @@ import { formatMoney } from "../../systems/utils/formatMoney";
 import ShipperOrderDetail from "./ShipperOrderDetail";
 
 const ShipperOrderPending = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
   const [startOrderId, setStartOrderId] = useState(null);
   const [modelOpenDetail, setModelOpenDetail] = useState(false);
@@ -30,9 +32,10 @@ const ShipperOrderPending = () => {
   const { mutate: startDelivery, isPending } = useShippperMutation({
     action: "DELIVERY_START",
     onSuccess: () => {
-      console.log("Success");
+      messageApi.success("Bắt đầu đơn hàng thành công.");
     },
     onError: (error) => {
+      messageApi.success("Bắt đầu đơn hàng thất bại.");
       console.log(error);
     },
   });
@@ -127,6 +130,7 @@ const ShipperOrderPending = () => {
 
   return (
     <>
+      {contextHolder}
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

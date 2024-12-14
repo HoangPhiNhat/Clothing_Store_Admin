@@ -27,20 +27,20 @@ const ShipperOrderDetail = ({ open, onCancel, products }) => {
     key: product.id,
     ...product,
   }));
-
+  
   const columns = [
-    // {
-    //   title: "Ảnh",
-    //   key: "img",
-    //   render: (_, product) => (
-    //     <img
-    //       src={product.image}
-    //       alt={product.name}
-    //       className="w-24 h-24 object-cover"
-    //     />
-    //   ),
-    //   with: "15%",
-    // },
+    {
+      title: "Ảnh",
+      key: "img",
+      render: (_, product) => (
+        <img
+          src={product.thumbnail}
+          alt={product.name}
+          className="w-24 h-24 object-cover"
+        />
+      ),
+      with: "15%",
+    },
     {
       title: "Tên sản phẩm",
       key: "name",

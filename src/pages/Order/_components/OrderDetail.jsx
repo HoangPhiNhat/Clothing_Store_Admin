@@ -181,11 +181,17 @@ const OrderDetail = () => {
               statusDeliveryPending && statusDeliveryPending.created_at,
           },
           {
-            title: "Đang giao hàng",
+            title: "Giao hàng",
             description: statusDelivery ? statusDelivery.created_at : "",
           },
           {
-            title: "Hoàn thành giao hàng",
+            title: "Trạng thái giao hàng",
+            description:
+              statusDeliveryCompletion &&
+              `${statusDeliveryCompletion.status} - ${statusDeliveryCompletion.created_at}`,
+          },
+          {
+            title: "Người dùng xác nhận",
             description:
               statusDeliveryCompletion &&
               `${statusDeliveryCompletion.status} - ${statusDeliveryCompletion.created_at}`,
