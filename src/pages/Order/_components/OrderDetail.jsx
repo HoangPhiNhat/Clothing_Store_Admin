@@ -1,6 +1,6 @@
 import { Breadcrumb, Pagination, Steps, Table, Tag } from "antd";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Loading from "../../../components/base/Loading/Loading";
 import useOrderQuery from "../../../hooks/Order/useOrderQuery";
 import { formatMoney } from "../../../systems/utils/formatMoney";
@@ -154,9 +154,11 @@ const OrderDetail = () => {
       disabled: current !== 1,
       onClick: () => current === 1 && setModalCreateOpen(true),
       description: shipperDetail ? (
-        <h4>
-          {shipperDetail.user.name} - {shipperDetail.user.phone}
-        </h4>
+        <Link to={`/admin/couriers/${shipperDetail.id}`}>
+          <h4>
+            {shipperDetail.user.name} - {shipperDetail.user.phone}
+          </h4>
+        </Link>
       ) : null,
     },
     {
