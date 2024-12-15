@@ -15,8 +15,8 @@ const useUserMutation = ({ action, onSuccess, onError }) => {
           return null;
       }
     },
-    onSuccess: () => {
-      onSuccess && onSuccess();
+    onSuccess: (success) => {
+      onSuccess && onSuccess(success);
       queryClient.invalidateQueries({
         queryKey: ["USER_KEY"],
       });

@@ -127,9 +127,11 @@ const CreateVoucher = ({ open, onCancel }) => {
                       new Error("Mã phiếu phải có ít nhất 6 ký tự!")
                     );
                   }
-                  if (!/^[A-Z]+$/.test(value)) {
+                  if (!/^[A-Z0-9]+$/.test(value)) {
                     return Promise.reject(
-                      new Error("Mã phiếu chỉ được chứa các chữ cái viết hoa!")
+                      new Error(
+                        "Mã phiếu chỉ được chứa các chữ cái viết hoa và số!"
+                      )
                     );
                   }
                   return Promise.resolve();
@@ -176,6 +178,17 @@ const CreateVoucher = ({ open, onCancel }) => {
                   type: "number",
                   message: "Giá giảm lớn hơn 0",
                 },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const discount_type = getFieldValue("discount_type");
+                    if (discount_type === "percentage" && Number(value)>=100) {
+                      return Promise.reject(
+                        "Vui lòng giá giảm thấp hơn 100%"
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
               <InputNumber

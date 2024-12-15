@@ -10,6 +10,7 @@ import {
   TruckOutlined,
   UnorderedListOutlined,
   UserOutlined,
+  // VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -95,6 +96,11 @@ const LayoutAdmin = () => {
       icon: <TagOutlined />,
       label: <Link to={"/admin/vouchers"}>Mã giảm giá</Link>,
     },
+    // {
+    //   key: "/admin/banners",
+    //   icon: <VideoCameraOutlined />,
+    //   label: <Link to={"/admin/banners"}>Quảng cáo</Link>,
+    // },
   ];
 
   const handleBreakpoint = (broken) => {

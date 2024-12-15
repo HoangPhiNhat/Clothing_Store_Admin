@@ -146,9 +146,11 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
                       new Error("Mã phiếu phải có ít nhất 6 ký tự!")
                     );
                   }
-                  if (!/^[A-Z]+$/.test(value)) {
+                  if (!/^[A-Z0-9]+$/.test(value)) {
                     return Promise.reject(
-                      new Error("Mã phiếu chỉ được chứa các chữ cái viết hoa!")
+                      new Error(
+                        "Mã phiếu chỉ được chứa các chữ cái viết hoa và số!"
+                      )
                     );
                   }
                   return Promise.resolve();
@@ -225,19 +227,15 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
                   validator(_, value) {
                     const discount_type = getFieldValue("discount_type");
                     const min_order_value = getFieldValue("min_order_value");
-                    if (!Number(value)) {
+                    if (Number(value) <= 0) {
+                      return Promise.reject("Vui lòng nhập giá lớn hơn 0");
+                    }
+                    if (!Number(value) && discount_type === "percentage") {
                       return Promise.reject("Vui lòng nhập giá giảm tối đa");
                     }
+
                     if (
-                      (Number(value) <= 0 || Number(value) >= 100) &&
-                      discount_type === "percentage"
-                    ) {
-                      return Promise.reject(
-                        "Giá giảm tối đa > 0% và nhỏ hơn 100%"
-                      );
-                    }
-                    if (
-                      Number(value) >= min_order_value &&
+                      Number(value) > min_order_value &&
                       discount_type === "fixed_amount"
                     ) {
                       return Promise.reject(

@@ -1,8 +1,4 @@
-import {
-  DeleteOutlined,
-  LockOutlined,
-  UnlockOutlined,
-} from "@ant-design/icons";
+import { LockOutlined, UnlockOutlined } from "@ant-design/icons";
 import {
   Breadcrumb,
   Button,
@@ -34,10 +30,8 @@ const User = () => {
   const { mutate: toggleStatusUser, isPending } = useUserMutation({
     action: "TOGGLE",
     onSuccess: (success) => {
-      console.log(success);
-
       setToggleUserId(null);
-      messageApi.success("Chuyển trạng thái thành công.");
+      messageApi.success(success.data.message);
     },
     onError: (error) => {
       setToggleUserId(null);

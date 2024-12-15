@@ -5,7 +5,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Breadcrumb, Button, Card, Col, Radio, Row, Select, Tag } from "antd";
+import { Breadcrumb, Card, Col, Radio, Row, Select} from "antd";
 import { useState } from "react";
 import { fetchDashboardData } from "../../services/dashboard";
 import { formatMoney } from "../../systems/utils/formatMoney";
@@ -75,51 +75,51 @@ const Statistical = () => {
     setValue(value);
   };
 
-  const TimelineData = [
-    { status: "Pending", id: "#303822", time: "6 hours ago", color: "orange" },
-    {
-      status: "Delivered",
-      id: "#474038",
-      time: "6 hours ago",
-      color: "green",
-    },
-    {
-      status: "On the way",
-      id: "#357211",
-      time: "6 hours ago",
-      color: "blue",
-    },
-    {
-      status: "On the way",
-      id: "#731863",
-      time: "7 hours ago",
-      color: "blue",
-    },
-    { status: "Cancelled", id: "#142463", time: "11 hours ago", color: "red" },
-  ];
+  // const TimelineData = [
+  //   { status: "Pending", id: "#303822", time: "6 hours ago", color: "orange" },
+  //   {
+  //     status: "Delivered",
+  //     id: "#474038",
+  //     time: "6 hours ago",
+  //     color: "green",
+  //   },
+  //   {
+  //     status: "On the way",
+  //     id: "#357211",
+  //     time: "6 hours ago",
+  //     color: "blue",
+  //   },
+  //   {
+  //     status: "On the way",
+  //     id: "#731863",
+  //     time: "7 hours ago",
+  //     color: "blue",
+  //   },
+  //   { status: "Cancelled", id: "#142463", time: "11 hours ago", color: "red" },
+  // ];
 
-  const orders = [
-    {
-      id: "#303822",
-      name: "Jayden Champlin",
-      address: "11844 Kassulke Corner, Brooklyn, NY 111",
-      items: ["Waldorf Salad x1", "Duck x1", "Pork x1"],
-      total: "$56.00",
-    },
-    {
-      id: "#756065",
-      name: "Geovany Ledner",
-      address: "11332 Alta Radial, Lindenhurst, NY 11526",
-      items: ["Fish Burger x1", "Sprite x1", "Chicken Alfredo x1"],
-      total: "$26.00",
-    },
-  ];
+  // const orders = [
+  //   {
+  //     id: "#303822",
+  //     name: "Jayden Champlin",
+  //     address: "11844 Kassulke Corner, Brooklyn, NY 111",
+  //     items: ["Waldorf Salad x1", "Duck x1", "Pork x1"],
+  //     total: "$56.00",
+  //   },
+  //   {
+  //     id: "#756065",
+  //     name: "Geovany Ledner",
+  //     address: "11332 Alta Radial, Lindenhurst, NY 11526",
+  //     items: ["Fish Burger x1", "Sprite x1", "Chicken Alfredo x1"],
+  //     total: "$26.00",
+  //   },
+  // ];
 
-  const trendingProducts = [
-    { name: "Cannelloni", orders: 53, revenue: "$821.50", rank: 1 },
-    { name: "Cheesecake", orders: 51, revenue: "$408.00", rank: 2 },
-    { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
-  ];
+  // const trendingProducts = [
+  //   { name: "Cannelloni", orders: 53, revenue: "$821.50", rank: 1 },
+  //   { name: "Cheesecake", orders: 51, revenue: "$408.00", rank: 2 },
+  //   { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
+  // ];
 
   return (
     <div className="">
@@ -259,7 +259,7 @@ const Statistical = () => {
         </Col>
       </Row>
 
-      <Row>
+      {/* <Row>
         <Col span={8}>
           <Card
             title={
@@ -356,7 +356,7 @@ const Statistical = () => {
             ))}
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </div>
   );
 };

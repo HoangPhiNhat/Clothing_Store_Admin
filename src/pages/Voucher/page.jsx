@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   EditOutlined,
   PauseCircleOutlined,
@@ -20,7 +21,7 @@ import { Link } from "react-router-dom";
 import { formatMoney } from "../../systems/utils/formatMoney";
 import CreateVoucher from "./_components/CreateVoucher";
 import UpdateVoucher from "./_components/UpdateVoucher";
-import useVoucherMutation from "../../hooks/Voucher/useVoucherMutation";
+// import useVoucherMutation from "../../hooks/Voucher/useVoucherMutation";
 
 const Voucher = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -43,29 +44,28 @@ const Voucher = () => {
   } = useVoucherQuery("GET_ALL_VOUCHER", null);
   console.log(vouchers);
 
-  const { mutate: toggleVoucher, isPending } = useVoucherMutation({
-    action: "TOGGLE",
-    onSuccess: () => {
-      setToggleVoucherId(null);
-      messageApi.success("Chuyển trạng thái phiếu thành công.");
-    },
-    onError: (error) => {
-      setToggleVoucherId(null);
-      messageApi.error(
-        "Chuyển trạng thái phiếu thất bại. " + error?.response.data.message
-      );
-    },
-  });
+  // const { mutate: toggleVoucher, isPending } = useVoucherMutation({
+  //   action: "TOGGLE",
+  //   onSuccess: () => {
+  //     setToggleVoucherId(null);
+  //     messageApi.success("Chuyển trạng thái phiếu thành công.");
+  //   },
+  //   onError: (error) => {
+  //     setToggleVoucherId(null);
+  //     messageApi.error(
+  //       "Chuyển trạng thái phiếu thất bại. " + error?.response.data.message
+  //     );
+  //   },
+  // });
 
   const columns = [
     {
       title: "Mã phiếu",
       dataIndex: "voucher_code",
       key: "voucher_code",
-      sorter: true,
       width: "10%",
       render: (_, voucher) => (
-        <div className="text-slate-950 hover:underline">
+        <div className="text-slate-950 font-medium">
           {voucher.voucher_code}
         </div>
       ),
@@ -74,15 +74,13 @@ const Voucher = () => {
       title: "Tên phiếu",
       dataIndex: "name",
       key: "name",
-      sorter: true,
       width: "20%",
       render: (_, voucher) => (
-        <Link
-          to={`${voucher.id}/attributes`}
-          className="text-slate-950 hover:underline"
+        <div
+          className="text-slate-950 "
         >
           {voucher.name}
-        </Link>
+        </div>
       ),
     },
     {
@@ -95,7 +93,6 @@ const Voucher = () => {
         </span>
       ),
       dataIndex: "discount_value",
-      sorter: true,
     },
     // {
     //   title: "Loại giảm",
@@ -113,7 +110,6 @@ const Voucher = () => {
       dataIndex: "max_discount",
       width: "12%",
       key: "max_discount",
-      sorter: true,
       render: (_, voucher) =>
         voucher.discount_type === "percentage" ? (
           <div>{formatMoney(voucher.max_discount)} Vnđ</div>
@@ -126,8 +122,7 @@ const Voucher = () => {
       width: "12%",
       dataIndex: "min_order_value",
       key: "min_order_value",
-      sorter: true,
-      render: (voucher) => <div>{voucher}</div>,
+      render: (voucher) => <div>{formatMoney(voucher)} Vnđ</div>,
     },
     {
       title: "Số phiếu",
@@ -136,7 +131,6 @@ const Voucher = () => {
         <span className="font-normal ">{voucher.usage_limit}</span>
       ),
       dataIndex: "usage_limit",
-      sorter: true,
     },
     {
       title: "Trạng thái",
@@ -159,7 +153,6 @@ const Voucher = () => {
           </Tag>
         ),
       dataIndex: "status",
-      sorter: true,
     },
     {
       title: "Hành động",
@@ -174,14 +167,14 @@ const Voucher = () => {
             <EditOutlined />
           </Button>
 
-          <Popconfirm
+          {/* <Popconfirm
             title="Chuyển trạng thái phiếu"
             description="Bạn có muốn trạng thái phiếu này không?"
             okText={toggleVoucherId === voucher.id ? `Đang chuyển` : `Có`}
             cancelText="Không"
             onConfirm={() => {
               setToggleVoucherId(voucher.id);
-              toggleVoucher(voucher.id);
+              // toggleVoucher(voucher.id);
             }}
           >
             {voucher.status === "active" ? (
@@ -203,7 +196,7 @@ const Voucher = () => {
             ) : (
               ""
             )}
-          </Popconfirm>
+          </Popconfirm> */}
         </Space>
       ),
     },
@@ -291,7 +284,9 @@ const Voucher = () => {
           <h1 className="text-xl">Quản lý phiếu</h1>
         </div>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
-          <PlusCircleOutlined disabled={isPending} />
+          <PlusCircleOutlined 
+          // disabled={isPending} 
+          />
           Thêm
         </Button>
       </div>
