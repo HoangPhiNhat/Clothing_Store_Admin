@@ -37,7 +37,9 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const inputRef = useAutoFocus(open);
   // const [startDate, setStartDate] = useState(null);
-  const [showMaxDiscount, setShowMaxDiscount] = useState(voucher?.discount_type);
+  const [showMaxDiscount, setShowMaxDiscount] = useState(
+    voucher?.discount_type
+  );
 
   const { mutate: updateVoucher, isPending } = useVoucherMutation({
     action: "UPDATE",
@@ -129,7 +131,33 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
           }}
           disabled={isPending}
         >
-          <Form.Item label="Mã phiếu" name="voucher_code">
+          <Form.Item
+            label="Mã phiếu"
+            name="voucher_code"
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    // Không kiểm tra nếu không nhập
+                    return Promise.resolve();
+                  }
+                  if (value.length < 6) {
+                    return Promise.reject(
+                      new Error("Mã phiếu phải có ít nhất 6 ký tự!")
+                    );
+                  }
+                  if (!/^[A-Z0-9]+$/.test(value)) {
+                    return Promise.reject(
+                      new Error(
+                        "Mã phiếu chỉ được chứa các chữ cái viết hoa và số!"
+                      )
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
             <Input placeholder="Vui lòng nhập mã phiếu" />
           </Form.Item>
           <Form.Item
@@ -199,19 +227,15 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
                   validator(_, value) {
                     const discount_type = getFieldValue("discount_type");
                     const min_order_value = getFieldValue("min_order_value");
-                    if (!Number(value)) {
+                    if (Number(value) <= 0) {
+                      return Promise.reject("Vui lòng nhập giá lớn hơn 0");
+                    }
+                    if (!Number(value) && discount_type === "percentage") {
                       return Promise.reject("Vui lòng nhập giá giảm tối đa");
                     }
+
                     if (
-                      (Number(value) <= 0 || Number(value) >= 100) &&
-                      discount_type === "percentage"
-                    ) {
-                      return Promise.reject(
-                        "Giá giảm tối đa > 0% và nhỏ hơn 100%"
-                      );
-                    }
-                    if (
-                      Number(value) >= min_order_value &&
+                      Number(value) > min_order_value &&
                       discount_type === "fixed_amount"
                     ) {
                       return Promise.reject(

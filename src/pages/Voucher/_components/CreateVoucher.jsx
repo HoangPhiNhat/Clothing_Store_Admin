@@ -112,7 +112,33 @@ const CreateVoucher = ({ open, onCancel }) => {
           }}
           disabled={isPending}
         >
-          <Form.Item label="Mã phiếu" name="voucher_code">
+          <Form.Item
+            label="Mã phiếu"
+            name="voucher_code"
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    // Không kiểm tra nếu không nhập
+                    return Promise.resolve();
+                  }
+                  if (value.length < 6) {
+                    return Promise.reject(
+                      new Error("Mã phiếu phải có ít nhất 6 ký tự!")
+                    );
+                  }
+                  if (!/^[A-Z0-9]+$/.test(value)) {
+                    return Promise.reject(
+                      new Error(
+                        "Mã phiếu chỉ được chứa các chữ cái viết hoa và số!"
+                      )
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
             <Input placeholder="Vui lòng nhập mã phiếu" />
           </Form.Item>
           <Form.Item
@@ -152,6 +178,17 @@ const CreateVoucher = ({ open, onCancel }) => {
                   type: "number",
                   message: "Giá giảm lớn hơn 0",
                 },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const discount_type = getFieldValue("discount_type");
+                    if (discount_type === "percentage" && Number(value)>=100) {
+                      return Promise.reject(
+                        "Vui lòng giá giảm thấp hơn 100%"
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
               <InputNumber
@@ -251,10 +288,10 @@ const CreateVoucher = ({ open, onCancel }) => {
               {
                 validator: (_, value) => {
                   if (value && value.length === 2) return Promise.resolve();
-                  if(!value)
-                  return Promise.reject(
-                    new Error("Cần chọn đủ cả ngày bắt đầu và kết thúc")
-                  );
+                  if (!value)
+                    return Promise.reject(
+                      new Error("Cần chọn đủ cả ngày bắt đầu và kết thúc")
+                    );
                 },
               },
             ]}

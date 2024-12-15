@@ -46,6 +46,8 @@ import ShipperOrderDelivery from "../pages/Shipper/ShipperOrderDelivery";
 import ShipperOrderHistory from "../pages/Shipper/ShipperOrderHistory";
 import ShipperOrderPending from "../pages/Shipper/ShipperOrderPending";
 import Voucher from "../pages/Voucher/page";
+import User from "../pages/User/page";
+// import Banner from "../pages/Banner/page";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -70,6 +72,9 @@ const RouterComponent = () => {
           >
             {/* Index */}
             <Route index element={<Statistical />} />
+
+            {/* Statistical */}
+            <Route path="users" element={<User />} />
 
             {/* Statistical */}
             <Route path="statistical" element={<Statistical />} />
@@ -111,6 +116,9 @@ const RouterComponent = () => {
             {/* Courier */}
             <Route path="couriers" element={<Courier />} />
             <Route path="couriers/:id" element={<CourierProfile />} />
+
+            {/* Banner */}
+            {/* <Route path="banners" element={<Banner />} /> */}
 
             {/* Discount */}
             <Route path="discounts" element={<Discounts />} />
