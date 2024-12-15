@@ -17,6 +17,8 @@ const StatusOrderDelivery = ({ open, onCancel, status, deliveryId }) => {
       action: "DELIVERY_SUCCESS",
       onSuccess: () => {
         onCancel();
+        form.resetFields();
+        setImageUrl(null)
         messageApi.success("Hoàn thành đơn hàng thành công.");
       },
       onError: (error) => {

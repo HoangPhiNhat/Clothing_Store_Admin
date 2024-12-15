@@ -140,7 +140,7 @@ const LayoutAdmin = () => {
         </Link>
         <Menu
           theme="light"
-          mode="inline"
+          mode="vertical"
           selectedKeys={[location.pathname]}
           defaultOpenKeys={findOpenKeys(items)}
           items={items}
