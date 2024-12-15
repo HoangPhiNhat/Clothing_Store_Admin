@@ -54,6 +54,28 @@ export const confirmOder = async (id) => {
   }
 };
 
+export const returnOder = async (id) => {
+  try {
+    const response = await Author.put(`/orders/${id}/order-status`, {
+      order_status: "Trả hàng",
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deliveredOder = async (id) => {
+  try {
+    const response = await Author.put(`/orders/${id}/order-status`, {
+      order_status: "Đã nhận hàng",
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const rejectOder = async (id) => {
   try {
     const response = await Author.put(`/orders/${id}/order-status`, {

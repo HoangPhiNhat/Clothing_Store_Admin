@@ -3,6 +3,8 @@ import {
   assignOrderForShipper,
   confirmOder,
   rejectOder,
+  returnOder,
+  deliveredOder,
 } from "../../services/order";
 
 const useOrderMutation = ({ action, onSuccess, onError }) => {
@@ -15,6 +17,10 @@ const useOrderMutation = ({ action, onSuccess, onError }) => {
           return await confirmOder(order.id);
         case "REJECT":
           return await rejectOder(order.id);
+        case "RETURN":
+          return await returnOder(order.id);
+        case "DELIVERED":
+          return await deliveredOder(order.id);
         case "ASSIGN_ORDER_FOR_SHIPPER":
           return await assignOrderForShipper(order.shipperId, order.orderId);
         default:
