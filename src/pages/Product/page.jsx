@@ -92,7 +92,7 @@ const ProductManagePage = () => {
       key: "name",
       rowScope: "row",
       sorter: true,
-      width: "30%",
+      width: "25%",
       render: (_, product) => (
         <Link
           to={`${product.id}/attributes`}
@@ -117,14 +117,14 @@ const ProductManagePage = () => {
       dataIndex: "regular_price",
       key: "regular_price",
       sorter: true,
-      width: "10%",
+      width: "15%",
       render: (regular_price) => <div>{formatMoney(regular_price)}đ</div>,
     },
     {
       title: "Giá khuyến mãi",
       dataIndex: "reduced_price",
       key: "reduced_price",
-      width: "10%",
+      width: "15%",
       sorter: true,
       render: (reduced_price) => <div>{formatMoney(reduced_price)}đ</div>,
     },

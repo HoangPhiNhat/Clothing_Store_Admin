@@ -71,7 +71,7 @@ const Category = () => {
       title: "Tên danh mục",
       dataIndex: "name",
       key: "name",
-      width: "40%",
+      width: "30%",
       sorter: true,
     },
     {
