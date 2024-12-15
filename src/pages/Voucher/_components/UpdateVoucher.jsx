@@ -37,7 +37,9 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const inputRef = useAutoFocus(open);
   // const [startDate, setStartDate] = useState(null);
-  const [showMaxDiscount, setShowMaxDiscount] = useState(voucher?.discount_type);
+  const [showMaxDiscount, setShowMaxDiscount] = useState(
+    voucher?.discount_type
+  );
 
   const { mutate: updateVoucher, isPending } = useVoucherMutation({
     action: "UPDATE",
@@ -129,7 +131,31 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
           }}
           disabled={isPending}
         >
-          <Form.Item label="Mã phiếu" name="voucher_code">
+          <Form.Item
+            label="Mã phiếu"
+            name="voucher_code"
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    // Không kiểm tra nếu không nhập
+                    return Promise.resolve();
+                  }
+                  if (value.length < 6) {
+                    return Promise.reject(
+                      new Error("Mã phiếu phải có ít nhất 6 ký tự!")
+                    );
+                  }
+                  if (!/^[A-Z]+$/.test(value)) {
+                    return Promise.reject(
+                      new Error("Mã phiếu chỉ được chứa các chữ cái viết hoa!")
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
             <Input placeholder="Vui lòng nhập mã phiếu" />
           </Form.Item>
           <Form.Item

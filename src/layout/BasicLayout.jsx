@@ -9,6 +9,7 @@ import {
   TagsOutlined,
   TruckOutlined,
   UnorderedListOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -32,11 +33,11 @@ const LayoutAdmin = () => {
       icon: <PieChartOutlined />,
       label: <Link to="/admin/statistical">Thống kê</Link>,
     },
-    // {
-    //   key: "/admin/users",
-    //   icon: <UserOutlined />,
-    //   label: <Link to="/admin/users">Users</Link>,
-    // },
+    {
+      key: "/admin/users",
+      icon: <UserOutlined />,
+      label: <Link to="/admin/users">Tài khoản</Link>,
+    },
     {
       // label: "Danh mục",
       icon: <TagsOutlined />,

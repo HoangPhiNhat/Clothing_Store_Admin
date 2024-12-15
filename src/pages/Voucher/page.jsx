@@ -1,5 +1,4 @@
 import {
-  DeleteOutlined,
   EditOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,

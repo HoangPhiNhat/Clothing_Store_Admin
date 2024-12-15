@@ -46,6 +46,7 @@ import ShipperOrderDelivery from "../pages/Shipper/ShipperOrderDelivery";
 import ShipperOrderHistory from "../pages/Shipper/ShipperOrderHistory";
 import ShipperOrderPending from "../pages/Shipper/ShipperOrderPending";
 import Voucher from "../pages/Voucher/page";
+import User from "../pages/User/page";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("access") !== null;
@@ -70,6 +71,9 @@ const RouterComponent = () => {
           >
             {/* Index */}
             <Route index element={<Statistical />} />
+
+            {/* Statistical */}
+            <Route path="users" element={<User />} />
 
             {/* Statistical */}
             <Route path="statistical" element={<Statistical />} />
