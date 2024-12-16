@@ -1,5 +1,6 @@
 import { RedoOutlined, RollbackOutlined } from "@ant-design/icons";
 import {
+  Breadcrumb,
   Button,
   Input,
   message,
@@ -189,7 +190,17 @@ const TrashProduct = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm đã ẩn</h1>
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Danh sách sản phẩm ẩn</a>,
+          },
+        ]}
+      />
+      <h1 className="text-2xl font-medium mb-2">Quản lý sản phẩm đã ẩn</h1>
       {contextHolder}
       <div className="flex justify-between">
         <Input

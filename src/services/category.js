@@ -1,26 +1,24 @@
 /* eslint-disable no-useless-catch */
 import instance from "../configs/axios";
-import Author from "./baseApi/AuthorApi"
+import Author from "./baseApi/AuthorApi";
 import { PAGING } from "../systems/constants";
 const size = PAGING.SIZE;
 
 export const getAllCategoryForProduct = async () => {
   try {
-    let queryCategory = `/campaigns/category`;
+    let queryCategory = `/categories`;
     return await Author.get(queryCategory);
   } catch (error) {
-    console.log(error);
     throw error;
-    // window.location.href = "/admin/page500";
   }
 };
 
-export const getAllCategory = async (page) => {
+export const getAllCategory = async (page, size, sort) => {
   try {
-    console.log(123);
-    
-    let queryCategory = `/categories?sort=DESC&size=${size}`;
-    if (page) queryCategory += `&page=${page}`;
+    let queryCategory = `/categories?size=${size}&page=${page}`;
+    if (sort.sortField && sort.sortOrder)
+      queryCategory += `&sortField=${sort.sortField}&sort=${sort.sortOrder}`;
+
     return await instance.get(queryCategory);
   } catch (error) {
     throw error;
@@ -48,7 +46,6 @@ export const removeCategory = async (category) => {
 
 export const getCategoryById = async (category) => {
   try {
-    console.log(category);
     const response = await Author.get(`/categories/${category.id}`);
     return response;
   } catch (error) {

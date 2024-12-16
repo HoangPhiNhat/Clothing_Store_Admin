@@ -40,9 +40,10 @@ axiosClient.interceptors.response.use(
       }
     } else if (response && response.status === 403) {
       window.location.href = "/admin/page403";
-    } else if (response && response.status === 500) {
-      window.location.href = "/page500";
-    }
+    } 
+    // else if (response && response.status === 500) {
+    //   window.location.href = "/page500";
+    // }
 
     //Other error
     return Promise.reject(error);

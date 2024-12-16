@@ -32,6 +32,7 @@ const CreateDiscount = ({ open, onCancel }) => {
     action: "CREATE",
     onSuccess: () => {
       onCancel(false)
+      form.resetFields();
       messageApi.success("Thêm chiến dịch giảm giá thành công.");
     },
     onError: (error) => {

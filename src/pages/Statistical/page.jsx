@@ -1,83 +1,181 @@
-import { ClockCircleOutlined } from "@ant-design/icons";
-import { Card, Statistic, Select, Row, Col, Tag, Button } from "antd";
-import { Line, Column } from "@ant-design/charts";
+import { Column, Line } from "@ant-design/charts";
+import {
+  ClockCircleOutlined,
+  ShoppingOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { Breadcrumb, Card, Col, Radio, Row, Select} from "antd";
+import { useState } from "react";
+import { fetchDashboardData } from "../../services/dashboard";
+import { formatMoney } from "../../systems/utils/formatMoney";
 
 const { Option } = Select;
 
-// Fake data
-const fakeData = [
-  { day: "Tue", revenue: 1000, orders: 50, customers: 20 },
-  { day: "Wed", revenue: 800, orders: 45, customers: 22 },
-  { day: "Thu", revenue: 700, orders: 40, customers: 15 },
-  { day: "Fri", revenue: 700, orders: 38, customers: 18 },
-  { day: "Sat", revenue: 1100, orders: 50, customers: 30 },
-  { day: "Sun", revenue: 1200, orders: 55, customers: 25 },
-  { day: "Mon", revenue: 900, orders: 30, customers: 20 },
-];
-
-// Chart configurations
-const revenueConfig = {
-  data: fakeData,
-  xField: "day",
-  yField: "revenue",
-  smooth: true,
-  lineStyle: { stroke: "#3f8600", lineWidth: 5 },
-};
-
-const ordersConfig = {
-  data: fakeData,
-  xField: "day",
-  yField: "orders",
-  columnStyle: { fill: "#3f86f8" },
-};
-
-const customersConfig = {
-  data: fakeData,
-  xField: "day",
-  yField: "customers",
-  columnStyle: { fill: "#fa8c16" },
-};
-
-const TimelineData = [
-  { status: "Pending", id: "#303822", time: "6 hours ago", color: "orange" },
-  { status: "Delivered", id: "#474038", time: "6 hours ago", color: "green" },
-  { status: "On the way", id: "#357211", time: "6 hours ago", color: "blue" },
-  { status: "On the way", id: "#731863", time: "7 hours ago", color: "blue" },
-  { status: "Cancelled", id: "#142463", time: "11 hours ago", color: "red" },
-];
-
-const orders = [
-  {
-    id: "#303822",
-    name: "Jayden Champlin",
-    address: "11844 Kassulke Corner, Brooklyn, NY 111",
-    items: ["Waldorf Salad x1", "Duck x1", "Pork x1"],
-    total: "$56.00",
-  },
-  {
-    id: "#756065",
-    name: "Geovany Ledner",
-    address: "11332 Alta Radial, Lindenhurst, NY 11526",
-    items: ["Fish Burger x1", "Sprite x1", "Chicken Alfredo x1"],
-    total: "$26.00",
-  },
-];
-
-const trendingProducts = [
-  { name: "Cannelloni", orders: 53, revenue: "$821.50", rank: 1 },
-  { name: "Cheesecake", orders: 51, revenue: "$408.00", rank: 2 },
-  { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
-];
 const Statistical = () => {
+  const [timePeriod, setTimePeriod] = useState("week"); // 'week' hoặc 'month'
+  const [value, setValue] = useState(() => {
+    // Set default value to current month if timePeriod is "month"
+    return timePeriod === "month" ? new Date().getMonth() + 1 : "current";
+  });
+
+  // Gọi API với React Query
+  const { data } = useQuery({
+    queryKey: ["dashboard", timePeriod, value],
+    queryFn: () => fetchDashboardData(timePeriod, value),
+  });
+  console.log(data);
+
+  const handleSelectChange = (value) => {
+    if (value === "Tuần này") {
+      setTimePeriod("week");
+      setValue("current");
+    } else if (value === "Tuần trước") {
+      setTimePeriod("week");
+      setValue("last");
+    }
+  };
+  const revenueConfig = {
+    data: data?.statistics,
+    xField: "day",
+    yField: "revenue",
+    smooth: true,
+    lineStyle: { stroke: "#3f8600", lineWidth: 5 },
+  };
+
+  const ordersConfig = {
+    data: data?.statistics,
+    xField: "day",
+    yField: "orders",
+    smooth: true,
+    lineStyle: { stroke: "#3f8600", lineWidth: 4 },
+    columnStyle: { fill: "#3f86f8" },
+  };
+
+  const customersConfig = {
+    data: data?.statistics,
+    xField: "day",
+    yField: "customers",
+    lineStyle: { stroke: "#3f8600", lineWidth: 3 },
+    columnStyle: { fill: "#3f86f8" },
+  };
+
+  const handleTimePeriodChange = (e) => {
+    const newTimePeriod = e.target.value;
+    setTimePeriod(newTimePeriod);
+    if (newTimePeriod === "month") {
+      // Set the default value to the current month when timePeriod is month
+      setValue(new Date().getMonth() + 1);
+    } else {
+      setValue("current");
+    }
+  };
+  
+  const handleValueChange = (value) => {
+    setValue(value);
+  };
+
+  // const TimelineData = [
+  //   { status: "Pending", id: "#303822", time: "6 hours ago", color: "orange" },
+  //   {
+  //     status: "Delivered",
+  //     id: "#474038",
+  //     time: "6 hours ago",
+  //     color: "green",
+  //   },
+  //   {
+  //     status: "On the way",
+  //     id: "#357211",
+  //     time: "6 hours ago",
+  //     color: "blue",
+  //   },
+  //   {
+  //     status: "On the way",
+  //     id: "#731863",
+  //     time: "7 hours ago",
+  //     color: "blue",
+  //   },
+  //   { status: "Cancelled", id: "#142463", time: "11 hours ago", color: "red" },
+  // ];
+
+  // const orders = [
+  //   {
+  //     id: "#303822",
+  //     name: "Jayden Champlin",
+  //     address: "11844 Kassulke Corner, Brooklyn, NY 111",
+  //     items: ["Waldorf Salad x1", "Duck x1", "Pork x1"],
+  //     total: "$56.00",
+  //   },
+  //   {
+  //     id: "#756065",
+  //     name: "Geovany Ledner",
+  //     address: "11332 Alta Radial, Lindenhurst, NY 11526",
+  //     items: ["Fish Burger x1", "Sprite x1", "Chicken Alfredo x1"],
+  //     total: "$26.00",
+  //   },
+  // ];
+
+  // const trendingProducts = [
+  //   { name: "Cannelloni", orders: 53, revenue: "$821.50", rank: 1 },
+  //   { name: "Cheesecake", orders: 51, revenue: "$408.00", rank: 2 },
+  //   { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
+  // ];
+
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Overview</h2>
-        <Select defaultValue="Last Week" className="w-40">
-          <Option value="Last Week">Last Week</Option>
-          <Option value="This Week">This Week</Option>
-        </Select>
+    <div className="">
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Thống kê</a>,
+          },
+        ]}
+      />
+
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-xl font-semibold">Tổng quan</h2>
+        <div className="flex gap-5">
+          <label>
+            <Radio
+              value="week"
+              checked={timePeriod === "week"}
+              onChange={handleTimePeriodChange}
+            />
+            Tuần
+          </label>
+          <label>
+            <Radio
+              value="month"
+              checked={timePeriod === "month"}
+              onChange={handleTimePeriodChange}
+            />
+            Tháng
+          </label>
+        </div>
+      </div>
+
+      <div className="flex justify-end mb-4">
+        {timePeriod === "month" && (
+          <Select className="w-28" onChange={handleValueChange} value={value}>
+            {Array.from({ length: 12 }, (_, i) => (
+              <Option key={i + 1} value={i + 1}>
+                Tháng {i + 1}
+              </Option>
+            ))}
+          </Select>
+        )}
+        {timePeriod === "week" && (
+          <Select
+            defaultValue="Tuần này"
+            className="w-28"
+            onChange={handleSelectChange}
+          >
+            <Option value="Tuần trước">Tuần trước</Option>
+            <Option value="Tuần này">Tuần này</Option>
+          </Select>
+        )}
       </div>
 
       {/* Statistics */}
@@ -90,10 +188,18 @@ const Statistical = () => {
                 <span className="text-red-500">
                   <ClockCircleOutlined />
                 </span>
-                <span className="text-gray-500">Daily Revenue</span>
+                <span className="text-gray-500">Doanh thu</span>
               </div>
               <div>
-                <span style={{ color: "#3f8600", fontSize: "18px" }}>$80</span>
+                <span
+                  style={{
+                    color: "#7b7474",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                  }}
+                >
+                  {formatMoney(data?.total_revenue) || "0"} VNĐ
+                </span>
               </div>
             </div>
             <Line {...revenueConfig} height={300} />
@@ -103,11 +209,25 @@ const Statistical = () => {
         {/* Daily Orders */}
         <Col span={8}>
           <Card className="shadow-sm">
-            <Statistic
-              title="Daily Orders"
-              value={150}
-              valueStyle={{ color: "#3f86f8" }}
-            />
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2">
+                <span className="text-red-500">
+                  <ShoppingOutlined />
+                </span>
+                <span className="text-gray-500">Đơn hàng</span>
+              </div>
+              <div>
+                <span
+                  style={{
+                    color: "#7b7474",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                  }}
+                >
+                  {data?.total_orders || "0"}
+                </span>
+              </div>
+            </div>
             <Column {...ordersConfig} height={300} />
           </Card>
         </Col>
@@ -115,17 +235,31 @@ const Statistical = () => {
         {/* New Customers */}
         <Col span={8}>
           <Card className="shadow-sm">
-            <Statistic
-              title="New Customers"
-              value="11,000%"
-              valueStyle={{ color: "#fa8c16" }}
-            />
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2">
+                <span className="text-red-500">
+                  <UserOutlined />
+                </span>
+                <span className="">Khách hàng</span>
+              </div>
+              <div>
+                <span
+                  style={{
+                    color: "#7b7474",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                  }}
+                >
+                  {data?.total_customers || "0"}
+                </span>
+              </div>
+            </div>
             <Column {...customersConfig} height={300} />
           </Card>
         </Col>
       </Row>
 
-      <Row>
+      {/* <Row>
         <Col span={8}>
           <Card
             title={
@@ -222,7 +356,7 @@ const Statistical = () => {
             ))}
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </div>
   );
 };

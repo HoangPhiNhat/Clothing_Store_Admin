@@ -1,12 +1,13 @@
 /* eslint-disable no-useless-catch */
 import Author from "../services/baseApi/AuthorApi";
 
-export const getAllAttribute = async (productId, page , size) => {
+export const getAllAttribute = async (productId, page, size, sort) => {
   try {
-    const response = await Author.get(
-      `/products/${productId}/productAtts?page=${page}&size=${size}&sort=DESC`
-    );
-    return response.data;
+    let queryAttribute = `/products/${productId}/productAtts?size=${size}&page=${page}`;
+    if (sort.sortField && sort.sortOrder)
+      queryAttribute += `&sortField=${sort.sortField}&sort=${sort.sortOrder}`;
+
+     return await Author.get(queryAttribute);
   } catch (error) {
     console.log(error);
 

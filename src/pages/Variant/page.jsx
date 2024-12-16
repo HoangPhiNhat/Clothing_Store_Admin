@@ -3,7 +3,15 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Button, message, Popconfirm, Space, Spin, Table } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  message,
+  Popconfirm,
+  Space,
+  Spin,
+  Table,
+} from "antd";
 import { useState } from "react";
 import useColorMutation from "../../hooks/Color/useColorMutation";
 import useColorQuery from "../../hooks/Color/useColorQuery";
@@ -37,7 +45,7 @@ const Variant = () => {
     action: "DELETE",
     onSuccess: () => {
       messageApi.success("Xóa màu sắc thành công.");
-      setDeletingColorId(null)
+      setDeletingColorId(null);
     },
     onError: (error) => {
       message.error("Xóa màu sắc thất bại: " + error.response.data.message);
@@ -54,7 +62,6 @@ const Variant = () => {
     onError: (error) => {
       message.error("Xóa kích thước thất bại: " + error.response.data.message);
       setDeletingSizeId(null);
-
     },
   });
 
@@ -158,11 +165,7 @@ const Variant = () => {
               setDeletingSizeId(size.id);
             }}
           >
-            <Button
-              type="primary"
-              danger
-              loading={deletingSizeId === size.id}
-            >
+            <Button type="primary" danger loading={deletingSizeId === size.id}>
               <DeleteOutlined />
             </Button>
           </Popconfirm>
@@ -174,7 +177,17 @@ const Variant = () => {
   return (
     <>
       {contextHolder}
-      <h1 className="text-2xl font-medium mb-2">Biến thể</h1>
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Danh sách thuộc tính</a>,
+          },
+        ]}
+      />
+      <h1 className="text-2xl font-medium mb-2">Quản lý thuộc tính</h1>
       <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 ">
         {/* Bảng Color */}
         <div className="bg-white shadow-md rounded-lg p-4 h-fit">
@@ -189,6 +202,7 @@ const Variant = () => {
             <Spin className="flex justify-center h-fit" />
           ) : (
             <Table
+              size="small"
               dataSource={dataColors}
               columns={colorColumns}
               rowKey="id"
@@ -210,6 +224,7 @@ const Variant = () => {
             <Spin className="flex justify-center h-fit" />
           ) : (
             <Table
+              size="small"
               dataSource={dataSizes}
               columns={sizeColumns}
               rowKey="id"

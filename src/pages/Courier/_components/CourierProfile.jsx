@@ -141,21 +141,26 @@ const CourierProfile = () => {
       key: "status",
       align: "center",
       render: (_, shipment) => {
+        console.log("🚀 ~ CourierProfile ~ shipment:", shipment);
         switch (shipment.order_status) {
           case "Chờ xác nhận":
             return <Tag color="warning">Chờ xác nhận</Tag>;
           case "Đã xác nhận":
             return <Tag color="success">Đã xác nhận</Tag>;
           case "Chờ lấy hàng":
-            return <Tag color="success">Chờ lấy hàng</Tag>;
+            return <Tag color="blue">Chờ lấy hàng</Tag>;
           case "Đang giao":
-            return <Tag color="success">Đang giao hàng</Tag>;
+            return <Tag color="blue">Đang giao hàng</Tag>;
           case "Đã giao":
             return <Tag color="success">Đã giao hàng</Tag>;
           case "Trả hàng":
-            return <Tag color="success">Trả hàng</Tag>;
+            return <Tag color="red">Trả hàng</Tag>;
           case "Đã huỷ":
-            return <Tag color="success">Đã huỷ bởi admin</Tag>;
+            return <Tag color="red">Đã huỷ bởi admin</Tag>;
+          case "Đã nhận hàng":
+            return <Tag color="success">Đã nhận hàng</Tag>;
+          case "Chưa nhận hàng":
+            return <Tag color="red">Chưa nhận hàng</Tag>;
         }
       },
     },
@@ -202,13 +207,13 @@ const CourierProfile = () => {
             <div className="relative">
               <Avatar
                 size={120}
-                src={courier?.data?.user.avatar || null}
+                src={courier?.data?.user.avatar || "/avatar.png"}
                 className="mb-4"
               ></Avatar>
             </div>
 
             <div className="mt-6 w-full">
-              <Row gutter={24}>
+              <Row align="center" gutter={24}>
                 <Col span={8}>
                   <label>Trạng thái</label>
                 </Col>
@@ -361,7 +366,7 @@ const CourierProfile = () => {
                   type="primary"
                   danger={!statusCourier}
                 >
-                  {statusCourier ? "Mở khoá tài khoản" : "Khoá tài khoản"}
+                  {statusCourier ? "Mở khoá" : "Khoá tài khoản"}
                 </Button>
               </Popconfirm>
 
@@ -395,6 +400,7 @@ const CourierProfile = () => {
             </div>
             <div>
               <Table
+                size="small"
                 dataSource={dataSource}
                 columns={columns}
                 pagination={false}

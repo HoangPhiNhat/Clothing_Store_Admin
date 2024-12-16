@@ -3,7 +3,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SnippetsOutlined,
-  TruckOutlined
+  TruckOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -81,7 +81,7 @@ const ShipperLayout = () => {
         </div>
         <Menu
           theme="light"
-          mode="inline"
+          mode="vertical"
           selectedKeys={[location.pathname]}
           defaultOpenKeys={findOpenKeys(items)}
           items={items}

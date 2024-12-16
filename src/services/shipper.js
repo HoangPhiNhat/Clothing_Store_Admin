@@ -43,10 +43,12 @@ export const updateStatusShipments = async (id, status) => {
   }
 };
 
-export const deliveryStatus = async (id, statusCode) => {
+export const deliveryStatus = async (id, statusCode, note, image) => {
   try {
     const res = await Author.put(`orders/${id}/order-status`, {
       order_status: statusCode,
+      note,
+      image,
     });
     return res;
   } catch (error) {

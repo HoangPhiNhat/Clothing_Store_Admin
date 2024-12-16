@@ -99,6 +99,7 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
     <>
       {contextHolder}
       <Modal
+        width="100%"
         title="Thêm đơn hàng cho tài xế"
         open={open}
         onCancel={isPending ? null : onCancel}
@@ -132,6 +133,7 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
             }}
           >
             <Table
+              size="small"
               className={styles.customTable}
               rowSelection={{
                 ...rowSelection,

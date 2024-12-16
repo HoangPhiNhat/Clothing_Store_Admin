@@ -4,6 +4,7 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import {
+  Breadcrumb,
   Button,
   Input,
   message,
@@ -12,45 +13,61 @@ import {
   Space,
   Table,
 } from "antd";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import Loading from "../../components/base/Loading/Loading";
+import useDebounce from "../../hooks/customHook/useDebounce";
 import useProductMutation from "../../hooks/Product/useProductMutation";
 import useProductQuery from "../../hooks/Product/useProductQuery";
 import { formatMoney } from "../../systems/utils/formatMoney";
-import Loading from "../../components/base/Loading/Loading";
-import useDebounce from "../../hooks/customHook/useDebounce";
 
 const ProductManagePage = () => {
-  const [pageProduct, setPageProduct] = useState(1);
   const [messageApi, contextHolder] = message.useMessage();
+  const [pageProduct, setPageProduct] = useState(1);
+  const [currentSize, setCurrentSize] = useState(10);
+
+  // Sorting and filter
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [searchKey, setSearhKey] = useState("");
   const debouncedSearchKey = useDebounce(searchKey, 1000);
+
   const { data: products, isLoading } = useProductQuery(
     "GET_ALL_PRODUCT",
     null,
     pageProduct,
-    debouncedSearchKey
+    debouncedSearchKey,
+    currentSize,
+    sortField,
+    sortOrder
   );
+  console.log(products);
 
-  const navigate = useNavigate();
   const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
     onSuccess: (data) => {
+      setDeletingProductId(null);
       messageApi.success(data.message);
-      console.log("Deleted attribute:", data);
     },
-    onError: (error) =>
-      message.error("Xóa sản phẩm thất bại: " + error.response.data.message),
+    onError: (error) => {
+      setDeletingProductId(null);
+      message.error("Xóa sản phẩm thất bại: " + error.response.data.message);
+    },
   });
 
-  useEffect(() => {
-    if (pageProduct) {
-      navigate(`?page=${pageProduct}`, { replace: true });
+  //Sort
+  const handleTableChange = (pagination, filters, sorter) => {
+    if (sorter) {
+      setPageProduct(1);
+      setSortField(sorter.field);
+      setSortOrder(sorter.order === "ascend" ? "ASC" : "DESC");
+    } else {
+      setSortField(null);
+      setSortOrder(null);
     }
-  }, [pageProduct]);
-
-  const dataSource = products?.data?.map((product) => ({
+  };
+  const dataSource = products?.data.data.map((product) => ({
     ...product,
     key: product.id,
   }));
@@ -73,7 +90,9 @@ const ProductManagePage = () => {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
-      width: "30%",
+      rowScope: "row",
+      sorter: true,
+      width: "25%",
       render: (_, product) => (
         <Link
           to={`${product.id}/attributes`}
@@ -85,22 +104,28 @@ const ProductManagePage = () => {
     },
     {
       title: "Danh mục",
-      key: "Category",
-      render: ({ category }) => <span>{category.name}</span>,
+      render: (_, product) => (
+        <span className="font-normal">{product.category.name}</span>
+      ),
+      dataIndex: "category_id",
+      rowScope: "row",
+      sorter: true,
       width: "15%",
     },
     {
       title: "Giá gốc",
       dataIndex: "regular_price",
       key: "regular_price",
-      width: "10%",
+      sorter: true,
+      width: "15%",
       render: (regular_price) => <div>{formatMoney(regular_price)}đ</div>,
     },
     {
       title: "Giá khuyến mãi",
       dataIndex: "reduced_price",
       key: "reduced_price",
-      width: "10%",
+      width: "15%",
+      sorter: true,
       render: (reduced_price) => <div>{formatMoney(reduced_price)}đ</div>,
     },
     {
@@ -191,7 +216,17 @@ const ProductManagePage = () => {
   return (
     <>
       {contextHolder}
-      <h1 className="text-2xl font-medium mb-2">Danh sách sản phẩm</h1>
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: "Danh sách sản phẩm",
+          },
+        ]}
+      />
+      <h1 className="text-2xl font-medium mb-2">Quản lý sản phẩm</h1>
       <div className="flex justify-between">
         <Input
           placeholder="Tìm kiếm theo tên và danh mục"
@@ -212,19 +247,23 @@ const ProductManagePage = () => {
       <Table
         loading={isLoading}
         columns={columns}
+        size="small"
         expandable={{ expandedRowRender }}
         dataSource={dataSource}
         pagination={false}
+        onChange={handleTableChange}
       />
+
       <Pagination
-        current={pageProduct}
-        onChange={(page) => {
-          setPageProduct(page);
-        }}
-        pageSize={5}
-        total={products?.total}
-        showSizeChanger={false}
+        className="mt-5"
         align="end"
+        showSizeChanger
+        current={pageProduct}
+        total={products?.data.total}
+        pageSize={currentSize}
+        onChange={(page) => setPageProduct(page)}
+        pageSizeOptions={["5", "10", "20", "50"]}
+        onShowSizeChange={(_, size) => setCurrentSize(size)}
       />
     </>
   );

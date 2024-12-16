@@ -6,6 +6,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import {
+  Breadcrumb,
   Button,
   Form,
   InputNumber,
@@ -29,6 +30,7 @@ import {
 import { useForm } from "antd/es/form/Form.js";
 import Loading from "../../components/base/Loading/Loading.jsx";
 import { formatMoney } from "../../systems/utils/formatMoney.js";
+import useProductQuery from "../../hooks/Product/useProductQuery.jsx";
 
 const ProductAttribute = () => {
   const [isPending, setIsPending] = useState(false);
@@ -41,10 +43,25 @@ const ProductAttribute = () => {
   const [fileList, setFileList] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  // Sorting and filter
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
   const [hasChanged, setHasChanged] = useState(false);
   const { id } = useParams();
-  const { data: attributes, isLoading } = useAttributeQuery(id, page, pageSize);
-  console.log(attributes);
+  const { data: attributes, isLoading } = useAttributeQuery(
+    id,
+    page,
+    pageSize,
+    sortField,
+    sortOrder
+  );
+  const { data: product } = useProductQuery(
+    "GET_PRODUCT_BY_ID",
+    id,
+    null,
+    null
+  );
 
   const { mutate: deleteAttribute } = useAttributeMutation({
     action: "DELETE",
@@ -55,8 +72,10 @@ const ProductAttribute = () => {
         setPublicId(null);
       }
     },
-    onError: (error) =>
-      message.error("Xóa thuộc tính thất bại: " + error.response.data.message),
+    onError: (error) => {
+      setDeletingAttributeId(null);
+      message.error("Xóa thuộc tính thất bại: " + error.response.data.message);
+    },
   });
 
   const { mutate: updateAttribute, isPending: updatePending } =
@@ -164,10 +183,12 @@ const ProductAttribute = () => {
       sorter: (a, b) => a.index - b.index,
     },
     {
-      title: "Mã sản phẩm",
+      title: "Mã thuộc tính",
       dataIndex: "sku",
       key: "sku",
       width: "10%",
+      rowScope: "row",
+      sorter: true,
     },
     {
       title: "Ảnh",
@@ -227,23 +248,32 @@ const ProductAttribute = () => {
     },
     {
       title: "Màu sắc",
-      dataIndex: "color_name",
+      dataIndex: "color_id",
       key: "color",
       width: "15%",
-      render: (color) => <>{color}</>,
+      rowScope: "row",
+      sorter: true,
+      render: (_, attribute) => (
+        <div className="font-normal">{attribute.color.name}</div>
+      ),
     },
     {
       title: "Kích thước",
-      dataIndex: "size_name",
-      key: "size",
+      dataIndex: "size_id",
       width: "15%",
-      render: (size) => <>{size}</>,
+      rowScope: "row",
+      sorter: true,
+      render: (_, attribute) => (
+        <div className="font-normal">{attribute.size.name}</div>
+      ),
     },
     {
       title: "Giá bán",
       dataIndex: "regular_price",
       key: "regular_price",
       width: "10%",
+      rowScope: "row",
+      sorter: true,
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
           <Form.Item
@@ -256,13 +286,17 @@ const ProductAttribute = () => {
             <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
-          <div>{formatMoney(attribute.regular_price)}đ</div>
+          <div className="font-normal">
+            {formatMoney(attribute.regular_price)}đ
+          </div>
         ),
     },
     {
       title: "Giá khuyến mãi",
       dataIndex: "reduced_price",
       key: "reduced_price",
+      rowScope: "row",
+      sorter: true,
       width: "10%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
@@ -291,13 +325,17 @@ const ProductAttribute = () => {
             <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
-          <div>{formatMoney(attribute.reduced_price)}đ</div>
+          <div className="font-normal">
+            {formatMoney(attribute.reduced_price)}đ
+          </div>
         ),
     },
     {
       title: "Số lượng",
       dataIndex: "stock_quantity",
       key: "stock_quantity",
+      rowScope: "row",
+      sorter: true,
       width: "10%",
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
@@ -311,7 +349,7 @@ const ProductAttribute = () => {
             <InputNumber className="w-full" onChange={handleFieldChange} />
           </Form.Item>
         ) : (
-          <span>{attribute.stock_quantity}</span>
+          <span className="font-normal">{attribute.stock_quantity}</span>
         ),
     },
     {
@@ -365,10 +403,10 @@ const ProductAttribute = () => {
                   setPublicId(extractPublicId(attribute.image));
                 }
               }}
-              title="Delete attribute"
-              description="Do you want to delete this attribute?"
-              okText="Yes"
-              cancelText="No"
+              title="Xoá biến thể"
+              description="Bạn có muốn xoá biến thể này không ?"
+              okText="Có"
+              cancelText="Không"
             >
               <Button
                 disabled={updatePending | isPending}
@@ -384,7 +422,20 @@ const ProductAttribute = () => {
     },
   ];
 
-  const dataSource = attributes?.map((attribute, index) => ({
+  //Sort
+  const handleTableChange = (pagination, filters, sorter) => {
+    console.log(sorter);
+
+    if (sorter) {
+      setPage(1);
+      setSortField(sorter.field);
+      setSortOrder(sorter.order === "ascend" ? "ASC" : "DESC");
+    } else {
+      setSortField(null);
+      setSortOrder(null);
+    }
+  };
+  const dataSource = attributes?.data?.data.map((attribute, index) => ({
     ...attribute,
     key: index + 1,
     index: index + 1,
@@ -395,26 +446,45 @@ const ProductAttribute = () => {
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-medium">Các biến thể của sản phẩm</h1>
+        <div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Trang chủ",
+              },
+              {
+                title: <a href="/admin/products">Danh sách thuộc tính</a>,
+              },
+              {
+                title: `${product?.name}`,
+              },
+            ]}
+          />
+          <h1 className="text-2xl font-medium">Các thuộc tính của sản phẩm</h1>
+        </div>
         <CreateAttribute />
       </div>
       <Form form={form} onFinish={save}>
         <Table
+        size="small"
           columns={columns}
           dataSource={dataSource}
           pagination={false}
           rowClassName="custom-row-height"
+          onChange={handleTableChange}
         />
       </Form>
       <Pagination
         showSizeChanger
+        className="mt-5"
         current={page}
         pageSize={pageSize}
         onChange={(page, pageSize) => {
           setPage(page);
           setPageSize(pageSize);
         }}
-        total={attributes?.total}
+        pageSizeOptions={["10", "20", "50"]}
+        total={attributes?.data.total}
         align="end"
       />
     </>

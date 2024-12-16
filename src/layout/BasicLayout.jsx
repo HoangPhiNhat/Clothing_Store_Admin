@@ -1,13 +1,14 @@
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PercentageOutlined,
   PieChartOutlined,
+  ProfileOutlined,
   ShoppingCartOutlined,
+  TagOutlined,
   TagsOutlined,
   TruckOutlined,
   UnorderedListOutlined,
-  UserOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -34,39 +35,44 @@ const LayoutAdmin = () => {
     {
       key: "/admin/users",
       icon: <UserOutlined />,
-      label: <Link to="/admin/users">Users</Link>,
+      label: <Link to="/admin/users">Tài khoản</Link>,
     },
     {
+      // label: "Danh mục",
       icon: <TagsOutlined />,
-      label: "Danh mục",
-      children: [
-        {
-          key: "/admin/categories",
-          label: <Link to="/admin/categories">Danh sách</Link>,
-        },
-        {
-          key: "/admin/categories/trash",
-          label: <Link to="/admin/categories/trash">Danh sách đã ẩn</Link>,
-        },
-      ],
+      key: "/admin/categories",
+      label: <Link to="/admin/categories">Danh mục</Link>,
+      // children: [
+      //   {
+      //     key: "/admin/categories",
+      //     label: <Link to="/admin/categories">Danh sách</Link>,
+      //   },
+      //   {
+      //     key: "/admin/categories/trash",
+      //     label: <Link to="/admin/categories/trash">Danh sách đã ẩn</Link>,
+      //   },
+      // ],
     },
     {
+      // label: "Sản phẩm",
       icon: <UnorderedListOutlined />,
-      label: "Sản phẩm",
-      children: [
-        {
-          key: "/admin/products",
-          label: <Link to="/admin/products">Danh sách</Link>,
-        },
-        {
-          key: "/admin/products/trash",
-          label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
-        },
-        {
-          key: "/admin/products/variant",
-          label: <Link to="/admin/products/variant">Biến thể</Link>,
-        },
-      ],
+      key: "/admin/products",
+      label: <Link to="/admin/products">Danh sách sản phẩm</Link>,
+      // children: [
+      //   {
+      //     key: "/admin/products",
+      //     label: <Link to="/admin/products">Danh sách</Link>,
+      //   },
+      //   {
+      //     key: "/admin/products/trash",
+      //     label: <Link to="/admin/products/trash">Danh sách đã ẩn</Link>,
+      //   },
+      // ],
+    },
+    {
+      icon: <ProfileOutlined />,
+      key: "/admin/products/variant",
+      label: <Link to="/admin/products/variant">Quản lí thuộc tính</Link>,
     },
     {
       key: "/admin/orders",
@@ -78,11 +84,21 @@ const LayoutAdmin = () => {
       icon: <TruckOutlined />,
       label: <Link to="/admin/couriers">Tài xế</Link>,
     },
+    // {
+    //   key: "/admin/discounts",
+    //   icon: <PercentageOutlined />,
+    //   label: <Link to={"/admin/discounts"}>Chiến dịch giảm giá</Link>,
+    // },
     {
-      key: "/admin/discounts",
-      icon: <PercentageOutlined />,
-      label: <Link to={"/admin/discounts"}>Giảm giá</Link>,
+      key: "/admin/vouchers",
+      icon: <TagOutlined />,
+      label: <Link to={"/admin/vouchers"}>Mã giảm giá</Link>,
     },
+    // {
+    //   key: "/admin/banners",
+    //   icon: <VideoCameraOutlined />,
+    //   label: <Link to={"/admin/banners"}>Quảng cáo</Link>,
+    // },
   ];
 
   const handleBreakpoint = (broken) => {
@@ -122,12 +138,14 @@ const LayoutAdmin = () => {
         onBreakpoint={handleBreakpoint}
         theme="light"
       >
-        <div className="px-5 py-3">
-          <img src={logo} alt="" />
-        </div>
+        <Link to={`/admin`}>
+          <div className="px-5 py-3">
+            <img src={logo} alt="" />
+          </div>
+        </Link>
         <Menu
           theme="light"
-          mode="inline"
+          mode="vertical"
           selectedKeys={[location.pathname]}
           defaultOpenKeys={findOpenKeys(items)}
           items={items}

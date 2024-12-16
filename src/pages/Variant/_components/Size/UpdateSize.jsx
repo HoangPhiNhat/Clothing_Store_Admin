@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect } from "react";
 import { Button, Modal, Form, Input, message } from "antd";
@@ -12,11 +13,11 @@ const UpdateSize = ({ open, onCancel, size }) => {
   const { mutate: updateSize, isPending } = useSizeMutation({
     action: "UPDATE",
     onSuccess: () => {
-      messageApi.success("Cập nhật kích thước thành công");
+      message.success("Cập nhật kích thước thành công");
       onCancel();
     },
     onError: (error) => {
-      messageApi.error(`Lỗi khi cập nhật: ${error.response.data.message}`);
+      message.error(`Lỗi khi cập nhật: ${error.response.data.message}`);
     },
   });
 
@@ -32,7 +33,7 @@ const UpdateSize = ({ open, onCancel, size }) => {
     if (size && size.id) {
       updateSize({ ...values, id: size.id });
     } else {
-      messageApi.error("Không tìm thấy ID của kích thước");
+      message.error("Không tìm thấy ID của kích thước");
     }
   };
 

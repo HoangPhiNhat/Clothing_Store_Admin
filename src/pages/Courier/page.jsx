@@ -3,7 +3,7 @@ import {
   PlusCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Breadcrumb, Button, Table } from "antd";
+import { Avatar, Breadcrumb, Button, Table, Tooltip } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Loading from "../../components/base/Loading/Loading";
@@ -63,11 +63,13 @@ const Courier = () => {
       key: "action",
       align: "center",
       render: (_, couriers) => (
-        <Link to={`${couriers.id}`}>
-          <Button>
-            <EyeOutlined />
-          </Button>
-        </Link>
+        <Tooltip title="Thông tin tài xế.">
+          <Link to={`${couriers.id}`}>
+            <Button>
+              <EyeOutlined />
+            </Button>
+          </Link>
+        </Tooltip>
       ),
     },
   ];
@@ -97,6 +99,7 @@ const Courier = () => {
       <Table
         dataSource={dataSource}
         columns={columns}
+        size="small"
         className="text-center"
         pagination={false}
       />

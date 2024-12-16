@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 
 import {
+  Breadcrumb,
   Button,
   Col,
   Form,
@@ -44,7 +45,6 @@ const CreateProduct = () => {
   const { data: categories, isLoading } = useCategoryQuery(
     "GET_ALL_CATEGORY_FOR_PRODUCT"
   );
-console.log(categories);
 
   const { data: sizes } = useSizeQuery("GET_ALL_SIZE");
   const { data: colors } = useColorQuery("GET_ALL_COLOR");
@@ -117,6 +117,12 @@ console.log(categories);
       render: (_, field) => (
         <Form.Item
           name={[field.name, "image"]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng tải lên hình ảnh thuộc tính",
+            },
+          ]}
         >
           <Upload
             maxCount={1}
@@ -155,7 +161,7 @@ console.log(categories);
     {
       title: "Màu sắc",
       dataIndex: "color",
-      width: 200,
+      width: 150,
       render: (_, field) => (
         <Form.Item
           name={[field.name, "color_id"]}
@@ -190,7 +196,7 @@ console.log(categories);
     {
       title: "Kích thước",
       dataIndex: "size",
-      width: 200,
+      width: 150,
       render: (_, field) => (
         <Form.Item
           name={[field.name, "size_id"]}
@@ -215,8 +221,8 @@ console.log(categories);
         <Form.Item
           name={[field.name, "regular_price"]}
           rules={[
-            { required: true, message: "Vui lòng nhập giá" },
-            { min: 0, type: "number", message: "Giá lớn hơn 0" },
+            { required: true, message: "Vui lòng nhập giá bán" },
+            { min: 0, type: "number", message: "Giá bán lớn hơn 0" },
           ]}
         >
           <InputNumber type="number" placeholder="Giá bán" className="w-full" />
@@ -235,20 +241,24 @@ console.log(categories);
               validator(_, value) {
                 const regularPrice = getFieldValue("regular_price");
                 if (!regularPrice) {
-                  return Promise.reject("Vui lòng nhập giá gốc trước");
+                  return Promise.reject("Vui lòng nhập giá bán trước");
                 }
                 if (Number(value) < 0) {
                   return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
                 }
                 if (Number(value) && regularPrice <= Number(value)) {
-                  return Promise.reject("Giá khuyến mãi phải thấp hơn giá gốc");
+                  return Promise.reject("Giá khuyến mãi phải thấp hơn giá bán");
                 }
                 return Promise.resolve();
               },
             }),
           ]}
         >
-          <InputNumber type="number" placeholder="Giá Khuyến mãi" className="w-full" />
+          <InputNumber
+            type="number"
+            placeholder="Giá Khuyến mãi"
+            className="w-full"
+          />
         </Form.Item>
       ),
     },
@@ -300,6 +310,16 @@ console.log(categories);
   return (
     <div className="container mx-auto">
       {contextHolder}
+      <Breadcrumb
+        items={[
+          {
+            title: "Trang chủ",
+          },
+          {
+            title: <a href="">Thêm sản phẩm</a>,
+          },
+        ]}
+      />
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-medium">Tạo sản phẩm mới</h1>
         <Link to="/admin/products">
@@ -422,7 +442,7 @@ console.log(categories);
                   </Form.Item>
                 </Col>
               </Row>
-              <Form.Item
+              {/* <Form.Item
                 name="short_description"
                 label="Mô tả ngắn"
                 rules={[
@@ -434,8 +454,8 @@ console.log(categories);
                   maxLength={200}
                   placeholder="Nhập giá mô tả ngắn"
                 />
-              </Form.Item>
-              <Form.Item
+              </Form.Item> */}
+              {/* <Form.Item
                 name="long_description"
                 label="Mô tả chi tiết"
                 rules={[
@@ -447,7 +467,7 @@ console.log(categories);
                   maxLength={200}
                   placeholder="Nhập giá mô tả chi tiết"
                 />
-              </Form.Item>
+              </Form.Item> */}
             </Col>
             <Col span={6}>
               <Form.Item

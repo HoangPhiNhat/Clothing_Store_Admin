@@ -1,6 +1,6 @@
-import { Breadcrumb, Pagination, Steps, Table } from "antd";
+import { Breadcrumb, Pagination, Steps, Table, Tag } from "antd";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Loading from "../../../components/base/Loading/Loading";
 import useOrderQuery from "../../../hooks/Order/useOrderQuery";
 import { formatMoney } from "../../../systems/utils/formatMoney";
@@ -17,6 +17,9 @@ const OrderDetail = () => {
     null,
     false
   );
+
+  //Shipper detail
+  const shipperDetail = order?.data.delivery_person;
 
   const { data: products, isLoading: isLoadingProduct } = useOrderQuery(
     "GET_PRODUCTS_FOR_ORDER_ID",
@@ -36,10 +39,10 @@ const OrderDetail = () => {
       dataIndex: "thumbnail",
       key: "thumbnail",
       width: "20%",
-      render: (thumbnail, product) => (
+      render: (_, product) => (
         <img
           className="w-24 h-24 object-cover"
-          src={thumbnail}
+          src={product.thumbnail}
           alt={product.name}
         />
       ),
@@ -88,10 +91,11 @@ const OrderDetail = () => {
 
   if (isLoadingOrder) return <Loading />;
 
-  const statusOrderConfirm = order?.data.order_status_histories[0];
-  const statusDeliveryPending = order?.data.order_status_histories[1];
-  const statusDelivery = order?.data.order_status_histories[2];
-  const statusDeliveryCompletion = order?.data.order_status_histories[3];
+  const statusOrderConfirm = order?.data.order_status_histories[1];
+  const statusDeliveryPending = order?.data.order_status_histories[2];
+  const statusDelivery = order?.data.order_status_histories[3];
+  const statusDeliveryCompletion = order?.data.order_status_histories[4];
+  const userConfirm = order?.data.order_status_histories[5];
   let current = 0;
   let status = "process";
 
@@ -124,8 +128,69 @@ const OrderDetail = () => {
     }
   }
 
-  //Shipper detail
-  const shipperDetail = order?.data.delivery_person;
+  if (userConfirm && status != "error") {
+    if (userConfirm.status == "Đã nhận hàng") {
+      current = 5;
+      status = "finish";
+    } else {
+      current = 5;
+      status = "error";
+    }
+  }
+
+  const steps = [
+    {
+      title: statusOrderConfirm?.status || "Chờ xác nhận",
+      description: statusOrderConfirm
+        ? `${statusOrderConfirm.created_at} ${
+            statusOrderConfirm.status === "Đã Huỷ"
+              ? `- ${statusOrderConfirm.note}`
+              : ""
+          }`
+        : "",
+    },
+    {
+      title: "Chọn tài xế",
+      disabled: current !== 1,
+      onClick: () => current === 1 && setModalCreateOpen(true),
+      description: shipperDetail ? (
+        <Link to={`/admin/couriers/${shipperDetail.id}`}>
+          <h4>
+            {shipperDetail.user.name} - {shipperDetail.user.phone}
+          </h4>
+        </Link>
+      ) : null,
+    },
+    {
+      title: statusDelivery ? "Đã lấy hàng" : "Chờ lấy hàng",
+      description: statusDeliveryPending?.created_at || "",
+    },
+    {
+      title: statusDelivery ? "Đang giao hàng" : "Giao hàng",
+      description: statusDelivery?.created_at || "",
+    },
+    {
+      title: statusDeliveryCompletion?.status || "Trạng thái giao hàng",
+      description: statusDeliveryCompletion && (
+        <>
+          {statusDeliveryCompletion.created_at}{" "}
+          {statusDeliveryCompletion.status === "Trả hàng" ? (
+            statusDeliveryCompletion.note
+          ) : (
+            <img
+              className="h-16 w-16"
+              src={statusDeliveryCompletion.image}
+              alt={statusDeliveryCompletion.status}
+            />
+          )}
+        </>
+      ),
+    },
+    {
+      title: userConfirm?.status || "Người dùng xác nhận",
+      description: userConfirm?.created_at || "",
+    },
+  ];
 
   return (
     <>
@@ -147,50 +212,11 @@ const OrderDetail = () => {
 
       {/* Step */}
       <Steps
+        size="small"
         responsive
         current={current}
         status={status}
-        items={[
-          {
-            title: "Chờ xác nhận",
-            description: statusOrderConfirm
-              ? `${statusOrderConfirm.status} ${statusOrderConfirm.created_at}`
-              : "",
-          },
-          {
-            title: "Chọn tài xế",
-            disabled: current !== 1,
-            onClick: () => {
-              if (current === 1) {
-                setModalCreateOpen(true);
-              }
-            },
-            description: (
-              <>
-                {shipperDetail && (
-                  <h4>
-                    {shipperDetail.user.name} - {shipperDetail.user.phone}
-                  </h4>
-                )}
-              </>
-            ),
-          },
-          {
-            title: "Chờ lấy hàng",
-            description:
-              statusDeliveryPending && statusDeliveryPending.created_at,
-          },
-          {
-            title: "Đang giao hàng",
-            description: statusDelivery ? statusDelivery.created_at : "",
-          },
-          {
-            title: "Hoàn thành giao hàng",
-            description:
-              statusDeliveryCompletion &&
-              `${statusDeliveryCompletion.status} - ${statusDeliveryCompletion.created_at}`,
-          },
-        ]}
+        items={steps}
       />
 
       {/* Info */}
@@ -205,6 +231,16 @@ const OrderDetail = () => {
           )}
           <h3>Địa chỉ: {order?.data.order_address}</h3>
           <h3>Phương thức thanh toán: {order?.data.payment_method}</h3>
+          <h3>
+            Trạng thái thanh toán:{" "}
+            {order?.data.payment_status === "Thanh toán thất bại" ? (
+              <Tag color="#f50">{order?.data.payment_status}</Tag>
+            ) : order?.data.payment_status === "Chưa thanh toán" ? (
+              <Tag color="gold">{order?.data.payment_status}</Tag>
+            ) : (
+              <Tag color="#87d068">{order?.data.payment_status}</Tag>
+            )}
+          </h3>
         </div>
       </div>
 

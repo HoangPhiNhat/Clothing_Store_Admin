@@ -6,6 +6,7 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import {
+  Breadcrumb,
   Button,
   message,
   Pagination,
@@ -13,6 +14,7 @@ import {
   Space,
   Table,
   Tag,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -139,11 +141,13 @@ const Discounts = () => {
             </Popconfirm>
           </Space>
         ) : (
-          <Link to={`${discount.id}`}>
-            <Button>
-              <EyeFilled />
-            </Button>
-          </Link>
+          <Tooltip title="Chi tiết chiến dịch.">
+            <Link to={`${discount.id}`}>
+              <Button>
+                <EyeFilled />
+              </Button>
+            </Link>
+          </Tooltip>
         ),
     },
   ];
@@ -154,7 +158,19 @@ const Discounts = () => {
     <>
       {contextHolder}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl">Quản lý chiến dịch giảm giá</h1>
+        <div>
+          <Breadcrumb
+            items={[
+              {
+                title: "Trang chủ",
+              },
+              {
+                title: <a href="">Danh sách chiến dịch</a>,
+              },
+            ]}
+          />
+          <h1 className="text-xl">Quản lý chiến dịch giảm giá</h1>
+        </div>
         <Button
           type="primary"
           disabled={isPending}
@@ -164,7 +180,12 @@ const Discounts = () => {
           Tạo chiến dịch
         </Button>
       </div>
-      <Table dataSource={dataSource} columns={columns} pagination={false} />
+      <Table
+        size="small"
+        dataSource={dataSource}
+        columns={columns}
+        pagination={false}
+      />
       <Pagination
         current={page}
         disabled={isPending}

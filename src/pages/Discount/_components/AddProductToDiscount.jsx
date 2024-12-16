@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Button, Form, Input, message, Pagination, Select, Table } from "antd";
+import { Breadcrumb, Button, Form, Input, message, Pagination, Select, Table } from "antd";
 import { useEffect, useState } from "react";
 import Loading from "../../../components/base/Loading/Loading";
 import useCategoryQuery from "../../../hooks/Category/useCategoryQuery";
@@ -113,6 +113,16 @@ const AddProductToDiscount = () => {
     <>
       {contextHolder}
       <div>
+        <Breadcrumb
+          items={[
+            {
+              title: "Trang chủ",
+            },
+            {
+              title: <a href="">Thêm sản phẩm vào chiến dịch</a>,
+            },
+          ]}
+        />
         <h2 className="text-2xl font-medium">Lọc sản phẩm</h2>
         <div>
           <Form name="basic" layout="vertical" onFinish={onFinish}>

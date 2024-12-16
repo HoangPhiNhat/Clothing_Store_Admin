@@ -7,19 +7,27 @@ import {
 } from "../../services/order";
 import { getAllShipperStatusOnline } from "../../services/shipper";
 
-const useOrderQuery = (action, id, page, isOrder) => {
+const useOrderQuery = (
+  action,
+  id,
+  page,
+  isOrder,
+  size,
+  sortField,
+  sortOrder
+) => {
   const queryKey = isOrder
     ? ["PRODUCT_KEY", page]
     : id
     ? ["ORDER_KEY", id]
-    : ["ORDER_KEY", page];
+    : ["ORDER_KEY", page, size, sortField, sortOrder];
 
   const { data, ...rest } = useQuery({
     queryKey,
     queryFn: async () => {
       switch (action) {
         case "GET_ALL_ORDER":
-          return await getAllOrder(page);
+          return await getAllOrder(page, size, { sortField, sortOrder });
         case "GET_ORDER_BY_ID":
           return await getOrderById(id);
         case "GET_PRODUCTS_FOR_ORDER_ID":
