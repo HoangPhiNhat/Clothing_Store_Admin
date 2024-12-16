@@ -154,6 +154,7 @@ const User = () => {
       </div>
 
       <Table
+        size="small"
         columns={columns}
         dataSource={dataSource}
         loading={isLoading}

@@ -395,6 +395,7 @@ const Order = () => {
         dataSource={dataSource}
         pagination={false}
         onChange={handleTableChange}
+        size="small"
       />
 
       {/* Pagination */}

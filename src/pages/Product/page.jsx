@@ -247,6 +247,7 @@ const ProductManagePage = () => {
       <Table
         loading={isLoading}
         columns={columns}
+        size="small"
         expandable={{ expandedRowRender }}
         dataSource={dataSource}
         pagination={false}

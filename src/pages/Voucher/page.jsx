@@ -65,9 +65,7 @@ const Voucher = () => {
       key: "voucher_code",
       width: "10%",
       render: (_, voucher) => (
-        <div className="text-slate-950 font-medium">
-          {voucher.voucher_code}
-        </div>
+        <div className="text-slate-950 font-medium">{voucher.voucher_code}</div>
       ),
     },
     {
@@ -76,11 +74,7 @@ const Voucher = () => {
       key: "name",
       width: "20%",
       render: (_, voucher) => (
-        <div
-          className="text-slate-950 "
-        >
-          {voucher.name}
-        </div>
+        <div className="text-slate-950 ">{voucher.name}</div>
       ),
     },
     {
@@ -284,13 +278,14 @@ const Voucher = () => {
           <h1 className="text-xl">Quản lý phiếu</h1>
         </div>
         <Button type="primary" onClick={() => setModalCreateOpen(true)}>
-          <PlusCircleOutlined 
-          // disabled={isPending} 
+          <PlusCircleOutlined
+          // disabled={isPending}
           />
           Thêm
         </Button>
       </div>
       <Table
+        size="small"
         loading={isLoading}
         columns={columns}
         expandable={{ expandedRowRender }}

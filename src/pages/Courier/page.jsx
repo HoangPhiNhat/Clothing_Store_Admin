@@ -99,6 +99,7 @@ const Courier = () => {
       <Table
         dataSource={dataSource}
         columns={columns}
+        size="small"
         className="text-center"
         pagination={false}
       />

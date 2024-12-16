@@ -87,6 +87,7 @@ const ChooseShipper = ({ open, onCancel, orderId }) => {
         ]}
       >
         <Table
+          size="small"
           rowSelection={{
             type: "radio",
             onChange: (selectedRowKeys) => {

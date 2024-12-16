@@ -400,6 +400,7 @@ const CourierProfile = () => {
             </div>
             <div>
               <Table
+                size="small"
                 dataSource={dataSource}
                 columns={columns}
                 pagination={false}

@@ -466,6 +466,7 @@ const ProductAttribute = () => {
       </div>
       <Form form={form} onFinish={save}>
         <Table
+        size="small"
           columns={columns}
           dataSource={dataSource}
           pagination={false}

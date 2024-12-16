@@ -133,6 +133,7 @@ const CreateOrderForShipper = ({ open, onCancel, id }) => {
             }}
           >
             <Table
+              size="small"
               className={styles.customTable}
               rowSelection={{
                 ...rowSelection,

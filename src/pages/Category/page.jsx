@@ -175,6 +175,7 @@ const Category = () => {
 
       <Table
         columns={columns}
+        size="small"
         dataSource={dataSource}
         loading={isLoading}
         pagination={false}

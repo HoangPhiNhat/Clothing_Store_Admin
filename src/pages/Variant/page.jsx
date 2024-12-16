@@ -3,7 +3,15 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Button, message, Popconfirm, Space, Spin, Table } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  message,
+  Popconfirm,
+  Space,
+  Spin,
+  Table,
+} from "antd";
 import { useState } from "react";
 import useColorMutation from "../../hooks/Color/useColorMutation";
 import useColorQuery from "../../hooks/Color/useColorQuery";
@@ -37,7 +45,7 @@ const Variant = () => {
     action: "DELETE",
     onSuccess: () => {
       messageApi.success("Xóa màu sắc thành công.");
-      setDeletingColorId(null)
+      setDeletingColorId(null);
     },
     onError: (error) => {
       message.error("Xóa màu sắc thất bại: " + error.response.data.message);
@@ -54,7 +62,6 @@ const Variant = () => {
     onError: (error) => {
       message.error("Xóa kích thước thất bại: " + error.response.data.message);
       setDeletingSizeId(null);
-
     },
   });
 
@@ -158,11 +165,7 @@ const Variant = () => {
               setDeletingSizeId(size.id);
             }}
           >
-            <Button
-              type="primary"
-              danger
-              loading={deletingSizeId === size.id}
-            >
+            <Button type="primary" danger loading={deletingSizeId === size.id}>
               <DeleteOutlined />
             </Button>
           </Popconfirm>
@@ -199,6 +202,7 @@ const Variant = () => {
             <Spin className="flex justify-center h-fit" />
           ) : (
             <Table
+              size="small"
               dataSource={dataColors}
               columns={colorColumns}
               rowKey="id"
@@ -220,6 +224,7 @@ const Variant = () => {
             <Spin className="flex justify-center h-fit" />
           ) : (
             <Table
+              size="small"
               dataSource={dataSizes}
               columns={sizeColumns}
               rowKey="id"
