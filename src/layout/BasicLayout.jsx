@@ -1,7 +1,6 @@
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PercentageOutlined,
   PieChartOutlined,
   ProfileOutlined,
   ShoppingCartOutlined,
@@ -9,8 +8,7 @@ import {
   TagsOutlined,
   TruckOutlined,
   UnorderedListOutlined,
-  UserOutlined,
-  // VideoCameraOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
@@ -86,11 +84,11 @@ const LayoutAdmin = () => {
       icon: <TruckOutlined />,
       label: <Link to="/admin/couriers">Tài xế</Link>,
     },
-    {
-      key: "/admin/discounts",
-      icon: <PercentageOutlined />,
-      label: <Link to={"/admin/discounts"}>Chiến dịch giảm giá</Link>,
-    },
+    // {
+    //   key: "/admin/discounts",
+    //   icon: <PercentageOutlined />,
+    //   label: <Link to={"/admin/discounts"}>Chiến dịch giảm giá</Link>,
+    // },
     {
       key: "/admin/vouchers",
       icon: <TagOutlined />,

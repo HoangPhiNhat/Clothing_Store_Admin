@@ -129,7 +129,7 @@ const OrderDetail = () => {
   }
 
   if (userConfirm && status != "error") {
-    if (userConfirm.status == "Đã giao") {
+    if (userConfirm.status == "Đã nhận hàng") {
       current = 5;
       status = "finish";
     } else {
@@ -211,7 +211,13 @@ const OrderDetail = () => {
       />
 
       {/* Step */}
-      <Steps size="small" responsive current={current} status={status} items={steps} />
+      <Steps
+        size="small"
+        responsive
+        current={current}
+        status={status}
+        items={steps}
+      />
 
       {/* Info */}
       <div className="mt-5">

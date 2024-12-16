@@ -6,7 +6,6 @@ import {
   Routes,
 } from "react-router-dom";
 import BasicLayout from "../layout/BasicLayout";
-import Home from "../pages/Home/Home";
 
 import SignIn from "../pages/Auth/Signin";
 import SignUp from "../pages/Auth/Signup";
@@ -45,8 +44,8 @@ import ShipperLayout from "../layout/ShipperLayout";
 import ShipperOrderDelivery from "../pages/Shipper/ShipperOrderDelivery";
 import ShipperOrderHistory from "../pages/Shipper/ShipperOrderHistory";
 import ShipperOrderPending from "../pages/Shipper/ShipperOrderPending";
-import Voucher from "../pages/Voucher/page";
 import User from "../pages/User/page";
+import Voucher from "../pages/Voucher/page";
 // import Banner from "../pages/Banner/page";
 
 const PrivateRoute = ({ children }) => {
@@ -138,7 +137,7 @@ const RouterComponent = () => {
               </PrivateRoute>
             }
           >
-            <Route index element={<Home />} />
+            <Route index element={<ShipperOrderPending />} />
             <Route path="shipping" element={<ShipperOrderDelivery />} />
             <Route path="shippending" element={<ShipperOrderPending />} />
             <Route path="history" element={<ShipperOrderHistory />} />
