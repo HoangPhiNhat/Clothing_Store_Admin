@@ -27,7 +27,7 @@ const ShipperOrderDetail = ({ open, onCancel, products }) => {
     key: product.id,
     ...product,
   }));
-  
+
   const columns = [
     {
       title: "Ảnh",
@@ -65,6 +65,7 @@ const ShipperOrderDetail = ({ open, onCancel, products }) => {
       onCancel={onCancel}
       className="max-w-4xl w-full"
       footer={false}
+      width={"100%"}
     >
       <Table
         className={styles.customTable}

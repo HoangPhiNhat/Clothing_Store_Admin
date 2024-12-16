@@ -40,8 +40,8 @@ const CreateAttribute = () => {
   const { mutate: createAttribute, isPending: createPending } =
     useAttributeMutation({
       action: "CREATE",
-      onSuccess: (data) => {
-        messageApi.success(data.message);
+      onSuccess: () => {
+        messageApi.success("Thêm thuộc tính sản phẩm thành công");
         form.resetFields();
       },
       onError: (error) => {
@@ -124,7 +124,7 @@ const CreateAttribute = () => {
             accept=".jpg, .jpeg, .png"
             beforeUpload={(file) => {
               console.log(file);
-              
+
               const isImage =
                 file.type === "image/jpeg" ||
                 file.type === "image/png" ||
