@@ -56,12 +56,21 @@ const ShipperOrderHistory = () => {
     {
       title: "Trạng thái đơn hàng",
       key: "order_status",
-      render: (_, order) =>
-        order.order_status == "Đã giao" ? (
-          <Tag color="success">Giao hàng thành công</Tag>
-        ) : (
-          <Tag color="red">Trả hàng</Tag>
-        ),
+      render: (_, order) => {
+        if (order.order_status === "Đã giao") {
+          return <Tag color="success">Giao hàng thành công</Tag>;
+        }
+        if (order.order_status === "Trả hàng") {
+          return <Tag color="warning">Trả hàng</Tag>;
+        }
+        if (order.order_status === "Đã nhận hàng") {
+          return <Tag color="success">Đã nhận hàng</Tag>;
+        }
+        if (order.order_status === "Chưa nhận hàng") {
+          return <Tag color="red">Chưa nhận hàng</Tag>;
+        }
+        return null;
+      },
     },
     {
       title: "Hành động",
