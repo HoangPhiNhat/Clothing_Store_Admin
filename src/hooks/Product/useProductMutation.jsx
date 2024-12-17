@@ -3,6 +3,7 @@ import {
   createProduct,
   removeProduct,
   restoreProduct,
+  toggleProduct,
   updateProduct,
 } from "../../services/product";
 
@@ -19,6 +20,8 @@ const useProductMutation = ({ action, onSuccess, onError }) => {
           return await updateProduct(product);
         case "RESTORE":
           return await restoreProduct(product);
+        case "TOGGLE":
+          return await toggleProduct(product);
         default:
           return null;
       }

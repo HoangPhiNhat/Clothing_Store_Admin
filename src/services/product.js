@@ -77,3 +77,12 @@ export const restoreProduct = async (id) => {
     throw error;
   }
 };
+
+export const toggleProduct = async (id) => {
+  try {
+    const res = await Author.put(`/products/${id}/toggle-status`);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
