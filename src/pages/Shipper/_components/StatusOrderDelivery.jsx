@@ -96,7 +96,7 @@ const StatusOrderDelivery = ({ open, onCancel, status, deliveryId }) => {
               isPendingDeliveryFail
             }
           >
-            Thêm
+            {status === "success" ? "Giao hàng thành công" : "Trả hàng"}
           </Button>,
         ]}
       >

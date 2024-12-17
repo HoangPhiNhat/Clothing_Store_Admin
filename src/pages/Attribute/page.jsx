@@ -15,6 +15,7 @@ import {
   Popconfirm,
   Space,
   Table,
+  Tooltip,
   Upload,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -178,7 +179,6 @@ const ProductAttribute = () => {
     {
       title: "# ",
       dataIndex: "index",
-      rowScope: "row",
       width: "5%",
       sorter: (a, b) => a.index - b.index,
     },
@@ -187,7 +187,6 @@ const ProductAttribute = () => {
       dataIndex: "sku",
       key: "sku",
       width: "10%",
-      rowScope: "row",
       sorter: true,
     },
     {
@@ -251,7 +250,6 @@ const ProductAttribute = () => {
       dataIndex: "color_id",
       key: "color",
       width: "15%",
-      rowScope: "row",
       sorter: true,
       render: (_, attribute) => (
         <div className="font-normal">{attribute.color.name}</div>
@@ -261,7 +259,6 @@ const ProductAttribute = () => {
       title: "Kích thước",
       dataIndex: "size_id",
       width: "15%",
-      rowScope: "row",
       sorter: true,
       render: (_, attribute) => (
         <div className="font-normal">{attribute.size.name}</div>
@@ -272,7 +269,6 @@ const ProductAttribute = () => {
       dataIndex: "regular_price",
       key: "regular_price",
       width: "10%",
-      rowScope: "row",
       sorter: true,
       render: (_, attribute) =>
         isEditing(attribute.key) ? (
@@ -280,6 +276,11 @@ const ProductAttribute = () => {
             rules={[
               { required: true, message: "Vui lòng nhập giá" },
               { min: 1, type: "number", message: "Giá lớn hơn 0" },
+              {
+                max: 99999999,
+                type: "number",
+                message: "Giá bán nhỏ hơn 99.9 triệu",
+              },
             ]}
             name="regular_price"
           >
@@ -295,7 +296,6 @@ const ProductAttribute = () => {
       title: "Giá khuyến mãi",
       dataIndex: "reduced_price",
       key: "reduced_price",
-      rowScope: "row",
       sorter: true,
       width: "10%",
       render: (_, attribute) =>
@@ -306,14 +306,17 @@ const ProductAttribute = () => {
                 validator(_, value) {
                   const regularPrice = getFieldValue("regular_price");
                   if (!regularPrice) {
-                    return Promise.reject("Vui lòng nhập giá gốc trước");
+                    return Promise.reject("Vui lòng nhập giá bán trước");
                   }
                   if (Number(value) < 0) {
                     return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
                   }
+                  if (Number(value) > 99999999) {
+                    return Promise.reject("Giá khuyến mãi nhỏ hơn 99.9 triệu");
+                  }
                   if (Number(value) && regularPrice <= Number(value)) {
                     return Promise.reject(
-                      "Giá khuyến mãi phải thấp hơn giá gốc"
+                      "Giá khuyến mãi phải thấp hơn giá bán"
                     );
                   }
                   return Promise.resolve();
@@ -334,7 +337,6 @@ const ProductAttribute = () => {
       title: "Số lượng",
       dataIndex: "stock_quantity",
       key: "stock_quantity",
-      rowScope: "row",
       sorter: true,
       width: "10%",
       render: (_, attribute) =>
@@ -343,6 +345,11 @@ const ProductAttribute = () => {
             rules={[
               { required: true, message: "Vui lòng nhập số lượng" },
               { min: 0, type: "number", message: "Số lượng lớn hơn 0" },
+              {
+                max: 4999,
+                type: "number",
+                message: "Số lượng nhỏ hơn 4.9 nghìn",
+              },
             ]}
             name="stock_quantity"
           >
@@ -361,38 +368,44 @@ const ProductAttribute = () => {
         return editable ? (
           <Form.Item>
             <Space size="small">
-              <Button
-                loading={isPending}
-                disabled={isPending}
-                type="default"
-                htmlType="submit"
-                className="bg-[#4CAF50]"
-              >
-                <SaveOutlined />
-              </Button>
-              <Button
-                type="default"
-                disabled={isPending}
-                onClick={cancel}
-                className="bg-[#FF5252]"
-              >
-                <CloseOutlined />
-              </Button>
+              <Tooltip title="Lưu.">
+                <Button
+                  loading={isPending}
+                  disabled={isPending}
+                  type="default"
+                  htmlType="submit"
+                  className="bg-[#4CAF50]"
+                >
+                  <SaveOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Hủy.">
+                <Button
+                  type="default"
+                  disabled={isPending}
+                  onClick={cancel}
+                  className="bg-[#FF5252]"
+                >
+                  <CloseOutlined />
+                </Button>
+              </Tooltip>
             </Space>
           </Form.Item>
         ) : (
           <Space size="small">
-            <Button
-              disabled={deletingAttributeId === attribute.id}
-              type="default"
-              onClick={() => {
-                edit(attribute);
-                console.log(attribute);
-              }}
-              className="bg-[#fadd04]"
-            >
-              <EditOutlined />
-            </Button>
+            <Tooltip title="Cập nhật.">
+              <Button
+                disabled={deletingAttributeId === attribute.id}
+                type="default"
+                onClick={() => {
+                  edit(attribute);
+                  console.log(attribute);
+                }}
+                className="bg-[#fadd04]"
+              >
+                <EditOutlined />
+              </Button>
+            </Tooltip>
             <Popconfirm
               onConfirm={() => {
                 console.log(attribute.id);
@@ -408,13 +421,15 @@ const ProductAttribute = () => {
               okText="Có"
               cancelText="Không"
             >
-              <Button
-                disabled={updatePending | isPending}
-                type="primary"
-                danger
-              >
-                <DeleteOutlined />
-              </Button>
+              <Tooltip title="Xóa.">
+                <Button
+                  disabled={updatePending | isPending}
+                  type="primary"
+                  danger
+                >
+                  <DeleteOutlined />
+                </Button>
+              </Tooltip>
             </Popconfirm>
           </Space>
         );
@@ -466,7 +481,7 @@ const ProductAttribute = () => {
       </div>
       <Form form={form} onFinish={save}>
         <Table
-        size="small"
+          size="small"
           columns={columns}
           dataSource={dataSource}
           pagination={false}

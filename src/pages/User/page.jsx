@@ -7,6 +7,7 @@ import {
   Space,
   Table,
   Tag,
+  Tooltip,
   message,
 } from "antd";
 import { useState } from "react";
@@ -110,13 +111,21 @@ const User = () => {
             }}
           >
             {user.is_blocked === false ? (
-              <Button type="primary" danger loading={toggleUserId === user.id}>
-                <LockOutlined />
-              </Button>
+              <Tooltip title="Chặn.">
+                <Button
+                  type="primary"
+                  danger
+                  loading={toggleUserId === user.id}
+                >
+                  <LockOutlined />
+                </Button>
+              </Tooltip>
             ) : (
-              <Button type="primary" loading={toggleUserId === user.id}>
-                <UnlockOutlined />
-              </Button>
+              <Tooltip title="Gỡ chặn.">
+                <Button type="primary" loading={toggleUserId === user.id}>
+                  <UnlockOutlined />
+                </Button>
+              </Tooltip>
             )}
           </Popconfirm>
         </Space>

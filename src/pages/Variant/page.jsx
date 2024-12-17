@@ -11,6 +11,7 @@ import {
   Space,
   Spin,
   Table,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import useColorMutation from "../../hooks/Color/useColorMutation";
@@ -102,12 +103,14 @@ const Variant = () => {
       key: "action",
       render: (_, color) => (
         <Space size="small">
+           <Tooltip title="Cập nhật.">
           <Button
             disabled={deletingColorId === color.id}
             onClick={() => openModal("updateColor", color)}
           >
             <EditOutlined />
           </Button>
+           </Tooltip>
           <Popconfirm
             title="Xóa màu sắc"
             description="Bạn có muốn xóa màu sắc này không?"
@@ -118,6 +121,7 @@ const Variant = () => {
               setDeletingColorId(color.id);
             }}
           >
+             <Tooltip title="Xóa.">
             <Button
               type="primary"
               danger
@@ -125,6 +129,7 @@ const Variant = () => {
             >
               <DeleteOutlined />
             </Button>
+             </Tooltip>
           </Popconfirm>
         </Space>
       ),
@@ -147,14 +152,17 @@ const Variant = () => {
       key: "action",
       render: (_, size) => (
         <Space size="small">
-          <Button
-            disabled={deletingSizeId === size.id}
-            onClick={() => {
-              openModal("updateSize", size);
-            }}
-          >
-            <EditOutlined />
-          </Button>
+          <Tooltip title="Cập nhật.">
+            <Button
+              disabled={deletingSizeId === size.id}
+              onClick={() => {
+                openModal("updateSize", size);
+              }}
+            >
+              <EditOutlined />
+            </Button>
+          </Tooltip>
+
           <Popconfirm
             title="Xóa kích thước"
             description="Bạn có muốn xóa kích thước này không?"
@@ -165,9 +173,15 @@ const Variant = () => {
               setDeletingSizeId(size.id);
             }}
           >
-            <Button type="primary" danger loading={deletingSizeId === size.id}>
-              <DeleteOutlined />
-            </Button>
+            <Tooltip title="Xóa.">
+              <Button
+                type="primary"
+                danger
+                loading={deletingSizeId === size.id}
+              >
+                <DeleteOutlined />
+              </Button>
+            </Tooltip>
           </Popconfirm>
         </Space>
       ),

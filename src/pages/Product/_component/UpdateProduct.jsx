@@ -87,7 +87,7 @@ const UpdateProduct = () => {
       });
       setImageUrl(product.thumbnail);
       setPreviewImage(product.thumbnail);
-      setProductName(product.name)
+      setProductName(product.name);
     }
   }, [form, product]);
 
@@ -216,21 +216,26 @@ const UpdateProduct = () => {
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      label="Giá gốc"
+                      label="Giá bán"
                       name="regular_price"
                       rules={[
-                        { required: true, message: "Vui lòng nhập giá gốc" },
+                        { required: true, message: "Vui lòng nhập giá bán" },
                         {
                           min: 1,
                           type: "number",
-                          message: "Giá gốc lớn hơn 1",
+                          message: "Giá bán lớn hơn 0",
+                        },
+                        {
+                          max: 99999999,
+                          type: "number",
+                          message: "Giá bán nhỏ hơn 99.9 triệu",
                         },
                       ]}
                     >
                       <InputNumber
                         type="number"
                         className="w-full"
-                        placeholder="Nhập giá gốc"
+                        placeholder="Nhập giá bán"
                       />
                     </Form.Item>
                   </Col>
@@ -245,7 +250,7 @@ const UpdateProduct = () => {
                             const regularPrice = getFieldValue("regular_price");
                             if (!regularPrice) {
                               return Promise.reject(
-                                "Vui lòng nhập giá gốc trước"
+                                "Vui lòng nhập giá bán trước"
                               );
                             }
                             if (Number(value) < 0) {
@@ -258,7 +263,20 @@ const UpdateProduct = () => {
                               regularPrice <= Number(value)
                             ) {
                               return Promise.reject(
-                                "Giá khuyến mãi phải thấp hơn giá gốc"
+                                "Giá khuyến mãi phải thấp hơn giá bán"
+                              );
+                            }
+                            if (Number(value) > 99999999) {
+                              return Promise.reject(
+                                "Giá khuyến mãi phải hơn 99.9 triệu"
+                              );
+                            }
+                            if (
+                              Number(value) &&
+                              regularPrice <= Number(value)
+                            ) {
+                              return Promise.reject(
+                                "Giá khuyến mãi phải thấp hơn giá bán"
                               );
                             }
                             return Promise.resolve();
@@ -274,7 +292,7 @@ const UpdateProduct = () => {
                     </Form.Item>
                   </Col>
                 </Row>
-                <Form.Item
+                {/* <Form.Item
                   name="short_description"
                   label="Mô tả ngắn"
                   rules={[
@@ -291,7 +309,7 @@ const UpdateProduct = () => {
                   ]}
                 >
                   <Input.TextArea showCount maxLength={200} />
-                </Form.Item>
+                </Form.Item> */}
               </Col>
               <Col span={6}>
                 <Form.Item

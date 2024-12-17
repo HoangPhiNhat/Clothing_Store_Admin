@@ -12,6 +12,7 @@ import {
   Popconfirm,
   Space,
   Table,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -90,16 +91,17 @@ const ProductManagePage = () => {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
-      rowScope: "row",
       sorter: true,
       width: "25%",
       render: (_, product) => (
-        <Link
-          to={`${product.id}/attributes`}
-          className="text-slate-950 hover:underline"
-        >
-          {product.name}
-        </Link>
+        <Tooltip title="Chi tiết.">
+          <Link
+            to={`${product.id}/attributes`}
+            className="text-slate-950 hover:underline"
+          >
+            {product.name}
+          </Link>
+        </Tooltip>
       ),
     },
     {
@@ -108,7 +110,6 @@ const ProductManagePage = () => {
         <span className="font-normal">{product.category.name}</span>
       ),
       dataIndex: "category_id",
-      rowScope: "row",
       sorter: true,
       width: "15%",
     },
@@ -135,15 +136,17 @@ const ProductManagePage = () => {
       render: (_, product) => (
         <div className="">
           <Space size="small">
-            <Link to={`${product.id}/edit`}>
-              <Button
-                disabled={deletingProductId === product.id}
-                type="default"
-                className="bg-[#fadd04] "
-              >
-                <EditOutlined />
-              </Button>
-            </Link>
+            <Tooltip title="Cập nhật.">
+              <Link to={`${product.id}/edit`}>
+                <Button
+                  disabled={deletingProductId === product.id}
+                  type="default"
+                  className="bg-[#fadd04] "
+                >
+                  <EditOutlined />
+                </Button>
+              </Link>
+            </Tooltip>
             <Popconfirm
               title="Xóa sản phẩm"
               description="Bạn có muốn xóa sản phẩm này không?"
@@ -154,13 +157,15 @@ const ProductManagePage = () => {
                 setDeletingProductId(product.id);
               }}
             >
-              <Button
-                loading={deletingProductId === product.id}
-                type="primary"
-                danger
-              >
-                <DeleteOutlined />
-              </Button>
+              <Tooltip title="Xóa.">
+                <Button
+                  loading={deletingProductId === product.id}
+                  type="primary"
+                  danger
+                >
+                  <DeleteOutlined />
+                </Button>
+              </Tooltip>
             </Popconfirm>
           </Space>
         </div>

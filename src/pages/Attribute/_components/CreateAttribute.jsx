@@ -222,6 +222,11 @@ const CreateAttribute = () => {
           rules={[
             { required: true, message: "Vui lòng nhập giá" },
             { min: 0, type: "number", message: "Giá lớn hơn 0" },
+            {
+              max: 99999999,
+              type: "number",
+              message: "Giá bán nhỏ hơn 99.9 triệu",
+            },
           ]}
         >
           <InputNumber
@@ -253,6 +258,10 @@ const CreateAttribute = () => {
                 }
                 if (Number(value) < 0) {
                   return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
+                }if (Number(value) > 99999999) {
+                  return Promise.reject(
+                    "Giá khuyến mãi nhỏ hơn 99.9 triệu"
+                  );
                 }
                 if (Number(value) && regularPrice <= Number(value)) {
                   return Promise.reject("Giá khuyến mãi phải thấp hơn giá bán");
@@ -281,6 +290,11 @@ const CreateAttribute = () => {
           rules={[
             { required: true, message: "Vui lòng nhập số lượng" },
             { min: 1, type: "number", message: "Số lượng lớn hơn 0" },
+            {
+              max: 4999,
+              type: "number",
+              message: "Số lượng nhỏ hơn 4.9 nghìn",
+            },
           ]}
         >
           <InputNumber

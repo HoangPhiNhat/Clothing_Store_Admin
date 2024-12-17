@@ -223,6 +223,11 @@ const CreateProduct = () => {
           rules={[
             { required: true, message: "Vui lòng nhập giá bán" },
             { min: 0, type: "number", message: "Giá bán lớn hơn 0" },
+            {
+              max: 99999999,
+              type: "number",
+              message: "Giá bán nhỏ hơn 99.9 triệu",
+            },
           ]}
         >
           <InputNumber type="number" placeholder="Giá bán" className="w-full" />
@@ -239,14 +244,26 @@ const CreateProduct = () => {
           rules={[
             ({ getFieldValue }) => ({
               validator(_, value) {
-                const regularPrice = getFieldValue("regular_price");
+                // Lấy toàn bộ giá trị của các thuộc tính
+                const fields = getFieldValue("attributes") || [];
+                const currentField = fields[field.name];
+                const regularPrice = currentField?.regular_price; // Giá bán của dòng hiện tại
+
                 if (!regularPrice) {
                   return Promise.reject("Vui lòng nhập giá bán trước");
                 }
-                if (Number(value) < 0) {
+                if (value === undefined || value === null) {
+                  return Promise.reject("Vui lòng nhập giá trị hợp lệ");
+                }
+                if (value < 0) {
                   return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
                 }
-                if (Number(value) && regularPrice <= Number(value)) {
+                if (value > 99999999) {
+                  return Promise.reject(
+                    "Giá khuyến mãi nhỏ hơn 99.9 triệu"
+                  );
+                }
+                if (value >= regularPrice) {
                   return Promise.reject("Giá khuyến mãi phải thấp hơn giá bán");
                 }
                 return Promise.resolve();
@@ -272,6 +289,11 @@ const CreateProduct = () => {
           rules={[
             { required: true, message: "Vui lòng nhập số lượng" },
             { min: 1, type: "number", message: "Số lượng lớn hơn 0" },
+            {
+              max: 4999,
+              type: "number",
+              message: "Số lượng nhỏ hơn 4.9 nghìn",
+            },
           ]}
         >
           <InputNumber
@@ -337,6 +359,9 @@ const CreateProduct = () => {
           layout="vertical"
           onFinish={onFinish}
           initialValues={{ attributes: [{}] }}
+          onValuesChange={(changedValues, allValues) => {
+            console.log("Tất cả giá trị:", allValues);
+          }}
         >
           {/* Form product */}
           <Row gutter={30}>
@@ -387,21 +412,26 @@ const CreateProduct = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item
-                    label="Giá gốc"
+                    label="Giá bán"
                     name="regular_price"
                     rules={[
-                      { required: true, message: "Vui lòng nhập giá gốc" },
+                      { required: true, message: "Vui lòng nhập giá bán" },
                       {
                         type: "number",
                         min: 1,
-                        message: "Giá gốc cần lớn hơn 1 đồng",
+                        message: "Giá bán cần lớn hơn 1 đồng",
+                      },
+                      {
+                        max: 99999999,
+                        type: "number",
+                        message: "Giá bán nhỏ hơn 99.9 triệu",
                       },
                     ]}
                   >
                     <InputNumber
                       type="number"
                       className="w-full"
-                      placeholder="Nhập giá gốc"
+                      placeholder="Nhập giá bán"
                     />
                   </Form.Item>
                 </Col>
@@ -414,9 +444,12 @@ const CreateProduct = () => {
                       ({ getFieldValue }) => ({
                         validator(_, value) {
                           const regularPrice = getFieldValue("regular_price");
-                          if (!regularPrice) {
+                          if (
+                            regularPrice === undefined ||
+                            regularPrice === null
+                          ) {
                             return Promise.reject(
-                              "Vui lòng nhập giá gốc trước"
+                              "Vui lòng nhập giá bán trước"
                             );
                           }
                           if (Number(value) < 0) {
@@ -426,7 +459,17 @@ const CreateProduct = () => {
                           }
                           if (Number(value) && regularPrice <= Number(value)) {
                             return Promise.reject(
-                              "Giá khuyến mãi phải thấp hơn giá gốc"
+                              "Giá khuyến mãi phải thấp hơn giá bán"
+                            );
+                          }
+                          if (Number(value) > 99999999) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải hơn 99.9 triệu"
+                            );
+                          }
+                          if (Number(value) && regularPrice <= Number(value)) {
+                            return Promise.reject(
+                              "Giá khuyến mãi phải thấp hơn giá bán"
                             );
                           }
                           return Promise.resolve();
@@ -551,7 +594,7 @@ const CreateProduct = () => {
                   <>
                     <Table
                       className="mb-4"
-                      columns={columns(remove, fields)}
+                      columns={columns(remove, fields, form)}
                       dataSource={fields}
                       pagination={false}
                       rowKey="key"
