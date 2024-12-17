@@ -188,7 +188,10 @@ const Order = () => {
       key: "action",
       align: "center",
       render: (_, order) => {
-        if (order.order_status === "Chờ xác nhận") {
+        if (
+          order.order_status === "Chờ xác nhận" &&
+          order.payment_status !== "Thanh toán thất bại"
+        ) {
           return (
             <Space size="middle">
               <Tooltip title="Từ chối đơn hàng">
