@@ -2,7 +2,6 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   EyeOutlined,
-  RedoOutlined,
 } from "@ant-design/icons";
 import {
   Breadcrumb,
@@ -31,14 +30,11 @@ const Order = () => {
   const [sortOrder, setSortOrder] = useState(null);
   const [rejectOrderPending, setRejectOrderPending] = useState(null);
   const [confirmOrderPending, setConfirmOrderPending] = useState(null);
-  const [returnOrderPending, setReturnOrderPending] = useState(null);
-  const [deliveredOrderPending, setDeliveredOrderPending] = useState(null);
 
   const setDefaultStatePending = () => {
     setConfirmOrderPending(null);
     setRejectOrderPending(null);
     setRejectOrderPending(null);
-    setDeliveredOrderPending(null);
   };
 
   const { mutate: confirmOrder, isPending: isPendingConfirm } =
@@ -69,35 +65,6 @@ const Order = () => {
       );
     },
   });
-
-  const { mutate: returnOrder, isPending: isPendingReturn } = useOrderMutation({
-    action: "RETURN",
-    onSuccess: () => {
-      messageApi.success("Chuyển trạng thái trả hàng thành công.");
-      setDefaultStatePending();
-    },
-    onError: (error) => {
-      setDefaultStatePending();
-      message.error(
-        "Chuyển trạng thái thất bại. " + error.response.data.message
-      );
-    },
-  });
-
-  const { mutate: deliveredOrder, isPending: isPendingDelivered } =
-    useOrderMutation({
-      action: "DELIVERED",
-      onSuccess: () => {
-        messageApi.success("Chuyển trạng thái trả hàng thành công.");
-        setDefaultStatePending();
-      },
-      onError: (error) => {
-        setDefaultStatePending();
-        message.error(
-          "Chuyển trạng thái thất bại. " + error.response.data.message
-        );
-      },
-    });
 
   const {
     data: orders,
@@ -219,6 +186,7 @@ const Order = () => {
     {
       title: "Hành động",
       key: "action",
+      align: "center",
       render: (_, order) => {
         if (order.order_status === "Chờ xác nhận") {
           return (
@@ -269,80 +237,6 @@ const Order = () => {
               </Tooltip>
             </Space>
           );
-        } else if (order.order_status === "Chưa nhận hàng") {
-          if (order.payment_method === "VNPAY") {
-            return (
-              <Space size="middle">
-                <Tooltip title="Trả hàng">
-                  <Popconfirm
-                    title="Xác nhận trả hàng"
-                    description="Bạn có muốn thay đổi trạng thái đơn hàng này không?"
-                    okText="Có"
-                    cancelText="Không"
-                    onConfirm={() => {
-                      // APi reject
-                      setReturnOrderPending(order.id);
-                      returnOrder(order);
-                    }}
-                  >
-                    <Button
-                      type="primary"
-                      danger
-                      loading={returnOrderPending === order.id}
-                      disabled={deliveredOrderPending === order.id}
-                    >
-                      <RedoOutlined />
-                    </Button>
-                  </Popconfirm>
-                </Tooltip>
-
-                <Tooltip title="Đã nhận được hàng.">
-                  <Popconfirm
-                    title="Xác nhận đơn hàng"
-                    description="Bạn có muốn thay đổi trạng thái sang đã nhận hàng không?"
-                    okText="Có"
-                    cancelText="Không"
-                    onConfirm={() => {
-                      // API Confirm
-                      setDeliveredOrderPending(order.id);
-                      deliveredOrder(order);
-                    }}
-                  >
-                    <Button
-                      type="primary"
-                      disabled={returnOrderPending === order.id}
-                      loading={deliveredOrderPending === order.id}
-                    >
-                      <CheckCircleOutlined />
-                    </Button>
-                  </Popconfirm>
-                </Tooltip>
-              </Space>
-            );
-          } else {
-            return (
-              <Tooltip title="Đã nhận được hàng.">
-                <Popconfirm
-                  title="Xác nhận đơn hàng"
-                  description="Bạn có muốn thay đổi trạng thái sang đã nhận hàng không?"
-                  okText="Có"
-                  cancelText="Không"
-                  onConfirm={() => {
-                    // API Confirm
-                    setDeliveredOrderPending(order.id);
-                    deliveredOrder(order);
-                  }}
-                >
-                  <Button
-                    type="primary"
-                    loading={deliveredOrderPending === order.id}
-                  >
-                    <CheckCircleOutlined />
-                  </Button>
-                </Popconfirm>
-              </Tooltip>
-            );
-          }
         } else {
           return (
             <Tooltip title="Chi tiết đơn hàng">
@@ -400,12 +294,7 @@ const Order = () => {
 
       {/* Pagination */}
       <Pagination
-        disabled={
-          isPendingConfirm ||
-          isPendingReject ||
-          isPendingReturn ||
-          isPendingDelivered
-        }
+        disabled={isPendingConfirm || isPendingReject}
         className="mt-5"
         align="end"
         current={pageOrder}
