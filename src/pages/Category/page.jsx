@@ -10,6 +10,7 @@ import {
   Popconfirm,
   Space,
   Table,
+  Tooltip,
   message,
 } from "antd";
 import { useState } from "react";
@@ -93,13 +94,14 @@ const Category = () => {
       key: "action",
       render: (_, category) => (
         <Space size="small">
-          <Button
-            disabled={deletingCategoryId === category.id}
-            onClick={() => handleModalUpdate(category)}
-          >
-            <EditOutlined />
-          </Button>
-
+          <Tooltip title="Cập nhật.">
+            <Button
+              disabled={deletingCategoryId === category.id}
+              onClick={() => handleModalUpdate(category)}
+            >
+              <EditOutlined />
+            </Button>
+          </Tooltip>
           <Popconfirm
             title="Xóa danh mục"
             description="Bạn có muốn xóa danh mục này không?"
@@ -110,13 +112,15 @@ const Category = () => {
               deleteCategory(category);
             }}
           >
-            <Button
-              type="primary"
-              danger
-              loading={deletingCategoryId === category.id}
-            >
-              <DeleteOutlined />
-            </Button>
+            <Tooltip title="Xóa.">
+              <Button
+                type="primary"
+                danger
+                loading={deletingCategoryId === category.id}
+              >
+                <DeleteOutlined />
+              </Button>
+            </Tooltip>
           </Popconfirm>
         </Space>
       ),
