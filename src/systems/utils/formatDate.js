@@ -53,3 +53,11 @@ export const formatDMY = (date) => {
     timeZone: "Asia/Ho_Chi_Minh",
   }).format(new Date(date));
 };
+
+export const formatTime = (hours) => {
+  const days = Math.floor(hours / 24); // Tính số ngày
+  if (days >= 1) {
+    return `${days} ngày trước`; // Hiển thị số ngày
+  }
+  return `${hours} giờ trước`; // Hiển thị thời gian bình thường
+};
