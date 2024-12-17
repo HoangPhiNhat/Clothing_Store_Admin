@@ -6,6 +6,7 @@ import {
 import {
   Breadcrumb,
   Button,
+  Input,
   message,
   Pagination,
   Popconfirm,
@@ -24,12 +25,19 @@ const Order = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
   const [currentSize, setCurrentSize] = useState(10);
+  const [rejectOrderPending, setRejectOrderPending] = useState(null);
+  const [confirmOrderPending, setConfirmOrderPending] = useState(null);
 
   // Sorting and filter
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
-  const [rejectOrderPending, setRejectOrderPending] = useState(null);
-  const [confirmOrderPending, setConfirmOrderPending] = useState(null);
+  const [search, setSearch] = useState(null);
+
+  const setDefaultSorterFilter = () => {
+    setSortField(null);
+    setSortOrder(null);
+    setSearch(null);
+  };
 
   const setDefaultStatePending = () => {
     setConfirmOrderPending(null);
@@ -77,8 +85,10 @@ const Order = () => {
     false,
     currentSize,
     sortField,
-    sortOrder
+    sortOrder,
+    search
   );
+
   //Sort
   const handleTableChange = (pagination, filters, sorter) => {
     if (sorter) {
@@ -90,6 +100,7 @@ const Order = () => {
       setSortOrder(null);
     }
   };
+
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -115,6 +126,7 @@ const Order = () => {
       title: "Ngày đặt",
       dataIndex: "created_at",
       rowScope: "row",
+      sorter: true,
       render: (_, order) => (
         <div className="font-normal">{order.created_at}</div>
       ),
@@ -284,6 +296,21 @@ const Order = () => {
       {/* Title  */}
       <div className="flex items-center justify-between my-5">
         <h1 className="text-xl">Quản lý danh sách đơn hàng</h1>
+      </div>
+
+      <div className="flex justify-between">
+        <Input
+          onPressEnter={(e) => {
+            console.log(e.target.value);
+            setSearch(e.target.value);
+          }}
+          onBlur={(e) => setSearch(e.target.value)}
+          placeholder="Tìm kiếm theo mã đơn hàng"
+          style={{ width: 300, marginBottom: 16 }}
+        />
+        <Button type="primary" onClick={() => setDefaultSorterFilter()}>
+          Xoá bộ lọc
+        </Button>
       </div>
 
       {/* Table */}
