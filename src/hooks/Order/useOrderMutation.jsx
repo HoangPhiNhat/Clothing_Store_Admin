@@ -5,6 +5,8 @@ import {
   rejectOder,
   returnOder,
   deliveredOder,
+  confirmOderList,
+  rejectOderList,
 } from "../../services/order";
 
 const useOrderMutation = ({ action, onSuccess, onError }) => {
@@ -18,9 +20,9 @@ const useOrderMutation = ({ action, onSuccess, onError }) => {
         case "REJECT":
           return await rejectOder(order.id);
         case "CONFIRM-LIST":
-          return await confirmOder(order.id);
+          return await confirmOderList(order.id);
         case "REJECT-LIST":
-          return await rejectOder(order.id);
+          return await rejectOderList(order.id);
         case "RETURN":
           return await returnOder(order.id);
         case "DELIVERED":
