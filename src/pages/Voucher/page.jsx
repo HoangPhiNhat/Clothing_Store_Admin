@@ -156,14 +156,18 @@ const Voucher = () => {
       align: "center",
       render: (_, voucher) => (
         <Space size="small">
-          <Tooltip title="Cập nhật phiếu.">
-            <Button
-              disabled={toggleVoucherId === voucher.id}
-              onClick={() => handleModalUpdate(voucher)}
-            >
-              <EditOutlined />
-            </Button>
-          </Tooltip>
+          {voucher.status !== "active" &&
+            voucher.status !== "pause" &&
+            voucher.status !== "cancel" && (
+              <Tooltip title="Cập nhật phiếu.">
+                <Button
+                  disabled={toggleVoucherId === voucher.id}
+                  onClick={() => handleModalUpdate(voucher)}
+                >
+                  <EditOutlined />
+                </Button>
+              </Tooltip>
+            )}
           <Popconfirm
             title="Chuyển trạng thái phiếu"
             description="Bạn có muốn trạng thái phiếu này không?"

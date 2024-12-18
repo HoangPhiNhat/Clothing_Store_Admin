@@ -64,8 +64,8 @@ const CreateCategory = ({ open, onCancel }) => {
                 message: "Vui lòng nhập danh mục!",
               },
               {
-                min: 6,
-                message: "Tên danh mục phải dài hơn 6 kí tự.",
+                min: 4,
+                message: "Tên danh mục phải dài hơn 4 kí tự.",
               },
             ]}
           >
