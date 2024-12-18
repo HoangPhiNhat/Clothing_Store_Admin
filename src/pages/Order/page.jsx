@@ -258,7 +258,11 @@ const Order = () => {
                     type="primary"
                     danger
                     loading={rejectOrderPending === order.id}
-                    disabled={confirmOrderPending === order.id}
+                    disabled={
+                      confirmOrderPending === order.id ||
+                      isPendingRejectList ||
+                      isPendingConfirmList
+                    }
                   >
                     <CloseCircleOutlined />
                   </Button>
@@ -279,7 +283,11 @@ const Order = () => {
                 >
                   <Button
                     type="primary"
-                    disabled={rejectOrderPending === order.id}
+                    disabled={
+                      rejectOrderPending === order.id ||
+                      isPendingRejectList ||
+                      isPendingConfirmList
+                    }
                     loading={confirmOrderPending === order.id}
                   >
                     <CheckCircleOutlined />
@@ -377,29 +385,42 @@ const Order = () => {
         <div>
           {orderId.length > 0 && (
             <Space>
-              <Button
-                type="primary"
-                danger
-                disabled={
-                  isPendingConfirm || isPendingReject || isPendingRejectList
-                }
-                loading={isPendingRejectList}
-                onClick={() => rejectListOrder(orderId)}
+              <Popconfirm
+                title="Xác nhận đơn hàng"
+                description="Bạn có muốn từ chối đơn hàng này không?"
+                okText="Có"
+                cancelText="Không"
+                onConfirm={() => rejectListOrder(orderId)}
               >
-                Từ chối đơn hàng
-              </Button>
-              <Button
-                type="primary"
-                disabled={
-                  isPendingConfirm || isPendingReject || isPendingRejectList
-                }
-                loading={isPendingConfirmList}
-                onClick={() => {
-                  confirmListOrder(orderId);
-                }}
+                <Button
+                  type="primary"
+                  danger
+                  disabled={
+                    isPendingConfirm || isPendingReject || isPendingConfirmList
+                  }
+                  loading={isPendingRejectList}
+                >
+                  Từ chối đơn hàng
+                </Button>
+              </Popconfirm>
+
+              <Popconfirm
+                title="Xác nhận đơn hàng"
+                description="Bạn có muốn xác nhận đơn hàng này không?"
+                okText="Có"
+                cancelText="Không"
+                onConfirm={() => confirmListOrder(orderId)}
               >
-                Xác nhận đơn hàng
-              </Button>
+                <Button
+                  type="primary"
+                  disabled={
+                    isPendingConfirm || isPendingReject || isPendingRejectList
+                  }
+                  loading={isPendingConfirmList}
+                >
+                  Xác nhận đơn hàng
+                </Button>
+              </Popconfirm>
             </Space>
           )}
         </div>
