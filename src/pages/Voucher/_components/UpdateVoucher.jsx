@@ -191,13 +191,32 @@ const UpdateVoucher = ({ open, onCancel, voucher }) => {
               label="Giá giảm"
               name="discount_value"
               rules={[
-                { required: true, message: "Vui lòng nhập giá trị giảm" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const discount_type = getFieldValue("discount_type");
+                    if (!value) {
+                      return Promise.reject("Vui lòng nhập giá giảm");
+                    }
+                    if (Number(value) > 50 && discount_type === "percentage") {
+                      return Promise.reject("Giá giảm tối đa 50%");
+                    }
+                    if (
+                      Number(value) > 1000000 &&
+                      discount_type === "fixed_amount"
+                    ) {
+                      return Promise.reject("Giá giảm tối đa tối đa 1 triệu");
+                    }
+                    if (
+                      Number(value) < 0
+                    ) {
+                      return Promise.reject("Giá giảm lớn hơn 0");
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
-              <InputNumber
-                className="w-full"
-                placeholder="Vui lòng nhập giá trị giảm"
-              />
+              <InputNumber className="w-full" placeholder="Giá trị giảm" />
             </Form.Item>
           </Row>
           <Form.Item

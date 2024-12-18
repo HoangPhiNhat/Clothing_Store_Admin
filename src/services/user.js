@@ -13,7 +13,7 @@ export const getAllUser = async (page, size) => {
 
 export const toggleStatusUser = async (user) => {
   try {
-    const response = await Author.put(`/users/${user}/toggle-status`);
+    const response = await Author.put(`/users/${user}/toggle-blacklist`);
     return response;
   } catch (error) {
     throw error;

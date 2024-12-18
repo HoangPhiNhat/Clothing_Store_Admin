@@ -40,8 +40,8 @@ const CreateAttribute = () => {
   const { mutate: createAttribute, isPending: createPending } =
     useAttributeMutation({
       action: "CREATE",
-      onSuccess: (data) => {
-        messageApi.success(data.message);
+      onSuccess: () => {
+        messageApi.success("Thêm thuộc tính sản phẩm thành công");
         form.resetFields();
       },
       onError: (error) => {
@@ -124,7 +124,7 @@ const CreateAttribute = () => {
             accept=".jpg, .jpeg, .png"
             beforeUpload={(file) => {
               console.log(file);
-              
+
               const isImage =
                 file.type === "image/jpeg" ||
                 file.type === "image/png" ||
@@ -222,6 +222,11 @@ const CreateAttribute = () => {
           rules={[
             { required: true, message: "Vui lòng nhập giá" },
             { min: 0, type: "number", message: "Giá lớn hơn 0" },
+            {
+              max: 99999999,
+              type: "number",
+              message: "Giá bán nhỏ hơn 99.9 triệu",
+            },
           ]}
         >
           <InputNumber
@@ -253,6 +258,10 @@ const CreateAttribute = () => {
                 }
                 if (Number(value) < 0) {
                   return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
+                }if (Number(value) > 99999999) {
+                  return Promise.reject(
+                    "Giá khuyến mãi nhỏ hơn 99.9 triệu"
+                  );
                 }
                 if (Number(value) && regularPrice <= Number(value)) {
                   return Promise.reject("Giá khuyến mãi phải thấp hơn giá bán");
@@ -281,6 +290,11 @@ const CreateAttribute = () => {
           rules={[
             { required: true, message: "Vui lòng nhập số lượng" },
             { min: 1, type: "number", message: "Số lượng lớn hơn 0" },
+            {
+              max: 4999,
+              type: "number",
+              message: "Số lượng nhỏ hơn 4.9 nghìn",
+            },
           ]}
         >
           <InputNumber

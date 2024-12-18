@@ -2,11 +2,11 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   EyeOutlined,
-  RedoOutlined,
 } from "@ant-design/icons";
 import {
   Breadcrumb,
   Button,
+  Input,
   message,
   Pagination,
   Popconfirm,
@@ -25,20 +25,24 @@ const Order = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [pageOrder, setPageOrder] = useState(1);
   const [currentSize, setCurrentSize] = useState(10);
+  const [rejectOrderPending, setRejectOrderPending] = useState(null);
+  const [confirmOrderPending, setConfirmOrderPending] = useState(null);
 
   // Sorting and filter
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
-  const [rejectOrderPending, setRejectOrderPending] = useState(null);
-  const [confirmOrderPending, setConfirmOrderPending] = useState(null);
-  const [returnOrderPending, setReturnOrderPending] = useState(null);
-  const [deliveredOrderPending, setDeliveredOrderPending] = useState(null);
+  const [search, setSearch] = useState(null);
+
+  const setDefaultSorterFilter = () => {
+    setSortField(null);
+    setSortOrder(null);
+    setSearch(null);
+  };
 
   const setDefaultStatePending = () => {
     setConfirmOrderPending(null);
     setRejectOrderPending(null);
     setRejectOrderPending(null);
-    setDeliveredOrderPending(null);
   };
 
   const { mutate: confirmOrder, isPending: isPendingConfirm } =
@@ -70,35 +74,6 @@ const Order = () => {
     },
   });
 
-  const { mutate: returnOrder, isPending: isPendingReturn } = useOrderMutation({
-    action: "RETURN",
-    onSuccess: () => {
-      messageApi.success("Chuyển trạng thái trả hàng thành công.");
-      setDefaultStatePending();
-    },
-    onError: (error) => {
-      setDefaultStatePending();
-      message.error(
-        "Chuyển trạng thái thất bại. " + error.response.data.message
-      );
-    },
-  });
-
-  const { mutate: deliveredOrder, isPending: isPendingDelivered } =
-    useOrderMutation({
-      action: "DELIVERED",
-      onSuccess: () => {
-        messageApi.success("Chuyển trạng thái trả hàng thành công.");
-        setDefaultStatePending();
-      },
-      onError: (error) => {
-        setDefaultStatePending();
-        message.error(
-          "Chuyển trạng thái thất bại. " + error.response.data.message
-        );
-      },
-    });
-
   const {
     data: orders,
     isLoading,
@@ -110,8 +85,10 @@ const Order = () => {
     false,
     currentSize,
     sortField,
-    sortOrder
+    sortOrder,
+    search
   );
+
   //Sort
   const handleTableChange = (pagination, filters, sorter) => {
     if (sorter) {
@@ -123,6 +100,7 @@ const Order = () => {
       setSortOrder(null);
     }
   };
+
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -148,6 +126,7 @@ const Order = () => {
       title: "Ngày đặt",
       dataIndex: "created_at",
       rowScope: "row",
+      sorter: true,
       render: (_, order) => (
         <div className="font-normal">{order.created_at}</div>
       ),
@@ -219,8 +198,12 @@ const Order = () => {
     {
       title: "Hành động",
       key: "action",
+      align: "center",
       render: (_, order) => {
-        if (order.order_status === "Chờ xác nhận") {
+        if (
+          order.order_status === "Chờ xác nhận" &&
+          order.payment_status !== "Thanh toán thất bại"
+        ) {
           return (
             <Space size="middle">
               <Tooltip title="Từ chối đơn hàng">
@@ -269,80 +252,6 @@ const Order = () => {
               </Tooltip>
             </Space>
           );
-        } else if (order.order_status === "Chưa nhận hàng") {
-          if (order.payment_method === "VNPAY") {
-            return (
-              <Space size="middle">
-                <Tooltip title="Trả hàng">
-                  <Popconfirm
-                    title="Xác nhận trả hàng"
-                    description="Bạn có muốn thay đổi trạng thái đơn hàng này không?"
-                    okText="Có"
-                    cancelText="Không"
-                    onConfirm={() => {
-                      // APi reject
-                      setReturnOrderPending(order.id);
-                      returnOrder(order);
-                    }}
-                  >
-                    <Button
-                      type="primary"
-                      danger
-                      loading={returnOrderPending === order.id}
-                      disabled={deliveredOrderPending === order.id}
-                    >
-                      <RedoOutlined />
-                    </Button>
-                  </Popconfirm>
-                </Tooltip>
-
-                <Tooltip title="Đã nhận được hàng.">
-                  <Popconfirm
-                    title="Xác nhận đơn hàng"
-                    description="Bạn có muốn thay đổi trạng thái sang đã nhận hàng không?"
-                    okText="Có"
-                    cancelText="Không"
-                    onConfirm={() => {
-                      // API Confirm
-                      setDeliveredOrderPending(order.id);
-                      deliveredOrder(order);
-                    }}
-                  >
-                    <Button
-                      type="primary"
-                      disabled={returnOrderPending === order.id}
-                      loading={deliveredOrderPending === order.id}
-                    >
-                      <CheckCircleOutlined />
-                    </Button>
-                  </Popconfirm>
-                </Tooltip>
-              </Space>
-            );
-          } else {
-            return (
-              <Tooltip title="Đã nhận được hàng.">
-                <Popconfirm
-                  title="Xác nhận đơn hàng"
-                  description="Bạn có muốn thay đổi trạng thái sang đã nhận hàng không?"
-                  okText="Có"
-                  cancelText="Không"
-                  onConfirm={() => {
-                    // API Confirm
-                    setDeliveredOrderPending(order.id);
-                    deliveredOrder(order);
-                  }}
-                >
-                  <Button
-                    type="primary"
-                    loading={deliveredOrderPending === order.id}
-                  >
-                    <CheckCircleOutlined />
-                  </Button>
-                </Popconfirm>
-              </Tooltip>
-            );
-          }
         } else {
           return (
             <Tooltip title="Chi tiết đơn hàng">
@@ -389,6 +298,21 @@ const Order = () => {
         <h1 className="text-xl">Quản lý danh sách đơn hàng</h1>
       </div>
 
+      <div className="flex justify-between">
+        <Input
+          onPressEnter={(e) => {
+            console.log(e.target.value);
+            setSearch(e.target.value);
+          }}
+          onBlur={(e) => setSearch(e.target.value)}
+          placeholder="Tìm kiếm theo mã đơn hàng"
+          style={{ width: 300, marginBottom: 16 }}
+        />
+        <Button type="primary" onClick={() => setDefaultSorterFilter()}>
+          Xoá bộ lọc
+        </Button>
+      </div>
+
       {/* Table */}
       <Table
         columns={columns}
@@ -400,12 +324,7 @@ const Order = () => {
 
       {/* Pagination */}
       <Pagination
-        disabled={
-          isPendingConfirm ||
-          isPendingReject ||
-          isPendingReturn ||
-          isPendingDelivered
-        }
+        disabled={isPendingConfirm || isPendingReject}
         className="mt-5"
         align="end"
         current={pageOrder}

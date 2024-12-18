@@ -14,6 +14,7 @@ import {
   Space,
   Table,
   Tag,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import useVoucherQuery from "../../hooks/Voucher/useVoucherQuery";
@@ -154,13 +155,14 @@ const Voucher = () => {
       align: "center",
       render: (_, voucher) => (
         <Space size="small">
-          <Button
-            disabled={toggleVoucherId === voucher.id}
-            onClick={() => handleModalUpdate(voucher)}
-          >
-            <EditOutlined />
-          </Button>
-
+          <Tooltip title="Cập nhật phiếu.">
+            <Button
+              disabled={toggleVoucherId === voucher.id}
+              onClick={() => handleModalUpdate(voucher)}
+            >
+              <EditOutlined />
+            </Button>
+          </Tooltip>
           {/* <Popconfirm
             title="Chuyển trạng thái phiếu"
             description="Bạn có muốn trạng thái phiếu này không?"
@@ -245,10 +247,10 @@ const Voucher = () => {
     );
   };
 
-  const dataSource = (vouchers?.data || []).map((category, index) => ({
-    key: category.id,
+  const dataSource = (vouchers?.data || []).map((voucher, index) => ({
+    key: voucher.id,
     index: index + 1,
-    ...category,
+    ...voucher,
   }));
 
   const handleModalUpdate = (voucher) => {

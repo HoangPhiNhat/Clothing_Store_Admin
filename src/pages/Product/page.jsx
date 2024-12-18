@@ -1,6 +1,8 @@
 import {
   DeleteOutlined,
   EditOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import {
@@ -12,6 +14,7 @@ import {
   Popconfirm,
   Space,
   Table,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -25,6 +28,7 @@ const ProductManagePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [pageProduct, setPageProduct] = useState(1);
   const [currentSize, setCurrentSize] = useState(10);
+  const [toggleProductId, setToggleProductId] = useState(null);
 
   // Sorting and filter
   const [sortField, setSortField] = useState(null);
@@ -42,16 +46,27 @@ const ProductManagePage = () => {
     sortField,
     sortOrder
   );
-  console.log(products);
 
   const { mutate: deleteProduct } = useProductMutation({
     action: "DELETE",
-    onSuccess: (data) => {
+    onSuccess: () => {
       setDeletingProductId(null);
-      messageApi.success(data.message);
+      messageApi.success("Xoá sản phẩm thành công.");
     },
     onError: (error) => {
       setDeletingProductId(null);
+      message.error("Xóa sản phẩm thất bại: " + error.response.data.message);
+    },
+  });
+
+  const { mutate: toggleProduct } = useProductMutation({
+    action: "TOGGLE",
+    onSuccess: () => {
+      setToggleProductId(null);
+      messageApi.success("Thay đổi trạng thái sản phẩm thành công.");
+    },
+    onError: (error) => {
+      setToggleProductId(null);
       message.error("Xóa sản phẩm thất bại: " + error.response.data.message);
     },
   });
@@ -67,6 +82,7 @@ const ProductManagePage = () => {
       setSortOrder(null);
     }
   };
+
   const dataSource = products?.data.data.map((product) => ({
     ...product,
     key: product.id,
@@ -90,16 +106,17 @@ const ProductManagePage = () => {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
-      rowScope: "row",
       sorter: true,
-      width: "25%",
+      width: "20%",
       render: (_, product) => (
-        <Link
-          to={`${product.id}/attributes`}
-          className="text-slate-950 hover:underline"
-        >
-          {product.name}
-        </Link>
+        <Tooltip title="Biến thể.">
+          <Link
+            to={`${product.id}/attributes`}
+            className="text-slate-950 hover:underline"
+          >
+            {product.name}
+          </Link>
+        </Tooltip>
       ),
     },
     {
@@ -108,9 +125,8 @@ const ProductManagePage = () => {
         <span className="font-normal">{product.category.name}</span>
       ),
       dataIndex: "category_id",
-      rowScope: "row",
       sorter: true,
-      width: "15%",
+      width: "10%",
     },
     {
       title: "Giá gốc",
@@ -129,21 +145,34 @@ const ProductManagePage = () => {
       render: (reduced_price) => <div>{formatMoney(reduced_price)}đ</div>,
     },
     {
+      title: "Trạng thái",
+      dataIndex: "is_active",
+      key: "is_active",
+      width: "10%",
+      sorter: true,
+      render: (_, product) => (
+        <div>{product.is_active == true ? "Hiển thị" : "Ẩn"}</div>
+      ),
+    },
+    {
       title: "Hành động",
       key: "operation",
       width: "10%",
+      align: "center",
       render: (_, product) => (
         <div className="">
           <Space size="small">
-            <Link to={`${product.id}/edit`}>
-              <Button
-                disabled={deletingProductId === product.id}
-                type="default"
-                className="bg-[#fadd04] "
-              >
-                <EditOutlined />
-              </Button>
-            </Link>
+            <Tooltip title="Cập nhật.">
+              <Link to={`${product.id}/edit`}>
+                <Button
+                  disabled={deletingProductId === product.id}
+                  type="default"
+                  className="bg-[#fadd04] "
+                >
+                  <EditOutlined />
+                </Button>
+              </Link>
+            </Tooltip>
             <Popconfirm
               title="Xóa sản phẩm"
               description="Bạn có muốn xóa sản phẩm này không?"
@@ -154,13 +183,41 @@ const ProductManagePage = () => {
                 setDeletingProductId(product.id);
               }}
             >
-              <Button
-                loading={deletingProductId === product.id}
-                type="primary"
-                danger
-              >
-                <DeleteOutlined />
-              </Button>
+              <Tooltip title="Xóa.">
+                <Button
+                  loading={deletingProductId === product.id}
+                  disabled={toggleProductId}
+                  type="primary"
+                  danger
+                >
+                  <DeleteOutlined />
+                </Button>
+              </Tooltip>
+            </Popconfirm>
+
+            <Popconfirm
+              title="Trạng thái sản phẩm"
+              description="Bạn có muốn thay đổi trạng thái sản phẩm này không?"
+              okText="Có"
+              cancelText="Không"
+              onConfirm={() => {
+                toggleProduct(product.id);
+                setToggleProductId(product.id);
+              }}
+            >
+              <Tooltip title="Thay đổi trạng thái">
+                <Button
+                  loading={toggleProductId === product.id}
+                  disabled={toggleProductId}
+                  type="primary"
+                >
+                  {product.is_active == true ? (
+                    <EyeInvisibleOutlined />
+                  ) : (
+                    <EyeOutlined />
+                  )}
+                </Button>
+              </Tooltip>
             </Popconfirm>
           </Space>
         </div>

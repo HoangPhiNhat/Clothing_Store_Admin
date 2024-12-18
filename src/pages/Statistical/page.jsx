@@ -1,18 +1,44 @@
 import { Column, Line } from "@ant-design/charts";
 import {
   ClockCircleOutlined,
+  RiseOutlined,
   ShoppingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Breadcrumb, Card, Col, Radio, Row, Select} from "antd";
+import { Breadcrumb, Card, Col, Radio, Row, Select, Table } from "antd";
 import { useState } from "react";
-import { fetchDashboardData } from "../../services/dashboard";
+import {
+  fetchDashboardData,
+  fetchOrders,
+  // fetchTimeLine,
+  trendingProduct,
+} from "../../services/dashboard";
 import { formatMoney } from "../../systems/utils/formatMoney";
-
+import { createStyles } from "antd-style";
+// import { formatTime } from "../../systems/utils/formatDate";
+import { Link } from "react-router-dom";
+const useStyle = createStyles(({ css, token }) => {
+  const { antCls } = token;
+  return {
+    customTable: css`
+      ${antCls}-table {
+        ${antCls}-table-container {
+          ${antCls}-table-body,
+          ${antCls}-table-content {
+            scrollbar-width: thin;
+            scrollbar-color: #eaeaea transparent;
+            scrollbar-gutter: stable;
+          }
+        }
+      }
+    `,
+  };
+});
 const { Option } = Select;
 
 const Statistical = () => {
+  const { styles } = useStyle();
   const [timePeriod, setTimePeriod] = useState("week"); // 'week' hoặc 'month'
   const [value, setValue] = useState(() => {
     // Set default value to current month if timePeriod is "month"
@@ -24,7 +50,28 @@ const Statistical = () => {
     queryKey: ["dashboard", timePeriod, value],
     queryFn: () => fetchDashboardData(timePeriod, value),
   });
-  console.log(data);
+
+  // const { data: timeLines, isLoading: timeLineLoading } = useQuery({
+  //   queryKey: ["timeline"],
+  //   queryFn: () => fetchTimeLine(),
+  // });
+
+  const { data: trendingProducts, isLoading: trendingLoading } = useQuery({
+    queryKey: ["trending"],
+    queryFn: () => trendingProduct(),
+  });
+
+  const { data: orders, isLoading: orderLoading } = useQuery({
+    queryKey: ["orders"],
+    queryFn: () => fetchOrders(),
+  });
+
+  const statistics = (data?.statistics || []).map((item) => ({
+    day: item.day,
+    "Doanh thu": item.revenue,
+    "Đơn hàng": item.orders,
+    "Khách hàng": item.customers,
+  }));
 
   const handleSelectChange = (value) => {
     if (value === "Tuần này") {
@@ -35,27 +82,29 @@ const Statistical = () => {
       setValue("last");
     }
   };
+
   const revenueConfig = {
-    data: data?.statistics,
+    data: statistics,
     xField: "day",
-    yField: "revenue",
+    yField: "Doanh thu",
     smooth: true,
     lineStyle: { stroke: "#3f8600", lineWidth: 5 },
   };
 
   const ordersConfig = {
-    data: data?.statistics,
+    data: statistics,
     xField: "day",
-    yField: "orders",
+    yField: "Đơn hàng",
     smooth: true,
     lineStyle: { stroke: "#3f8600", lineWidth: 4 },
     columnStyle: { fill: "#3f86f8" },
   };
 
   const customersConfig = {
-    data: data?.statistics,
+    data: statistics,
     xField: "day",
-    yField: "customers",
+    yField: "Khách hàng",
+    smoothL: true,
     lineStyle: { stroke: "#3f8600", lineWidth: 3 },
     columnStyle: { fill: "#3f86f8" },
   };
@@ -70,57 +119,195 @@ const Statistical = () => {
       setValue("current");
     }
   };
-  
+
   const handleValueChange = (value) => {
     setValue(value);
   };
 
-  // const TimelineData = [
-  //   { status: "Pending", id: "#303822", time: "6 hours ago", color: "orange" },
+  // const columnTimeLine = [
   //   {
-  //     status: "Delivered",
-  //     id: "#474038",
-  //     time: "6 hours ago",
-  //     color: "green",
+  //     title: () => (
+  //       <div>
+  //         <span className="text-red-500">
+  //           <ClockCircleOutlined />
+  //         </span>{" "}
+  //         Dòng thời gian
+  //       </div>
+  //     ),
+  //     children: [
+  //       {
+  //         title: "Trạng thái",
+  //         width: 150,
+  //         render:(_, time)=>(
+  //           <Tag color={time.color}>{time.status}</Tag>
+  //         )
+  //       },
+  //       {
+  //         title: "Mã đơn hàng",
+  //         dataIndex: "order_code",
+  //         width: 150,
+  //         render: (_, tine) => (
+  //           <Link to={`orders/${tine.id}`}>
+  //             <div className="font-semibold text-[#1f1f1f]">
+  //               #{tine.order_code}
+  //             </div>
+  //           </Link>
+  //         ),
+  //       },
+  //       {
+  //         title: "Thời gian",
+  //         dataIndex: "time",
+  //         render: (time) => formatTime(time),
+  //       },
+  //     ],
   //   },
-  //   {
-  //     status: "On the way",
-  //     id: "#357211",
-  //     time: "6 hours ago",
-  //     color: "blue",
-  //   },
-  //   {
-  //     status: "On the way",
-  //     id: "#731863",
-  //     time: "7 hours ago",
-  //     color: "blue",
-  //   },
-  //   { status: "Cancelled", id: "#142463", time: "11 hours ago", color: "red" },
   // ];
 
-  // const orders = [
-  //   {
-  //     id: "#303822",
-  //     name: "Jayden Champlin",
-  //     address: "11844 Kassulke Corner, Brooklyn, NY 111",
-  //     items: ["Waldorf Salad x1", "Duck x1", "Pork x1"],
-  //     total: "$56.00",
-  //   },
-  //   {
-  //     id: "#756065",
-  //     name: "Geovany Ledner",
-  //     address: "11332 Alta Radial, Lindenhurst, NY 11526",
-  //     items: ["Fish Burger x1", "Sprite x1", "Chicken Alfredo x1"],
-  //     total: "$26.00",
-  //   },
-  // ];
+  // const dataSourceTimeLine = (timeLines || []).map((timeline, index) => ({
+  //   key: timeline.id,
+  //   index: index + 1,
+  //   ...timeline,
+  // }));
 
-  // const trendingProducts = [
-  //   { name: "Cannelloni", orders: 53, revenue: "$821.50", rank: 1 },
-  //   { name: "Cheesecake", orders: 51, revenue: "$408.00", rank: 2 },
-  //   { name: "Bruschetta", orders: 50, revenue: "$350.00", rank: 3 },
-  // ];
+  const columnOrder = [
+    {
+      title: () => (
+        <div>
+          <span className="text-red-500">
+            <ShoppingOutlined />
+          </span>{" "}
+          Đơn hàng gần đây
+        </div>
+      ),
+      children: [
+        {
+          title: "Mã đơn hàng",
+          width: 110,
+          render: (_, order) => (
+            <Link to={`orders/${order.id}`}>
+              <div className="font-semibold text-[#1f1f1f]">
+                #{order.order_code}
+              </div>
+            </Link>
+          ),
+        },
+        {
+          title: "Khách hàng",
+          width: 170,
+          render: (_, order) => (
+            <div>
+              <div>{order.name}</div>
+              <div className="text-[#8c8c8c] text-xs">
+                {" "}
+                {order.address.length > 10
+                  ? `${order.address.slice(0, 18)}...`
+                  : order.address}
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "Sản phẩm",
+          width: 240,
+          render: (_, order) => (
+            <div>
+              <div>
+                {order?.items.map((item, index) => (
+                  <div key={index}>{item}</div>
+                ))}
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "Tổng tiền",
+          render: (_, order) => (
+            <div className="text-[#1f1f1f]">{formatMoney(order.total)} Vnđ</div>
+          ),
+        },
+      ],
+    },
+  ];
 
+  const dataSourceOrder = (orders?.data || []).map((order, index) => ({
+    key: order.id,
+    index: index + 1,
+    ...order,
+  }));
+
+  const columnTrending = [
+    {
+      title: () => (
+        <div>
+          <span className="text-red-500">
+            <RiseOutlined />
+          </span>{" "}
+          Sản phẩm nổi bật
+        </div>
+      ),
+      children: [
+        {
+          title: "Xếp hạng",
+          dataIndex: "rank",
+          width: "20%",
+          render: (rank) => (
+            <div
+              className={`text-2xl font-medium ${
+                rank === 1
+                  ? "text-yellow-500 font-extrabold"
+                  : rank === 2
+                  ? "text-green-500 font-bold"
+                  : rank === 3
+                  ? "text-blue-500 font-semibold"
+                  : rank === 4
+                  ? "text-gray-500 font-medium"
+                  : "text-red-500 font-normal"
+              }`}
+            >
+              #{rank} {rank <= 3 ? "🏆" : ""}
+            </div>
+          ),
+        },
+        {
+          title: "Tên sản phẩm",
+          dataIndex: "name",
+          width: "50%",
+          render: (_, product) => (
+            <Link to={`/admin/products/${product.product_id}/attributes`}>
+              <div className="font-semibold text-xl text-[#1f1f1f]">
+                {product.name}
+              </div>
+            </Link>
+          ),
+        },
+        {
+          title: "Tổng",
+          width: "30%",
+          dataIndex: "revenue",
+          render: (_, product) => (
+            <div className="text-[#8c8c8c]">
+              <div>{formatMoney(product.revenue)} Vnđ</div>
+              <div className="">
+                Đặt hàng{" "}
+                <span className="font-semibold text-[#1f1f1f]">
+                  {product.orders}
+                </span>{" "}
+                lượt
+              </div>
+            </div>
+          ),
+        },
+      ],
+    },
+  ];
+
+  const dataSourceTrending = (trendingProducts || []).map(
+    (timeline, index) => ({
+      key: timeline.id,
+      index: index + 1,
+      ...timeline,
+    })
+  );
   return (
     <div className="">
       <Breadcrumb
@@ -259,104 +446,41 @@ const Statistical = () => {
         </Col>
       </Row>
 
-      {/* <Row>
-        <Col span={8}>
-          <Card
-            title={
-              <div className="flex items-center gap-2">
-                <span className="text-red-500">
-                  <ClockCircleOutlined />
-                </span>
-                <span>Timeline</span>
-              </div>
-            }
-            className="w-full"
-          >
-            {TimelineData.map((item, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center py-2 border-b last:border-0"
-              >
-                <Tag color={item.color} className="capitalize">
-                  {item.status}
-                </Tag>
-                <span className="font-medium">{item.id}</span>
-                <span className="text-gray-500">{item.time}</span>
-              </div>
-            ))}
-          </Card>
+      <Row gutter={[16, 16]} className="mt-4">
+        {/* <Col span={7}>
+          <Table
+            className={styles.customTable}
+            columns={columnTimeLine}
+            dataSource={dataSourceTimeLine}
+            pagination={false}
+            loading={timeLineLoading}
+            scroll={{
+              y: 55 * 7,
+            }}
+          />
+        </Col> */}
+        <Col span={12}>
+          <Table
+            className={styles.customTable}
+            columns={columnOrder}
+            dataSource={dataSourceOrder}
+            pagination={false}
+            loading={orderLoading}
+            scroll={{
+              y: 55 * 7,
+            }}
+          />
         </Col>
-        <Col span={8}>
-          <Card
-            title={
-              <div className="flex items-center gap-2">
-                <span>📋</span>
-                <span>Recent Orders</span>
-              </div>
-            }
-            className="w-full"
-          >
-            {orders.map((order, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-start py-3 border-b last:border-0"
-              >
-                <div>
-                  <span className="block text-lg font-semibold">
-                    {order.id}
-                  </span>
-                  <span className="block text-gray-500">{order.name}</span>
-                  <span className="block text-gray-400">{order.address}</span>
-                </div>
-                <div>
-                  {order.items.map((item, idx) => (
-                    <span key={idx} className="block text-gray-500">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center">
-                  <span className="text-lg font-semibold">{order.total}</span>
-                  <Button type="text" className="ml-2">
-                    ...
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </Card>
+        <Col span={12}>
+          <Table
+            className={styles.customTable}
+            columns={columnTrending}
+            dataSource={dataSourceTrending}
+            pagination={false}
+            loading={trendingLoading}
+          />
         </Col>
-        <Col span={8}>
-          <Card
-            title={
-              <div className="flex items-center gap-2">
-                <span>🔥</span>
-                <span>Trending Products</span>
-              </div>
-            }
-            className="w-full"
-          >
-            {trendingProducts.map((product, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between py-3 border-b last:border-0"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-orange-500">
-                    #{product.rank}
-                  </span>
-                  <span>{product.name}</span>
-                </div>
-                <div>
-                  <span className="block font-medium">{product.revenue}</span>
-                  <span className="block text-gray-500">
-                    Ordered {product.orders} times
-                  </span>
-                </div>
-              </div>
-            ))}
-          </Card>
-        </Col>
-      </Row> */}
+      </Row>
     </div>
   );
 };
