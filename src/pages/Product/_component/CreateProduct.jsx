@@ -252,9 +252,6 @@ const CreateProduct = () => {
                 if (!regularPrice) {
                   return Promise.reject("Vui lòng nhập giá bán trước");
                 }
-                if (value === undefined || value === null) {
-                  return Promise.reject("Vui lòng nhập giá trị hợp lệ");
-                }
                 if (value < 0) {
                   return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
                 }
@@ -498,14 +495,15 @@ const CreateProduct = () => {
               </Form.Item>
               <Form.Item
                 name="long_description"
-                label="Mô tả chi tiết"
+                label="Mô tả"
                 rules={[
-                  { required: true, message: "Vui lòng nhập mô tả chi tiết" },
+                  { required: true, message: "Vui lòng nhập mô tả" },
                 ]}
               >
                 <Input.TextArea
                   showCount
-                  maxLength={200}
+                  className="h-44"
+                  maxLength={500}
                   placeholder="Nhập giá mô tả chi tiết"
                 />
               </Form.Item>

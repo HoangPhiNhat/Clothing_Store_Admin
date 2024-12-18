@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 import { formatMoney } from "../../systems/utils/formatMoney";
 import CreateVoucher from "./_components/CreateVoucher";
 import UpdateVoucher from "./_components/UpdateVoucher";
+import useVoucherMutation from "../../hooks/Voucher/useVoucherMutation";
 // import useVoucherMutation from "../../hooks/Voucher/useVoucherMutation";
 
 const Voucher = () => {
@@ -45,19 +46,19 @@ const Voucher = () => {
   } = useVoucherQuery("GET_ALL_VOUCHER", null);
   console.log(vouchers);
 
-  // const { mutate: toggleVoucher, isPending } = useVoucherMutation({
-  //   action: "TOGGLE",
-  //   onSuccess: () => {
-  //     setToggleVoucherId(null);
-  //     messageApi.success("Chuyển trạng thái phiếu thành công.");
-  //   },
-  //   onError: (error) => {
-  //     setToggleVoucherId(null);
-  //     messageApi.error(
-  //       "Chuyển trạng thái phiếu thất bại. " + error?.response.data.message
-  //     );
-  //   },
-  // });
+  const { mutate: toggleVoucher, isPending } = useVoucherMutation({
+    action: "TOGGLE",
+    onSuccess: () => {
+      setToggleVoucherId(null);
+      messageApi.success("Chuyển trạng thái phiếu thành công.");
+    },
+    onError: (error) => {
+      setToggleVoucherId(null);
+      messageApi.error(
+        "Chuyển trạng thái phiếu thất bại. " + error?.response.data.message
+      );
+    },
+  });
 
   const columns = [
     {
@@ -163,14 +164,14 @@ const Voucher = () => {
               <EditOutlined />
             </Button>
           </Tooltip>
-          {/* <Popconfirm
+          <Popconfirm
             title="Chuyển trạng thái phiếu"
             description="Bạn có muốn trạng thái phiếu này không?"
             okText={toggleVoucherId === voucher.id ? `Đang chuyển` : `Có`}
             cancelText="Không"
             onConfirm={() => {
               setToggleVoucherId(voucher.id);
-              // toggleVoucher(voucher.id);
+              toggleVoucher(voucher.id);
             }}
           >
             {voucher.status === "active" ? (
@@ -192,7 +193,7 @@ const Voucher = () => {
             ) : (
               ""
             )}
-          </Popconfirm> */}
+          </Popconfirm>
         </Space>
       ),
     },
