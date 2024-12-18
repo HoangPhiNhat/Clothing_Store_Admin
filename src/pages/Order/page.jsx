@@ -28,6 +28,7 @@ const Order = () => {
   const [rejectOrderPending, setRejectOrderPending] = useState(null);
   const [confirmOrderPending, setConfirmOrderPending] = useState(null);
   const [orderId, setOrderId] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Thêm trạng thái
 
   // Sorting and filter
   const [sortField, setSortField] = useState(null);
@@ -38,12 +39,16 @@ const Order = () => {
     setSortField(null);
     setSortOrder(null);
     setSearch(null);
+    setOrderId([]);
+    setSelectedRowKeys([]);
   };
 
   const setDefaultStatePending = () => {
     setConfirmOrderPending(null);
     setRejectOrderPending(null);
     setRejectOrderPending(null);
+    setOrderId([]);
+    setSelectedRowKeys([]);
   };
 
   const { mutate: confirmOrder, isPending: isPendingConfirm } =
@@ -305,9 +310,11 @@ const Order = () => {
   }));
 
   const rowSelection = {
-    onChange: (selectedRowKeys) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`);
-      setOrderId(selectedRowKeys);
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log(`selectedRowKeys: ${newSelectedRowKeys}`);
+      setSelectedRowKeys(newSelectedRowKeys);
+      setOrderId(newSelectedRowKeys);
     },
     getCheckboxProps: (record) => ({
       disabled:
