@@ -247,10 +247,10 @@ const Voucher = () => {
     );
   };
 
-  const dataSource = (vouchers?.data || []).map((category, index) => ({
-    key: category.id,
+  const dataSource = (vouchers?.data || []).map((voucher, index) => ({
+    key: voucher.id,
     index: index + 1,
-    ...category,
+    ...voucher,
   }));
 
   const handleModalUpdate = (voucher) => {

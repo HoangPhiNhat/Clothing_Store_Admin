@@ -172,19 +172,23 @@ const CreateVoucher = ({ open, onCancel }) => {
               label="Giá giảm"
               name="discount_value"
               rules={[
-                { required: true, message: "Vui lòng nhập giá trị giảm" },
-                {
-                  min: 1,
-                  type: "number",
-                  message: "Giá giảm lớn hơn 0",
-                },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     const discount_type = getFieldValue("discount_type");
-                    if (discount_type === "percentage" && Number(value)>=100) {
-                      return Promise.reject(
-                        "Vui lòng giá giảm thấp hơn 100%"
-                      );
+                    if (!value) {
+                      return Promise.reject("Vui lòng nhập giá giảm");
+                    }
+                    if (Number(value) > 50 && discount_type === "percentage") {
+                      return Promise.reject("Giá giảm tối đa 50%");
+                    }
+                    if (
+                      Number(value) > 1000000 &&
+                      discount_type === "fixed_amount"
+                    ) {
+                      return Promise.reject("Giá giảm tối đa tối đa 1 triệu");
+                    }
+                    if (Number(value) < 0) {
+                      return Promise.reject("Giá giảm lớn hơn 0");
                     }
                     return Promise.resolve();
                   },
