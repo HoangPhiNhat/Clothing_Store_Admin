@@ -35,20 +35,20 @@ const SignUp = () => {
           className="p-8 bg-white rounded-lg shadow-lg w-full max-w-lg"
           style={{ maxWidth: 400 }}
         >
-          <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
+          <h2 className="text-2xl font-bold text-center mb-6">Đăng kí</h2>
 
           <Form.Item
             name="name"
-            rules={[{ required: true, message: "Please input your Name!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
           >
-            <Input placeholder="Name" ref={inputRef} />
+            <Input placeholder="Tên" ref={inputRef} />
           </Form.Item>
 
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: "Please input your Email!" },
-              { type: "email", message: "The input is not valid E-mail!" },
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: "email", message: "Email không đúng định dạng!" },
             ]}
           >
             <Input placeholder="Email" />
@@ -56,9 +56,9 @@ const SignUp = () => {
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
-            <Input.Password placeholder="Password" />
+            <Input.Password placeholder="Mật khẩu" />
           </Form.Item>
 
           <Form.Item
@@ -66,7 +66,7 @@ const SignUp = () => {
             dependencies={["password"]}
             hasFeedback
             rules={[
-              { required: true, message: "Please confirm your Password!" },
+              { required: true, message: "Vui lòng xác nhận mật khẩu!" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {

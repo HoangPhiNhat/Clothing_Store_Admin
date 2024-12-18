@@ -6,17 +6,17 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Breadcrumb, Card, Col, Radio, Row, Select, Table, Tag } from "antd";
+import { Breadcrumb, Card, Col, Radio, Row, Select, Table } from "antd";
 import { useState } from "react";
 import {
   fetchDashboardData,
   fetchOrders,
-  fetchTimeLine,
+  // fetchTimeLine,
   trendingProduct,
 } from "../../services/dashboard";
 import { formatMoney } from "../../systems/utils/formatMoney";
 import { createStyles } from "antd-style";
-import { formatTime } from "../../systems/utils/formatDate";
+// import { formatTime } from "../../systems/utils/formatDate";
 import { Link } from "react-router-dom";
 const useStyle = createStyles(({ css, token }) => {
   const { antCls } = token;
@@ -50,23 +50,22 @@ const Statistical = () => {
     queryKey: ["dashboard", timePeriod, value],
     queryFn: () => fetchDashboardData(timePeriod, value),
   });
-  const { data: timeLines, isLoading: timeLineLoading } = useQuery({
-    queryKey: ["timeline"],
-    queryFn: () => fetchTimeLine(),
-  });
 
-  console.log(timeLines);
+  // const { data: timeLines, isLoading: timeLineLoading } = useQuery({
+  //   queryKey: ["timeline"],
+  //   queryFn: () => fetchTimeLine(),
+  // });
+
   const { data: trendingProducts, isLoading: trendingLoading } = useQuery({
     queryKey: ["trending"],
     queryFn: () => trendingProduct(),
   });
-  console.log(trendingProducts);
 
   const { data: orders, isLoading: orderLoading } = useQuery({
     queryKey: ["orders"],
     queryFn: () => fetchOrders(),
   });
-  console.log(orders);
+
   const statistics = (data?.statistics || []).map((item) => ({
     day: item.day,
     "Doanh thu": item.revenue,
@@ -83,6 +82,7 @@ const Statistical = () => {
       setValue("last");
     }
   };
+
   const revenueConfig = {
     data: statistics,
     xField: "day",
@@ -108,6 +108,7 @@ const Statistical = () => {
     lineStyle: { stroke: "#3f8600", lineWidth: 3 },
     columnStyle: { fill: "#3f86f8" },
   };
+
   const handleTimePeriodChange = (e) => {
     const newTimePeriod = e.target.value;
     setTimePeriod(newTimePeriod);
@@ -123,50 +124,50 @@ const Statistical = () => {
     setValue(value);
   };
 
-  const columnTimeLine = [
-    {
-      title: () => (
-        <div>
-          <span className="text-red-500">
-            <ClockCircleOutlined />
-          </span>{" "}
-          Dòng thời gian
-        </div>
-      ),
-      children: [
-        {
-          title: "Trạng thái",
-          width: 150,
-          render:(_, time)=>(
-            <Tag color={time.color}>{time.status}</Tag>
-          )
-        },
-        {
-          title: "Mã đơn hàng",
-          dataIndex: "order_code",
-          width: 150,
-          render: (_, tine) => (
-            <Link to={`orders/${tine.id}`}>
-              <div className="font-semibold text-[#1f1f1f]">
-                #{tine.order_code}
-              </div>
-            </Link>
-          ),
-        },
-        {
-          title: "Thời gian",
-          dataIndex: "time",
-          render: (time) => formatTime(time),
-        },
-      ],
-    },
-  ];
+  // const columnTimeLine = [
+  //   {
+  //     title: () => (
+  //       <div>
+  //         <span className="text-red-500">
+  //           <ClockCircleOutlined />
+  //         </span>{" "}
+  //         Dòng thời gian
+  //       </div>
+  //     ),
+  //     children: [
+  //       {
+  //         title: "Trạng thái",
+  //         width: 150,
+  //         render:(_, time)=>(
+  //           <Tag color={time.color}>{time.status}</Tag>
+  //         )
+  //       },
+  //       {
+  //         title: "Mã đơn hàng",
+  //         dataIndex: "order_code",
+  //         width: 150,
+  //         render: (_, tine) => (
+  //           <Link to={`orders/${tine.id}`}>
+  //             <div className="font-semibold text-[#1f1f1f]">
+  //               #{tine.order_code}
+  //             </div>
+  //           </Link>
+  //         ),
+  //       },
+  //       {
+  //         title: "Thời gian",
+  //         dataIndex: "time",
+  //         render: (time) => formatTime(time),
+  //       },
+  //     ],
+  //   },
+  // ];
 
-  const dataSourceTimeLine = (timeLines || []).map((timeline, index) => ({
-    key: timeline.id,
-    index: index + 1,
-    ...timeline,
-  }));
+  // const dataSourceTimeLine = (timeLines || []).map((timeline, index) => ({
+  //   key: timeline.id,
+  //   index: index + 1,
+  //   ...timeline,
+  // }));
 
   const columnOrder = [
     {
@@ -446,7 +447,7 @@ const Statistical = () => {
       </Row>
 
       <Row gutter={[16, 16]} className="mt-4">
-        <Col span={7}>
+        {/* <Col span={7}>
           <Table
             className={styles.customTable}
             columns={columnTimeLine}
@@ -457,8 +458,8 @@ const Statistical = () => {
               y: 55 * 7,
             }}
           />
-        </Col>
-        <Col span={10}>
+        </Col> */}
+        <Col span={12}>
           <Table
             className={styles.customTable}
             columns={columnOrder}
@@ -470,7 +471,7 @@ const Statistical = () => {
             }}
           />
         </Col>
-        <Col span={7}>
+        <Col span={12}>
           <Table
             className={styles.customTable}
             columns={columnTrending}

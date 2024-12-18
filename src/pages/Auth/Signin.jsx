@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useMutation } from "@tanstack/react-query";
 import { Button, Form, Input, message } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAutoFocus from "../../hooks/customHook/useAutoFocus";
 import { signIn } from "../../services/auth";
 
@@ -64,13 +64,13 @@ const SignIn = () => {
           onFinishFailed={onFinishFailed}
           className="p-8 bg-white rounded-lg shadow-lg w-full max-w-[400px]"
         >
-          <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+          <h2 className="text-2xl font-bold text-center mb-6">Đăng nhập</h2>
 
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: "Please input your Email!" },
-              { type: "email", message: "The input is not valid E-mail!" },
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: "email", message: "Email không đúng định dạng!" },
             ]}
           >
             <Input placeholder="Email" ref={inputRef} />
@@ -78,9 +78,9 @@ const SignIn = () => {
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
-            <Input.Password placeholder="Password" />
+            <Input.Password placeholder="Mật khâu" />
           </Form.Item>
 
           <Form.Item>
@@ -90,25 +90,16 @@ const SignIn = () => {
               htmlType="submit"
               className="w-full"
             >
-              Log in
+              Đăng nhập
             </Button>
           </Form.Item>
 
-          <div className="text-center mt-4">
-            <a
-              href="/forgot-password"
-              className="text-blue-500 hover:underline"
-            >
-              Forgot your password?
-            </a>
-          </div>
-
-          <div className="text-center mt-4">
-            <span className="mx-1">Don't have an account?</span>
+          {/* <div className="text-center mt-4">
+            <span className="mx-1">Bạn không có tài khoản?</span>
             <Link to="/signup" className="text-blue-500 hover:underline">
-              Register now!
+              Đăng kí ngay!
             </Link>
-          </div>
+          </div> */}
         </Form>
       </div>
     </>

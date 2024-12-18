@@ -259,9 +259,7 @@ const CreateProduct = () => {
                   return Promise.reject("Giá khuyến mãi phải lớn hơn 0");
                 }
                 if (value > 99999999) {
-                  return Promise.reject(
-                    "Giá khuyến mãi nhỏ hơn 99.9 triệu"
-                  );
+                  return Promise.reject("Giá khuyến mãi nhỏ hơn 99.9 triệu");
                 }
                 if (value >= regularPrice) {
                   return Promise.reject("Giá khuyến mãi phải thấp hơn giá bán");
@@ -485,7 +483,7 @@ const CreateProduct = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              {/* <Form.Item
+              <Form.Item
                 name="short_description"
                 label="Mô tả ngắn"
                 rules={[
@@ -497,8 +495,8 @@ const CreateProduct = () => {
                   maxLength={200}
                   placeholder="Nhập giá mô tả ngắn"
                 />
-              </Form.Item> */}
-              {/* <Form.Item
+              </Form.Item>
+              <Form.Item
                 name="long_description"
                 label="Mô tả chi tiết"
                 rules={[
@@ -510,7 +508,7 @@ const CreateProduct = () => {
                   maxLength={200}
                   placeholder="Nhập giá mô tả chi tiết"
                 />
-              </Form.Item> */}
+              </Form.Item>
             </Col>
             <Col span={6}>
               <Form.Item

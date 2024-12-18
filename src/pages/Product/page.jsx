@@ -109,7 +109,7 @@ const ProductManagePage = () => {
       sorter: true,
       width: "20%",
       render: (_, product) => (
-        <Tooltip title="Chi tiết.">
+        <Tooltip title="Biến thể.">
           <Link
             to={`${product.id}/attributes`}
             className="text-slate-950 hover:underline"
