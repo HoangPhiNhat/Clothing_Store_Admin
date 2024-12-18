@@ -387,7 +387,9 @@ const Order = () => {
                   isPendingConfirm || isPendingReject || isPendingRejectList
                 }
                 loading={isPendingConfirmList}
-                onClick={() => confirmListOrder(orderId)}
+                onClick={() => {
+                  confirmListOrder(orderId);
+                }}
               >
                 Xác nhận đơn hàng
               </Button>
