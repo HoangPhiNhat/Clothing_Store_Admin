@@ -27,6 +27,7 @@ const Order = () => {
   const [currentSize, setCurrentSize] = useState(10);
   const [rejectOrderPending, setRejectOrderPending] = useState(null);
   const [confirmOrderPending, setConfirmOrderPending] = useState(null);
+  const [orderId, setOrderId] = useState([]);
 
   // Sorting and filter
   const [sortField, setSortField] = useState(null);
@@ -73,6 +74,36 @@ const Order = () => {
       );
     },
   });
+
+  const { mutate: confirmListOrder, isPending: isPendingConfirmList } =
+    useOrderMutation({
+      action: "CONFIRM-LIST",
+      onSuccess: () => {
+        messageApi.success("Xác nhận đơn hàng thành công.");
+        setDefaultStatePending();
+      },
+      onError: (error) => {
+        message.error(
+          "Xác nhận đơn hàng thất bại. " + error.response.data.message
+        );
+        setDefaultStatePending();
+      },
+    });
+
+  const { mutate: rejectListOrder, isPending: isPendingRejectList } =
+    useOrderMutation({
+      action: "REJECT-LIST",
+      onSuccess: () => {
+        messageApi.success("Từ chối đơn hàng thành công.");
+        setDefaultStatePending();
+      },
+      onError: (error) => {
+        setDefaultStatePending();
+        message.error(
+          "Từ chối đơn hàng thất bại. " + error.response.data.message
+        );
+      },
+    });
 
   const {
     data: orders,
@@ -273,6 +304,18 @@ const Order = () => {
     ...order,
   }));
 
+  const rowSelection = {
+    onChange: (selectedRowKeys) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`);
+      setOrderId(selectedRowKeys);
+    },
+    getCheckboxProps: (record) => ({
+      disabled:
+        record.order_status !== "Chờ xác nhận" ||
+        record.payment_status === "Thanh toán thất bại", // Điều kiện để disable checkbox
+    }),
+  };
+
   if (isError) {
     return <div>Error: {isError.message}</div>;
   }
@@ -299,18 +342,58 @@ const Order = () => {
       </div>
 
       <div className="flex justify-between">
-        <Input
-          onPressEnter={(e) => {
-            console.log(e.target.value);
-            setSearch(e.target.value);
-          }}
-          onBlur={(e) => setSearch(e.target.value)}
-          placeholder="Tìm kiếm theo mã đơn hàng"
-          style={{ width: 300, marginBottom: 16 }}
-        />
-        <Button type="primary" onClick={() => setDefaultSorterFilter()}>
-          Xoá bộ lọc
-        </Button>
+        <div className="flex justify-between">
+          <Input
+            onPressEnter={(e) => {
+              console.log(e.target.value);
+              setSearch(e.target.value);
+            }}
+            onBlur={(e) => setSearch(e.target.value)}
+            placeholder="Tìm kiếm theo mã đơn hàng"
+            style={{ width: 300, marginBottom: 16 }}
+          />
+          <Button
+            className="mx-2"
+            type="primary"
+            disabled={
+              isPendingConfirm ||
+              isPendingReject ||
+              isPendingConfirmList ||
+              isPendingRejectList
+            }
+            onClick={() => setDefaultSorterFilter()}
+          >
+            Xoá bộ lọc
+          </Button>
+        </div>
+
+        <div>
+          {orderId.length > 0 && (
+            <Space>
+              <Button
+                type="primary"
+                danger
+                disabled={
+                  isPendingConfirm || isPendingReject || isPendingRejectList
+                }
+                loading={isPendingRejectList}
+                onClick={() => rejectListOrder(orderId)}
+              >
+                Từ chối đơn hàng
+              </Button>
+              <Button
+                type="primary"
+                disabled={
+                  isPendingConfirm || isPendingReject || isPendingRejectList
+                }
+                loading={isPendingConfirmList}
+                onClick={() => confirmListOrder(orderId)}
+              >
+                Xác nhận đơn hàng
+              </Button>
+            </Space>
+          )}
+        </div>
       </div>
 
       {/* Table */}
@@ -320,6 +403,9 @@ const Order = () => {
         pagination={false}
         onChange={handleTableChange}
         size="small"
+        rowSelection={{
+          ...rowSelection,
+        }}
       />
 
       {/* Pagination */}

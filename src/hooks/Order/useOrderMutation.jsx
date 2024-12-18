@@ -17,6 +17,10 @@ const useOrderMutation = ({ action, onSuccess, onError }) => {
           return await confirmOder(order.id);
         case "REJECT":
           return await rejectOder(order.id);
+        case "CONFIRM-LIST":
+          return await confirmOder(order.id);
+        case "REJECT-LIST":
+          return await rejectOder(order.id);
         case "RETURN":
           return await returnOder(order.id);
         case "DELIVERED":
