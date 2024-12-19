@@ -112,7 +112,7 @@ const CreateVoucher = ({ open, onCancel }) => {
           }}
           disabled={isPending}
         >
-          <Form.Item
+          {/* <Form.Item
             label="Mã phiếu"
             name="voucher_code"
             rules={[
@@ -140,7 +140,7 @@ const CreateVoucher = ({ open, onCancel }) => {
             ]}
           >
             <Input placeholder="Vui lòng nhập mã phiếu" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label="Tên phiếu"
             name="name"

@@ -21,9 +21,27 @@ import useSizeQuery from "../../hooks/Size/useSizeQuery";
 import CreateColor from "./_components/Color/CreateColor";
 import UpdateColor from "./_components/Color/UpdateColor";
 import CreateSize from "./_components/Size/CreateSize";
+import { createStyles } from "antd-style";
 import UpdateSize from "./_components/Size/UpdateSize";
-
+const useStyle = createStyles(({ css, token }) => {
+  const { antCls } = token;
+  return {
+    customTable: css`
+      ${antCls}-table {
+        ${antCls}-table-container {
+          ${antCls}-table-body,
+          ${antCls}-table-content {
+            scrollbar-width: thin;
+            scrollbar-color: #eaeaea transparent;
+            scrollbar-gutter: stable;
+          }
+        }
+      }
+    `,
+  };
+});
 const Variant = () => {
+  const { styles } = useStyle();
   const [messageApi, contextHolder] = message.useMessage();
   const [modalState, setModalState] = useState({
     open: false,
@@ -103,14 +121,14 @@ const Variant = () => {
       key: "action",
       render: (_, color) => (
         <Space size="small">
-           <Tooltip title="Cập nhật.">
-          <Button
-            disabled={deletingColorId === color.id}
-            onClick={() => openModal("updateColor", color)}
-          >
-            <EditOutlined />
-          </Button>
-           </Tooltip>
+          <Tooltip title="Cập nhật.">
+            <Button
+              disabled={deletingColorId === color.id}
+              onClick={() => openModal("updateColor", color)}
+            >
+              <EditOutlined />
+            </Button>
+          </Tooltip>
           <Popconfirm
             title="Xóa màu sắc"
             description="Bạn có muốn xóa màu sắc này không?"
@@ -121,15 +139,15 @@ const Variant = () => {
               setDeletingColorId(color.id);
             }}
           >
-             <Tooltip title="Xóa.">
-            <Button
-              type="primary"
-              danger
-              loading={deletingColorId === color.id}
-            >
-              <DeleteOutlined />
-            </Button>
-             </Tooltip>
+            <Tooltip title="Xóa.">
+              <Button
+                type="primary"
+                danger
+                loading={deletingColorId === color.id}
+              >
+                <DeleteOutlined />
+              </Button>
+            </Tooltip>
           </Popconfirm>
         </Space>
       ),
@@ -221,7 +239,8 @@ const Variant = () => {
               columns={colorColumns}
               rowKey="id"
               pagination={false}
-              className="custom-table"
+              className={styles.customTable}
+              scroll={dataColors.length > 6 ? { y: 50 * 6 } : undefined}
             />
           )}
         </div>
@@ -243,7 +262,8 @@ const Variant = () => {
               columns={sizeColumns}
               rowKey="id"
               pagination={false}
-              className="custom-table"
+              className={styles.customTable}
+              scroll={dataSizes.length > 6 ? { y: 50 * 6 } : undefined}
             />
           )}
         </div>
